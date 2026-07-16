@@ -1,0 +1,195 @@
+* {
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+QMainWindow, QWidget#ContentArea {
+    background-color: #041024;
+}
+
+QFrame#Sidebar {
+    background-color: #071733; 
+    border-right: 1px solid #0F254A; 
+}
+
+/* --- TOP BAR --- */
+QFrame#TopBar {
+    background-color: transparent;
+    border-bottom: 1px solid #0F254A;
+}
+
+QLabel#TopBarGreeting {
+    font-size: 20px;
+    font-weight: bold;
+    color: #F8FAFC;
+}
+
+QLabel#TopBarClock {
+    font-size: 18px;
+    color: #FFD54F;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+QLabel#AppTitle {
+    font-size: 24px;
+    font-weight: 900;
+    color: #FFD54F; 
+    letter-spacing: 3px;
+}
+
+QLabel#HeaderTitle {
+    font-size: 28px;
+    font-weight: bold;
+    color: #F8FAFC;
+}
+
+/* Card dan Panel Grafik */
+QFrame#SensorCard, QFrame#GraphPanel {
+    background-color: #081B3B;
+    border-radius: 14px;
+    border: 1px solid #112A54;
+}
+
+QLabel#CardTitle {
+    font-size: 14px;
+    color: #64748B;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+QLabel#CardValue {
+    font-size: 40px;
+    font-weight: 900;
+}
+
+QLabel#CardUnit {
+    font-size: 16px;
+    color: #64748B;
+    margin-bottom: 6px;
+}
+
+QPushButton#MenuButton {
+    background-color: transparent;
+    color: #64748B;
+    text-align: left;
+    padding: 16px 30px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-left: 4px solid transparent; 
+}
+
+QPushButton#MenuButton:hover {
+    background-color: #0A1F45;
+    color: #E2E8F0;
+    border-left: 4px solid #64748B;
+}
+
+QPushButton#MenuButtonActive {
+    background-color: #0F254A;
+    color: #FFD54F; 
+    text-align: left;
+    padding: 16px 30px;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    border-left: 4px solid #FFD54F; 
+}
+
+/* --- TOMBOL DAN INPUT PENCARIAN --- */
+QPushButton#PrimaryButton {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #FFD54F, stop:1 #FFB300);
+    color: #1A1A1A;
+    font-weight: 800;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+}
+
+QPushButton#PrimaryButton:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #FFE082, stop:1 #FFC107);
+}
+
+QPushButton#SecondaryButton {
+    background-color: #112A54;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 8px;
+    border: none;
+}
+
+QPushButton#SecondaryButton:hover {
+    background-color: #1A3A70;
+}
+
+QLineEdit#SearchBar {
+    background-color: #071733;
+    border: 2px solid #112A54;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #FFFFFF;
+    font-size: 16px;
+}
+
+QLineEdit#SearchBar:focus {
+    border: 2px solid #FFD54F;
+    background-color: #0A1F45;
+}
+
+/* --- STYLING TABEL PASIEN (QTableWidget) --- */
+QTableWidget {
+    background-color: #081B3B;
+    color: #F8FAFC;
+    border: 1px solid #112A54;
+    border-radius: 8px;
+    gridline-color: #112A54;
+    font-size: 14px;
+}
+
+QTableWidget::item {
+    padding: 10px;
+    border-bottom: 1px solid #0A1F45;
+}
+
+QTableWidget::item:selected {
+    background-color: #1565C0;
+    color: #FFFFFF;
+}
+
+QHeaderView::section {
+    background-color: #071733;
+    color: #8C9EBA;
+    padding: 12px;
+    border: none;
+    border-bottom: 2px solid #112A54;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* --- STYLING COMBOBOX --- */
+QComboBox {
+    background-color: #071733;
+    border: 2px solid #112A54;
+    border-radius: 8px;
+    padding: 5px 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+QComboBox:focus {
+    border: 2px solid #FFD54F;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 30px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #071733;
+    color: #FFFFFF;
+    selection-background-color: #1565C0;
+    border: 1px solid #112A54;
+}
