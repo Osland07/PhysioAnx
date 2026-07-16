@@ -1,0 +1,78 @@
+==============================================================
+PANDUAN LENGKAP INSTALASI & MENJALANKAN PHYSIOANX DI MAC
+==============================================================
+
+Dokumen ini adalah panduan langkah demi langkah untuk pengguna 
+Mac (macOS), mulai dari kondisi komputer kosong hingga aplikasi 
+PhysioAnx siap digunakan.
+
+--------------------------------------------------------------
+TAHAP 1: PERSIAPAN AWAL (Instalasi Git & Python)
+--------------------------------------------------------------
+Jika komputer Mac Anda belum pernah digunakan untuk memprogram:
+
+1. Buka aplikasi Terminal (Tekan tombol Command + Space di keyboard, ketik "Terminal", lalu tekan Enter).
+2. Instal Git (Dibutuhkan untuk mengunduh kode dari GitHub):
+   - Ketik perintah: git --version
+   - Jika Git belum terinstal, layar Mac akan otomatis memunculkan kotak dialog untuk menginstal "Command Line Developer Tools". Klik "Install" dan tunggu hingga selesai.
+3. Instal Python 3:
+   - Ketik perintah: python3 --version
+   - Jika belum ada, Anda bisa mengunduhnya secara gratis melalui web resmi: https://www.python.org/downloads/macos/
+   - (Ikuti proses instalasi Python seperti menginstal aplikasi biasa, klik next hingga selesai).
+
+--------------------------------------------------------------
+TAHAP 2: MENGUNDUH KODE DARI GITHUB (Clone Repository)
+--------------------------------------------------------------
+1. Buka Terminal Anda kembali.
+2. Pindah ke direktori tempat Anda ingin menyimpan aplikasinya (misalnya di Desktop). Ketik:
+   cd ~/Desktop
+3. Unduh (clone) kode dari GitHub dengan perintah:
+   git clone <MASUKKAN_URL_GITHUB_ANDA_DI_SINI>
+   (Hapus tanda < > dan ganti dengan link GitHub Anda)
+4. Masuk ke dalam folder project yang baru saja diunduh. Ketik:
+   cd PhysioAnx
+
+--------------------------------------------------------------
+TAHAP 3: SETUP APLIKASI (Hanya dilakukan 1 KALI di awal)
+--------------------------------------------------------------
+Langkah ini berfungsi untuk memasang semua library medis, grafik, dan bluetooth yang dibutuhkan oleh PhysioAnx.
+
+1. Buka Terminal dan ketik (JANGAN TEKAN ENTER DULU):
+   sh 
+   (Pastikan Anda memberikan satu SPASI setelah huruf h)
+2. Buka aplikasi Finder, cari folder PhysioAnx yang baru saja diunduh.
+3. Klik dan seret (drag & drop) file bernama "Setup_Mac.command" dari Finder ke dalam jendela Terminal.
+4. Tekan Enter.
+5. Tunggu Terminal bekerja menginstal semuanya (biasanya memakan waktu 1-3 menit).
+
+--------------------------------------------------------------
+TAHAP 4: CARA MENJALANKAN APLIKASI (Sehari-hari)
+--------------------------------------------------------------
+Agar aplikasi lebih praktis dibuka setiap harinya, mari kita ubah file "Run_Mac.command" agar bisa di-klik ganda.
+
+Memberikan Izin Klik Ganda (Hanya perlu dilakukan 1x selamanya):
+1. Buka Terminal, ketik (JANGAN TEKAN ENTER DULU):
+   chmod +x 
+   (Pastikan ada satu spasi di ujungnya).
+2. Buka Finder, klik dan seret (drag & drop) file "Run_Mac.command" ke layar Terminal.
+3. Tekan Enter.
+Selesai! Sekarang, kapan pun Anda ingin membuka aplikasi PhysioAnx, Anda cukup MENGKLIK GANDA file "Run_Mac.command" tersebut layaknya aplikasi biasa.
+
+*Jika Cara Klik Ganda Ditolak oleh Keamanan Mac:*
+Anda selalu bisa menjalankannya secara manual dengan cara yang paling aman:
+1. Buka Terminal, ketik: sh  (dengan spasi)
+2. Seret file "Run_Mac.command" ke Terminal dan tekan Enter.
+
+==============================================================
+CATATAN PENTING: IZIN AKSES BLUETOOTH
+==============================================================
+Aplikasi ini membaca data sensor pasien melalui Bluetooth.
+Keamanan macOS sangat ketat mengenai akses Bluetooth.
+Saat pertama kali Anda berhasil menjalankan aplikasi, Mac mungkin
+akan memunculkan pop-up yang meminta izin akses Bluetooth untuk
+Terminal / Python. 
+
+PASTIKAN Anda mengklik tombol "Allow" atau "OK".
+Jika tidak sengaja Anda tolak (Deny), aplikasi tidak akan bisa
+membaca sensor. Anda harus menyalakannya manual melalui:
+Logo Apple (Kiri Atas) > System Settings > Privacy & Security > Bluetooth > Aktifkan saklar untuk aplikasi Terminal.
