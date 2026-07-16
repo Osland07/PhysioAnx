@@ -823,7 +823,7 @@ class MainWindow(QMainWindow):
         scroll.setWidget(scroll_content)
         layout.addWidget(scroll)
         
-        btn_save = QPushButton("SIMPAN SEMUA PENGATURAN")
+        btn_save = QPushButton("Simpan")
         btn_save.setFixedSize(250, 45)
         btn_save.setStyleSheet("background-color: #2E7D32; color: white; border-radius: 4px; font-weight: bold; font-size: 14px;")
         btn_save.clicked.connect(lambda: QMessageBox.information(self, "Tersimpan", "Semua pengaturan berhasil disimpan ke dalam sistem."))
