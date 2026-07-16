@@ -1,0 +1,4 @@
+1. Halaman Login
+2. Warna Latar
+3. Data yang direkam dari sensor GSR uS, ada temperature, Heart Rate
+4
