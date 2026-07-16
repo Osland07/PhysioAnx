@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(self.btn_setting)
         sidebar_layout.addStretch()
         
-        footer_label = QLabel("PhysioAnx v1.0\nSecure Medical System")
+        footer_label = QLabel("PhysioAnx v1.0")
         footer_label.setAlignment(Qt.AlignCenter)
         footer_label.setStyleSheet("color: #475569; font-size: 11px; font-weight: bold; letter-spacing: 1px;")
         sidebar_layout.addWidget(footer_label)
@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
         elif 11 <= jam < 15: sapaan = "Selamat Siang,"
         elif 15 <= jam < 18: sapaan = "Selamat Sore,"
         else: sapaan = "Selamat Malam,"
-        self.greeting_label.setText(f"{sapaan} Dr. Oslan!")
+        self.greeting_label.setText(f"{sapaan}")
         self.clock_label.setText(current_time.toString("HH:mm:ss"))
 
     def switch_page(self, index):
@@ -632,8 +632,8 @@ class MainWindow(QMainWindow):
         
         # Indikator Vital
         card_hr = self.create_sensor_card("HEART RATE (BPM)", "82", "BPM", "#FF5252", "fa5s.heartbeat")
-        card_gsr = self.create_sensor_card("EDA / GSR (µS)", "14.2", "µS", "#40C4FF", "fa5s.bolt")
-        card_status = self.create_sensor_card("STATUS KECEMASAN", "Siap", "Standby", "#69F0AE", "fa5s.smile")
+        card_gsr = self.create_sensor_card("GSR (µS)", "14.2", "µS", "#40C4FF", "fa5s.bolt")
+        card_status = self.create_sensor_card("STATUS KECEMASAN", "-", "-", "#69F0AE", "fa5s.smile")
         
         control_layout.addLayout(action_panel)
         control_layout.addWidget(card_hr)
@@ -660,15 +660,20 @@ class MainWindow(QMainWindow):
         
         # Fake ECG/GSR Data for UI Showcase
         import numpy as np
-        x_data = np.linspace(0, 10, 300)
-        y_data_hr = np.sin(x_data * 5) * 10 + 80 + np.random.normal(0, 1, 300)
-        y_data_gsr = np.sin(x_data) * 5 + 15 + np.random.normal(0, 0.2, 300)
+        self.x_data = np.linspace(0, 10, 300)
+        self.phase = 0.0
+        self.y_data_hr = np.sin(self.x_data * 5 + self.phase) * 10 + 80 + np.random.normal(0, 1, 300)
+        self.y_data_gsr = np.sin(self.x_data + self.phase) * 5 + 15 + np.random.normal(0, 0.2, 300)
         
         pen_hr = pg.mkPen(color='#FF5252', width=3)
         pen_gsr = pg.mkPen(color='#40C4FF', width=3)
         
-        self.plot.plot(x_data, y_data_hr, pen=pen_hr, name="Heart Rate")
-        self.plot.plot(x_data, y_data_gsr, pen=pen_gsr, name="EDA/GSR")
+        self.curve_hr = self.plot.plot(self.x_data, self.y_data_hr, pen=pen_hr, name="Heart Rate")
+        self.curve_gsr = self.plot.plot(self.x_data, self.y_data_gsr, pen=pen_gsr, name="GSR")
+        
+        self.timer_graph = QTimer(self)
+        self.timer_graph.timeout.connect(self.update_fake_graph)
+        self.timer_graph.start(50)
         
         gl.addWidget(gl_title)
         gl.addWidget(self.plot)
@@ -677,6 +682,19 @@ class MainWindow(QMainWindow):
         layout.addWidget(prep_panel)
         layout.addLayout(control_layout)
         layout.addWidget(graph_panel, stretch=1)
+
+    def update_fake_graph(self):
+        import numpy as np
+        self.phase += 0.2
+        # Geser gelombang agar beranimasi
+        self.y_data_hr[:-1] = self.y_data_hr[1:]
+        self.y_data_hr[-1] = np.sin(self.x_data[-1] * 5 + self.phase) * 10 + 80 + np.random.normal(0, 1)
+        
+        self.y_data_gsr[:-1] = self.y_data_gsr[1:]
+        self.y_data_gsr[-1] = np.sin(self.x_data[-1] + self.phase) * 5 + 15 + np.random.normal(0, 0.2)
+        
+        self.curve_hr.setData(self.x_data, self.y_data_hr)
+        self.curve_gsr.setData(self.x_data, self.y_data_gsr)
 
     def create_sensor_card(self, title_text, value_text, unit_text, color, icon_name=None):
         card = QFrame()
