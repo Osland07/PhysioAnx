@@ -117,6 +117,7 @@ class MainWindow(QMainWindow):
         self.setup_report_page()
         
         self.page_setting = QWidget()
+        self.setup_setting_page()
         
         self.stacked_widget.addWidget(self.page_pasien)       # 0
         self.stacked_widget.addWidget(self.page_live_session) # 1
@@ -141,10 +142,10 @@ class MainWindow(QMainWindow):
     def update_time(self):
         current_time = QTime.currentTime()
         jam = current_time.hour()
-        if 5 <= jam < 11: sapaan = "Selamat Pagi,"
-        elif 11 <= jam < 15: sapaan = "Selamat Siang,"
-        elif 15 <= jam < 18: sapaan = "Selamat Sore,"
-        else: sapaan = "Selamat Malam,"
+        if 5 <= jam < 11: sapaan = "Selamat Pagi!"
+        elif 11 <= jam < 15: sapaan = "Selamat Siang!"
+        elif 15 <= jam < 18: sapaan = "Selamat Sore!"
+        else: sapaan = "Selamat Malam!"
         self.greeting_label.setText(f"{sapaan}")
         self.clock_label.setText(current_time.toString("HH:mm:ss"))
 
@@ -648,7 +649,7 @@ class MainWindow(QMainWindow):
         gl = QVBoxLayout(graph_panel)
         gl.setContentsMargins(20, 20, 20, 20)
         
-        gl_title = QLabel("Oscilloscope Monitoring (Live)")
+        gl_title = QLabel("Data Pasien")
         gl_title.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none;")
         
         pg.setConfigOption('background', 'transparent')
@@ -734,4 +735,104 @@ class MainWindow(QMainWindow):
         layout.addWidget(title)
         layout.addLayout(v_lay)
         return card
+
+    def setup_setting_page(self):
+        from PySide6.QtWidgets import QFormLayout, QGroupBox, QFileDialog, QScrollArea, QMessageBox
+        
+        layout = QVBoxLayout(self.page_setting)
+        layout.setContentsMargins(40, 40, 40, 40)
+        layout.setSpacing(25)
+        
+        header_label = QLabel("Pengaturan Sistem")
+        header_label.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
+        layout.addWidget(header_label)
+        
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("QScrollArea { border: none; background-color: transparent; } QScrollBar:vertical { width: 10px; background: #051024; } QScrollBar::handle:vertical { background: #112A54; border-radius: 5px; }")
+        
+        scroll_content = QWidget()
+        scroll_content.setStyleSheet("background-color: transparent;")
+        scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setSpacing(30)
+        scroll_layout.setContentsMargins(0, 0, 20, 0)
+        
+        # 1. KONEKSI BLUETOOTH
+        group_dev = QGroupBox(" Koneksi Bluetooth (ESP32)")
+        group_dev.setStyleSheet("QGroupBox { color: #69F0AE; font-size: 16px; font-weight: bold; border: 1px solid #112A54; border-radius: 8px; margin-top: 15px; padding-top: 25px; background-color: #081B3B; } QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; padding: 0 10px; left: 10px; } QLabel { color: #B0BEC5; font-size: 14px; } QLineEdit { background-color: #051024; color: white; border: 1px solid #112A54; border-radius: 4px; padding: 10px; }")
+        
+        form_dev = QFormLayout(group_dev)
+        form_dev.setContentsMargins(25, 25, 25, 25)
+        form_dev.setSpacing(15)
+        
+        self.input_dev_name = QLineEdit("PhysioAnx-ESP32")
+        self.input_mac = QLineEdit()
+        self.input_mac.setPlaceholderText("Dikosongkan jika ingin mode pencarian otomatis")
+        
+        form_dev.addRow(QLabel("Nama Perangkat Target:"), self.input_dev_name)
+        form_dev.addRow(QLabel("MAC Address (Opsional):"), self.input_mac)
+        
+        btn_scan = QPushButton("Cari Perangkat Sekarang")
+        btn_reset = QPushButton("Reset Perangkat")
+        
+        btn_style = "QPushButton { background-color: #112A54; color: white; border-radius: 4px; padding: 10px 15px; font-weight: bold; } QPushButton:hover { background-color: #1A3A70; }"
+        btn_scan.setStyleSheet(btn_style)
+        btn_reset.setStyleSheet("QPushButton { background-color: #D32F2F; color: white; border-radius: 4px; padding: 10px 15px; font-weight: bold; } QPushButton:hover { background-color: #B71C1C; }")
+        
+        btn_scan.clicked.connect(lambda: QMessageBox.information(self, "Bluetooth", "Memindai perangkat...\\n(Simulasi: Perangkat ditemukan!)"))
+        btn_reset.clicked.connect(lambda: QMessageBox.information(self, "Reset", "Perangkat berhasil di-reset dan dilepaskan dari memori."))
+        
+        box_btn = QHBoxLayout()
+        box_btn.addWidget(btn_scan)
+        box_btn.addWidget(btn_reset)
+        box_btn.addStretch()
+        form_dev.addRow(QLabel("Aksi:"), box_btn)
+        
+        # 2. PENYIMPANAN LAPORAN
+        group_store = QGroupBox(" Penyimpanan Ekspor & Laporan")
+        group_store.setStyleSheet(group_dev.styleSheet())
+        form_store = QFormLayout(group_store)
+        form_store.setContentsMargins(25, 25, 25, 25)
+        form_store.setSpacing(15)
+        
+        self.input_dir = QLineEdit("C:/Users/oslan/Documents/PhysioAnx_Reports")
+        btn_browse = QPushButton("Pilih Folder")
+        btn_browse.setStyleSheet(btn_style)
+        btn_browse.clicked.connect(self.browse_folder)
+        
+        box_dir = QHBoxLayout()
+        box_dir.addWidget(self.input_dir)
+        box_dir.addWidget(btn_browse)
+        form_store.addRow(QLabel("Folder Output Laporan:"), box_dir)
+        
+        # 3. KALIBRASI / THRESHOLD
+        group_cal = QGroupBox(" Kalibrasi Sensor (Default Baseline)")
+        group_cal.setStyleSheet(group_dev.styleSheet())
+        form_cal = QFormLayout(group_cal)
+        form_cal.setContentsMargins(25, 25, 25, 25)
+        form_cal.setSpacing(15)
+        
+        form_cal.addRow(QLabel("Ambang Batas Heart Rate (BPM):"), QLineEdit("100"))
+        form_cal.addRow(QLabel("Ambang Batas Cemas GSR (µS):"), QLineEdit("20.5"))
+        
+        scroll_layout.addWidget(group_dev)
+        scroll_layout.addWidget(group_store)
+        scroll_layout.addWidget(group_cal)
+        scroll_layout.addStretch()
+        
+        scroll.setWidget(scroll_content)
+        layout.addWidget(scroll)
+        
+        btn_save = QPushButton("SIMPAN SEMUA PENGATURAN")
+        btn_save.setFixedSize(250, 45)
+        btn_save.setStyleSheet("background-color: #2E7D32; color: white; border-radius: 4px; font-weight: bold; font-size: 14px;")
+        btn_save.clicked.connect(lambda: QMessageBox.information(self, "Tersimpan", "Semua pengaturan berhasil disimpan ke dalam sistem."))
+        
+        layout.addWidget(btn_save, alignment=Qt.AlignRight)
+
+    def browse_folder(self):
+        from PySide6.QtWidgets import QFileDialog
+        folder = QFileDialog.getExistingDirectory(self, "Pilih Folder Penyimpanan")
+        if folder:
+            self.input_dir.setText(folder)
 
