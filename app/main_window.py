@@ -167,6 +167,26 @@ class MainWindow(QMainWindow):
             buttons[index].style().unpolish(buttons[index])
             buttons[index].style().polish(buttons[index])
 
+    def start_examination(self, patient, umur):
+        self.lbl_info_rm.setText(f"<b>No RM:</b> {patient.no_rm}")
+        self.lbl_info_nama.setText(f"<b>Nama:</b> {patient.full_name}")
+        self.lbl_info_usia.setText(f"<b>Usia:</b> {umur} Tahun")
+        self.lbl_info_gender.setText(f"<b>Gender:</b> {patient.gender}")
+        
+        # Pindah ke halaman Live Session dan langsung ke Active Session
+        self.switch_page(1)
+        if hasattr(self, 'session_stacked'):
+            self.session_stacked.setCurrentIndex(1)
+            
+    def enter_active_session(self):
+        teks_pasien = self.cmb_pasien_session.currentText()
+        self.lbl_info_rm.setText("<b>No RM:</b> -")
+        self.lbl_info_nama.setText(f"<b>Nama:</b> {teks_pasien}")
+        self.lbl_info_usia.setText("<b>Usia:</b> -")
+        self.lbl_info_gender.setText("<b>Gender:</b> -")
+        if hasattr(self, 'session_stacked'):
+            self.session_stacked.setCurrentIndex(1)
+
     def setup_pasien_page(self):
         from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, QSpacerItem, QSizePolicy
 
@@ -240,7 +260,7 @@ class MainWindow(QMainWindow):
         self.table_pasien.setColumnWidth(0, 130) # No RM
         self.table_pasien.setColumnWidth(2, 80)  # Umur
         self.table_pasien.setColumnWidth(3, 50)  # L/P
-        self.table_pasien.setColumnWidth(4, 200) # Aksi (Edit, Hapus)
+        self.table_pasien.setColumnWidth(4, 260) # Aksi (Periksa, Edit, Hapus)
         
         self.table_pasien.verticalHeader().setVisible(False)
         self.table_pasien.verticalHeader().setDefaultSectionSize(55) # Tambah tinggi baris agar tombol tidak terpotong
@@ -312,6 +332,12 @@ class MainWindow(QMainWindow):
             action_layout.setContentsMargins(5, 2, 5, 2)
             action_layout.setSpacing(8)
             
+            btn_periksa = QPushButton(" Periksa")
+            btn_periksa.setIcon(qta.icon('fa5s.stethoscope', color='white'))
+            btn_periksa.setStyleSheet("background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-weight: bold;")
+            btn_periksa.setCursor(Qt.PointingHandCursor)
+            btn_periksa.clicked.connect(lambda checked, pat=p, u=umur: self.start_examination(pat, u))
+            
             btn_edit = QPushButton(" Edit")
             btn_edit.setIcon(qta.icon('fa5s.edit', color='white'))
             btn_edit.setStyleSheet("background-color: #FFA000; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-weight: bold;")
@@ -324,6 +350,7 @@ class MainWindow(QMainWindow):
             btn_delete.setCursor(Qt.PointingHandCursor)
             btn_delete.clicked.connect(lambda checked, rm=p.no_rm, n=p.full_name: self.delete_patient_action(rm, n))
             
+            action_layout.addWidget(btn_periksa)
             action_layout.addWidget(btn_edit)
             action_layout.addWidget(btn_delete)
             action_layout.addStretch()
@@ -569,26 +596,80 @@ class MainWindow(QMainWindow):
     # ==========================================
     def setup_live_session_page(self):
         layout = QVBoxLayout(self.page_live_session)
-        layout.setContentsMargins(15, 15, 15, 15)
-        layout.setSpacing(20)
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.session_stacked = QStackedWidget()
+        layout.addWidget(self.session_stacked)
+        
+        # ==========================================
+        # SUB-PAGE 0: PRE-SESSION (Pilih Pasien)
+        # ==========================================
+        self.page_pre_session = QWidget()
+        pre_layout = QVBoxLayout(self.page_pre_session)
+        pre_layout.setAlignment(Qt.AlignCenter)
+        
+        pre_panel = QFrame()
+        pre_panel.setFixedSize(500, 320)
+        pre_panel.setStyleSheet("background-color: #081B3B; border-radius: 12px; border: 1px solid #112A54;")
+        pre_panel_layout = QVBoxLayout(pre_panel)
+        pre_panel_layout.setContentsMargins(30, 30, 30, 30)
+        pre_panel_layout.setSpacing(15)
+        
+        lbl_title_pre = QLabel("Persiapan Pemeriksaan")
+        lbl_title_pre.setAlignment(Qt.AlignCenter)
+        lbl_title_pre.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 18px; border: none; margin-bottom: 10px;")
+        
+        self.cmb_pasien_session = QComboBox()
+        self.cmb_pasien_session.setEditable(True)
+        self.cmb_pasien_session.lineEdit().setPlaceholderText("Cari nama atau RM...")
+        self.cmb_pasien_session.addItem("RM-2406-001 - Bpk. Budi Santoso")
+        self.cmb_pasien_session.addItem("RM-2406-002 - Ibu Siti Aminah")
+        self.cmb_pasien_session.addItem("RM-2406-003 - Sdr. Andi Pratama")
+        self.cmb_pasien_session.setFixedHeight(45)
+        
+        btn_add_patient_session = QPushButton(" + Pasien Baru")
+        btn_add_patient_session.setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold; border-radius: 5px;")
+        btn_add_patient_session.setFixedHeight(40)
+        btn_add_patient_session.setCursor(Qt.PointingHandCursor)
+        btn_add_patient_session.clicked.connect(self.show_add_patient_dialog)
+        
+        btn_enter_session = QPushButton(" Mulai Sesi Pemeriksaan")
+        btn_enter_session.setIcon(qta.icon('fa5s.arrow-right', color='white'))
+        btn_enter_session.setStyleSheet("background-color: #2196F3; color: white; font-weight: bold; font-size: 14px; border-radius: 8px;")
+        btn_enter_session.setFixedHeight(50)
+        btn_enter_session.setCursor(Qt.PointingHandCursor)
+        btn_enter_session.clicked.connect(self.enter_active_session)
+        
+        pre_panel_layout.addWidget(lbl_title_pre)
+        pre_panel_layout.addWidget(QLabel("Pilih Pasien:", styleSheet="color: #64748B; font-weight: bold;"))
+        pre_panel_layout.addWidget(self.cmb_pasien_session)
+        pre_panel_layout.addWidget(btn_add_patient_session)
+        pre_panel_layout.addStretch()
+        pre_panel_layout.addWidget(btn_enter_session)
+        
+        pre_layout.addWidget(pre_panel)
+        
+        # ==========================================
+        # SUB-PAGE 1: ACTIVE SESSION (Monitoring)
+        # ==========================================
+        self.page_active_session = QWidget()
+        active_layout = QVBoxLayout(self.page_active_session)
+        active_layout.setContentsMargins(15, 15, 15, 15)
+        active_layout.setSpacing(20)
         
         # --- 1. PANEL PERSIAPAN (Atas) ---
         prep_panel = QFrame()
         prep_panel.setGraphicsEffect(create_shadow())
         prep_panel.setStyleSheet("background-color: #081B3B; border-radius: 8px; border: 1px solid #112A54;")
-        prep_layout = QHBoxLayout(prep_panel)
+        prep_layout = QVBoxLayout(prep_panel)
         prep_layout.setContentsMargins(20, 15, 20, 15)
         prep_layout.setSpacing(15)
         
-        lbl_pilih = QLabel("Pilih Pasien:")
-        lbl_pilih.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 14px; border: none;")
+        # Baris 1: Judul dan Bluetooth
+        top_row = QHBoxLayout()
         
-        cmb_pasien = QComboBox()
-        cmb_pasien.addItem("RM-2406-001 - Bpk. Budi Santoso")
-        cmb_pasien.addItem("RM-2406-002 - Ibu Siti Aminah")
-        cmb_pasien.addItem("RM-2406-003 - Sdr. Andi Pratama")
-        cmb_pasien.setMinimumWidth(300)
-        cmb_pasien.setFixedHeight(40)
+        lbl_pilih = QLabel("Pemeriksaan Pasien Aktif")
+        lbl_pilih.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none;")
         
         lbl_bluetooth = QLabel("⚫ Alat Disconnected")
         lbl_bluetooth.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 14px; border: none; margin-left: 20px;")
@@ -599,11 +680,30 @@ class MainWindow(QMainWindow):
         btn_connect.setFixedSize(160, 40)
         btn_connect.setCursor(Qt.PointingHandCursor)
         
-        prep_layout.addWidget(lbl_pilih)
-        prep_layout.addWidget(cmb_pasien)
-        prep_layout.addWidget(lbl_bluetooth)
-        prep_layout.addWidget(btn_connect)
-        prep_layout.addStretch()
+        top_row.addWidget(lbl_pilih)
+        top_row.addStretch()
+        top_row.addWidget(lbl_bluetooth)
+        top_row.addWidget(btn_connect)
+        
+        # Baris 2: Data Diri Pasien
+        info_row = QFrame()
+        info_row.setStyleSheet("background-color: #112A54; border-radius: 6px; padding: 10px;")
+        info_layout = QHBoxLayout(info_row)
+        info_layout.setContentsMargins(10, 10, 10, 10)
+        
+        self.lbl_info_rm = QLabel("<b>No RM:</b> -")
+        self.lbl_info_nama = QLabel("<b>Nama:</b> Belum ada pasien dipilih")
+        self.lbl_info_usia = QLabel("<b>Usia:</b> -")
+        self.lbl_info_gender = QLabel("<b>Gender:</b> -")
+        
+        for lbl in [self.lbl_info_rm, self.lbl_info_nama, self.lbl_info_usia, self.lbl_info_gender]:
+            lbl.setStyleSheet("color: #E2E8F0; font-size: 13px; border: none;")
+            info_layout.addWidget(lbl)
+            
+        info_layout.addStretch()
+        
+        prep_layout.addLayout(top_row)
+        prep_layout.addWidget(info_row)
         
         # --- 2. KONTROL SESI & INDIKATOR VITAL ---
         control_layout = QHBoxLayout()
@@ -634,12 +734,12 @@ class MainWindow(QMainWindow):
         # Indikator Vital
         card_hr = self.create_sensor_card("HEART RATE (BPM)", "82", "BPM", "#FF5252", "fa5s.heartbeat")
         card_gsr = self.create_sensor_card("GSR (µS)", "14.2", "µS", "#40C4FF", "fa5s.bolt")
-        card_status = self.create_sensor_card("STATUS KECEMASAN", "-", "-", "#69F0AE", "fa5s.smile")
+        card_temp = self.create_sensor_card("TEMPERATURE (°C)", "36.5", "°C", "#FFB300", "fa5s.thermometer-half")
         
         control_layout.addLayout(action_panel)
         control_layout.addWidget(card_hr)
         control_layout.addWidget(card_gsr)
-        control_layout.addWidget(card_status)
+        control_layout.addWidget(card_temp)
         
         # --- 3. GRAFIK REAL-TIME ---
         graph_panel = QFrame()
@@ -665,12 +765,15 @@ class MainWindow(QMainWindow):
         self.phase = 0.0
         self.y_data_hr = np.sin(self.x_data * 5 + self.phase) * 10 + 80 + np.random.normal(0, 1, 300)
         self.y_data_gsr = np.sin(self.x_data + self.phase) * 5 + 15 + np.random.normal(0, 0.2, 300)
+        self.y_data_temp = np.ones(300) * 36.5 + np.random.normal(0, 0.05, 300)
         
         pen_hr = pg.mkPen(color='#FF5252', width=3)
         pen_gsr = pg.mkPen(color='#40C4FF', width=3)
+        pen_temp = pg.mkPen(color='#FFB300', width=3)
         
         self.curve_hr = self.plot.plot(self.x_data, self.y_data_hr, pen=pen_hr, name="Heart Rate")
         self.curve_gsr = self.plot.plot(self.x_data, self.y_data_gsr, pen=pen_gsr, name="GSR")
+        self.curve_temp = self.plot.plot(self.x_data, self.y_data_temp, pen=pen_temp, name="Temperature")
         
         self.timer_graph = QTimer(self)
         self.timer_graph.timeout.connect(self.update_fake_graph)
@@ -679,10 +782,14 @@ class MainWindow(QMainWindow):
         gl.addWidget(gl_title)
         gl.addWidget(self.plot)
         
-        # Rangkai Semua
-        layout.addWidget(prep_panel)
-        layout.addLayout(control_layout)
-        layout.addWidget(graph_panel, stretch=1)
+        # Rangkai Semua di Active Session
+        active_layout.addWidget(prep_panel)
+        active_layout.addLayout(control_layout)
+        active_layout.addWidget(graph_panel, stretch=1)
+        
+        self.session_stacked.addWidget(self.page_pre_session)
+        self.session_stacked.addWidget(self.page_active_session)
+        self.session_stacked.setCurrentIndex(0)
 
     def update_fake_graph(self):
         import numpy as np
@@ -694,8 +801,12 @@ class MainWindow(QMainWindow):
         self.y_data_gsr[:-1] = self.y_data_gsr[1:]
         self.y_data_gsr[-1] = np.sin(self.x_data[-1] + self.phase) * 5 + 15 + np.random.normal(0, 0.2)
         
+        self.y_data_temp[:-1] = self.y_data_temp[1:]
+        self.y_data_temp[-1] = 36.5 + np.random.normal(0, 0.05)
+        
         self.curve_hr.setData(self.x_data, self.y_data_hr)
         self.curve_gsr.setData(self.x_data, self.y_data_gsr)
+        self.curve_temp.setData(self.x_data, self.y_data_temp)
 
     def create_sensor_card(self, title_text, value_text, unit_text, color, icon_name=None):
         card = QFrame()
