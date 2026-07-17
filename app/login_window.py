@@ -104,37 +104,7 @@ class LoginWindow(QWidget):
         divider_row.setAlignment(Qt.AlignCenter)
         divider_row.addWidget(divider)
 
-        # Info card kecil di bawah
-        info_card = QFrame()
-        info_card.setStyleSheet("""
-            QFrame {
-                background-color: rgba(255,255,255,0.04);
-                border: 1px solid #1C3565;
-                border-radius: 10px;
-            }
-        """)
-        info_card_layout = QVBoxLayout(info_card)
-        info_card_layout.setContentsMargins(20, 16, 20, 16)
-        info_card_layout.setSpacing(10)
-
-        def _feature_row(icon, text):
-            row = QHBoxLayout()
-            ic = QLabel()
-            ic.setPixmap(qta.icon(icon, color='#40C4FF').pixmap(16, 16))
-            ic.setStyleSheet("background: transparent; border: none;")
-            ic.setFixedWidth(24)
-            lbl = QLabel(text)
-            lbl.setStyleSheet("color: #8C9EBA; font-size: 12px; background: transparent; border: none;")
-            row.addWidget(ic)
-            row.addWidget(lbl)
-            row.addStretch()
-            return row
-
-        info_card_layout.addLayout(_feature_row('fa5s.chart-line', 'Pemantauan sinyal GSR & BVP real-time'))
-        info_card_layout.addLayout(_feature_row('fa5s.user-injured', 'Manajemen data rekam medis pasien'))
-        info_card_layout.addLayout(_feature_row('fa5s.file-medical-alt', 'Ekspor laporan PDF otomatis'))
-
-        lbl_version = QLabel("v1.0.0 — Prototype")
+        lbl_version = QLabel("v1.0.0")
         lbl_version.setAlignment(Qt.AlignCenter)
         lbl_version.setStyleSheet("color: #2A4A7A; font-size: 11px; background: transparent;")
 
@@ -146,8 +116,6 @@ class LoginWindow(QWidget):
         left_layout.addLayout(divider_row)
         left_layout.addSpacing(16)
         left_layout.addWidget(lbl_tagline)
-        left_layout.addSpacing(32)
-        left_layout.addWidget(info_card)
         left_layout.addStretch()
         left_layout.addWidget(lbl_version)
 
