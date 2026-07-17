@@ -135,6 +135,9 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
         
+        # Memuat data untuk combobox pasien
+        self.load_patients_to_combobox()
+        
         # Default ke Data Pasien
         self.switch_page(0)
 
@@ -168,22 +171,70 @@ class MainWindow(QMainWindow):
             buttons[index].style().polish(buttons[index])
 
     def start_examination(self, patient, umur):
-        self.lbl_info_rm.setText(f"<b>No RM:</b> {patient.no_rm}")
-        self.lbl_info_nama.setText(f"<b>Nama:</b> {patient.full_name}")
-        self.lbl_info_usia.setText(f"<b>Usia:</b> {umur} Tahun")
-        self.lbl_info_gender.setText(f"<b>Gender:</b> {patient.gender}")
+        self.lbl_info_rm.setText(f"RM: {patient.no_rm}")
+        self.lbl_info_nama.setText(patient.full_name)
+        self.lbl_info_usia.setText(f"Usia: {umur}")
+        self.lbl_info_gender.setText(f"Gender: {patient.gender}")
         
         # Pindah ke halaman Live Session dan langsung ke Active Session
         self.switch_page(1)
         if hasattr(self, 'session_stacked'):
             self.session_stacked.setCurrentIndex(1)
             
+    def validate_session_start(self, text):
+        if hasattr(self, 'btn_enter_session'):
+            if " - " in text and len(text) > 5:
+                self.btn_enter_session.setEnabled(True)
+                self.btn_enter_session.setStyleSheet("""
+                    QPushButton {
+                        background-color: #1976D2; 
+                        color: white; 
+                        font-weight: bold; 
+                        font-size: 14px; 
+                        border-radius: 8px;
+                    }
+                    QPushButton:hover {
+                        background-color: #2196F3;
+                    }
+                """)
+            else:
+                self.btn_enter_session.setEnabled(False)
+                self.btn_enter_session.setStyleSheet("""
+                    QPushButton {
+                        background-color: #112A54;
+                        color: #64748B;
+                        font-weight: bold; 
+                        font-size: 14px; 
+                        border-radius: 8px;
+                    }
+                """)
+
     def enter_active_session(self):
         teks_pasien = self.cmb_pasien_session.currentText()
-        self.lbl_info_rm.setText("<b>No RM:</b> -")
-        self.lbl_info_nama.setText(f"<b>Nama:</b> {teks_pasien}")
-        self.lbl_info_usia.setText("<b>Usia:</b> -")
-        self.lbl_info_gender.setText("<b>Gender:</b> -")
+        # Parse nama jika ada format "RM-XXXX - Nama"
+        nama_pasien = teks_pasien.split(" - ")[-1] if " - " in teks_pasien else teks_pasien
+        rm_pasien = teks_pasien.split(" - ")[0] if " - " in teks_pasien else "-"
+        
+        usia_pasien = "-"
+        gender_pasien = "-"
+        
+        if rm_pasien != "-":
+            session = SessionLocal()
+            p = session.query(Patient).filter(Patient.no_rm == rm_pasien).first()
+            if p:
+                nama_pasien = p.full_name
+                gender_pasien = p.gender
+                if p.date_of_birth:
+                    today = date.today()
+                    age = today.year - p.date_of_birth.year - ((today.month, today.day) < (p.date_of_birth.month, p.date_of_birth.day))
+                    usia_pasien = f"{age} Thn"
+            session.close()
+        
+        self.lbl_info_rm.setText(f"RM: {rm_pasien}")
+        self.lbl_info_nama.setText(nama_pasien)
+        self.lbl_info_usia.setText(f"Usia: {usia_pasien}")
+        self.lbl_info_gender.setText(f"Gender: {gender_pasien}")
+        
         if hasattr(self, 'session_stacked'):
             self.session_stacked.setCurrentIndex(1)
 
@@ -219,23 +270,26 @@ class MainWindow(QMainWindow):
         filter_layout.setContentsMargins(20, 15, 20, 15)
         filter_layout.setSpacing(15)
         
-        search_input = QLineEdit()
-        search_input.setObjectName("SearchBar")
-        search_input.setPlaceholderText("Cari No. RM, NIK, atau Nama Pasien...")
-        search_input.setMinimumWidth(300)
+        self.search_input_pasien = QLineEdit()
+        self.search_input_pasien.setObjectName("SearchBar")
+        self.search_input_pasien.setPlaceholderText("Cari No. RM atau Nama Pasien...")
+        self.search_input_pasien.setMinimumWidth(300)
+        self.search_input_pasien.textChanged.connect(self.load_patients_to_table)
         
-        cmb_gender = QComboBox()
-        cmb_gender.addItems(["Semua Jenis Kelamin", "Laki-laki", "Perempuan"])
-        cmb_gender.setFixedSize(210, 40)
+        self.cmb_gender_pasien = QComboBox()
+        self.cmb_gender_pasien.addItems(["Semua Jenis Kelamin", "Laki-laki", "Perempuan"])
+        self.cmb_gender_pasien.setFixedSize(210, 40)
+        self.cmb_gender_pasien.currentIndexChanged.connect(self.load_patients_to_table)
         
         btn_filter = QPushButton(" Filter")
         btn_filter.setIcon(qta.icon('fa5s.filter', color='white'))
         btn_filter.setObjectName("SecondaryButton")
         btn_filter.setFixedSize(100, 40)
         btn_filter.setCursor(Qt.PointingHandCursor)
+        btn_filter.clicked.connect(self.load_patients_to_table)
         
-        filter_layout.addWidget(search_input)
-        filter_layout.addWidget(cmb_gender)
+        filter_layout.addWidget(self.search_input_pasien)
+        filter_layout.addWidget(self.cmb_gender_pasien)
         filter_layout.addWidget(btn_filter)
         filter_layout.addStretch()
         
@@ -304,7 +358,20 @@ class MainWindow(QMainWindow):
 
     def load_patients_to_table(self):
         session = SessionLocal()
-        patients = session.query(Patient).all()
+        query = session.query(Patient)
+        
+        # Terapkan filter jika UI search sudah tersedia
+        if hasattr(self, 'search_input_pasien'):
+            search_text = self.search_input_pasien.text().strip()
+            if search_text:
+                query = query.filter((Patient.full_name.ilike(f"%{search_text}%")) | (Patient.no_rm.ilike(f"%{search_text}%")))
+                
+        if hasattr(self, 'cmb_gender_pasien'):
+            gender_text = self.cmb_gender_pasien.currentText()
+            if gender_text != "Semua Jenis Kelamin":
+                query = query.filter(Patient.gender == gender_text)
+                
+        patients = query.all()
         
         self.table_pasien.setRowCount(len(patients))
         for row, p in enumerate(patients):
@@ -349,7 +416,6 @@ class MainWindow(QMainWindow):
             btn_delete.setStyleSheet("background-color: #D32F2F; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-weight: bold;")
             btn_delete.setCursor(Qt.PointingHandCursor)
             btn_delete.clicked.connect(lambda checked, rm=p.no_rm, n=p.full_name: self.delete_patient_action(rm, n))
-            
             action_layout.addWidget(btn_periksa)
             action_layout.addWidget(btn_edit)
             action_layout.addWidget(btn_delete)
@@ -357,6 +423,25 @@ class MainWindow(QMainWindow):
             self.table_pasien.setCellWidget(row, 4, action_widget)
             
         self.lbl_info.setText(f"Menampilkan 1 hingga {len(patients)} dari {len(patients)} entri")
+        session.close()
+
+    def load_patients_to_combobox(self):
+        if not hasattr(self, 'cmb_pasien_session'):
+            return
+            
+        session = SessionLocal()
+        patients = session.query(Patient).all()
+        
+        # Simpan status QCompleter untuk di-reapply agar list ter-update di model
+        completer = self.cmb_pasien_session.completer()
+        
+        self.cmb_pasien_session.clear()
+        for p in patients:
+            self.cmb_pasien_session.addItem(f"{p.no_rm} - {p.full_name}")
+            
+        if completer:
+            completer.setModel(self.cmb_pasien_session.model())
+            
         session.close()
 
     def show_add_patient_dialog(self):
@@ -377,6 +462,7 @@ class MainWindow(QMainWindow):
             session.commit()
             session.close()
             self.load_patients_to_table()
+            self.load_patients_to_combobox()
 
     def show_edit_patient_dialog(self, patient_obj):
         from components.patient_dialog import PatientDialog
@@ -394,6 +480,7 @@ class MainWindow(QMainWindow):
                 session.commit()
             session.close()
             self.load_patients_to_table()
+            self.load_patients_to_combobox()
 
     def delete_patient_action(self, rm_id, patient_name):
         from PySide6.QtWidgets import QMessageBox
@@ -427,6 +514,7 @@ class MainWindow(QMainWindow):
                 session.commit()
             session.close()
             self.load_patients_to_table()
+            self.load_patients_to_combobox()
 
     # ==========================================
     # HALAMAN 3: RIWAYAT SESI
@@ -609,43 +697,147 @@ class MainWindow(QMainWindow):
         pre_layout.setAlignment(Qt.AlignCenter)
         
         pre_panel = QFrame()
-        pre_panel.setFixedSize(500, 320)
-        pre_panel.setStyleSheet("background-color: #081B3B; border-radius: 12px; border: 1px solid #112A54;")
+        pre_panel.setFixedSize(650, 420)
+        pre_panel.setGraphicsEffect(create_shadow())
+        pre_panel.setStyleSheet("""
+            QFrame {
+                background-color: #0F2040; 
+                border-radius: 16px; 
+                border: 1px solid #1C3565;
+            }
+        """)
         pre_panel_layout = QVBoxLayout(pre_panel)
-        pre_panel_layout.setContentsMargins(30, 30, 30, 30)
-        pre_panel_layout.setSpacing(15)
+        pre_panel_layout.setContentsMargins(50, 40, 50, 40)
+        pre_panel_layout.setSpacing(25)
         
-        lbl_title_pre = QLabel("Persiapan Pemeriksaan")
+        lbl_icon_pre = QLabel()
+        lbl_icon_pre.setPixmap(qta.icon('fa5s.clipboard-check', color='#40C4FF').pixmap(50, 50))
+        lbl_icon_pre.setAlignment(Qt.AlignCenter)
+        lbl_icon_pre.setStyleSheet("border: none; background: transparent;")
+        
+        lbl_title_pre = QLabel("Mulai Sesi Pemeriksaan Baru")
         lbl_title_pre.setAlignment(Qt.AlignCenter)
-        lbl_title_pre.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 18px; border: none; margin-bottom: 10px;")
+        lbl_title_pre.setStyleSheet("color: #FFFFFF; font-weight: 900; font-size: 26px; border: none; background: transparent; letter-spacing: 1px;")
+        
+        lbl_subtitle_pre = QLabel("Pilih pasien dari daftar untuk memulai sesi pemantauan kondisi fisiologis.")
+        lbl_subtitle_pre.setWordWrap(True)
+        lbl_subtitle_pre.setAlignment(Qt.AlignCenter)
+        lbl_subtitle_pre.setStyleSheet("color: #8C9EBA; font-size: 14px; border: none; background: transparent; margin-bottom: 5px;")
+        
+        # Search Box Container
+        search_container = QFrame()
+        search_container.setStyleSheet("""
+            QFrame {
+                background-color: #051024;
+                border: 2px solid #1C3565;
+                border-radius: 8px;
+            }
+            QFrame:focus-within {
+                border: 2px solid #40C4FF;
+            }
+        """)
+        search_layout = QHBoxLayout(search_container)
+        search_layout.setContentsMargins(15, 5, 15, 5)
+        search_layout.setSpacing(10)
+        
+        search_icon = QLabel()
+        search_icon.setPixmap(qta.icon('fa5s.search', color='#8C9EBA').pixmap(20, 20))
+        search_icon.setStyleSheet("border: none; background: transparent;")
         
         self.cmb_pasien_session = QComboBox()
         self.cmb_pasien_session.setEditable(True)
-        self.cmb_pasien_session.lineEdit().setPlaceholderText("Cari nama atau RM...")
-        self.cmb_pasien_session.addItem("RM-2406-001 - Bpk. Budi Santoso")
-        self.cmb_pasien_session.addItem("RM-2406-002 - Ibu Siti Aminah")
-        self.cmb_pasien_session.addItem("RM-2406-003 - Sdr. Andi Pratama")
+        self.cmb_pasien_session.setInsertPolicy(QComboBox.NoInsert)
+        self.cmb_pasien_session.lineEdit().setPlaceholderText("Ketik nama atau No. RM pasien...")
+        
+        from PySide6.QtWidgets import QCompleter
+        completer = QCompleter(self.cmb_pasien_session.model(), self)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.cmb_pasien_session.setCompleter(completer)
+        
+        # Tampilkan list saat diklik meski belum mengetik
+        original_mouse_press = self.cmb_pasien_session.lineEdit().mousePressEvent
+        def show_popup_on_click(event):
+            self.cmb_pasien_session.showPopup()
+            original_mouse_press(event)
+        self.cmb_pasien_session.lineEdit().mousePressEvent = show_popup_on_click
         self.cmb_pasien_session.setFixedHeight(45)
         
-        btn_add_patient_session = QPushButton(" + Pasien Baru")
-        btn_add_patient_session.setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold; border-radius: 5px;")
-        btn_add_patient_session.setFixedHeight(40)
+        # Style Combobox inside container
+        self.cmb_pasien_session.setStyleSheet("""
+            QComboBox {
+                background-color: transparent;
+                color: #FFFFFF;
+                border: none;
+                font-size: 15px;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 0px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #0F2040;
+                color: #FFFFFF;
+                selection-background-color: #1A3A70;
+                border: 1px solid #1C3565;
+                border-radius: 6px;
+                outline: none;
+            }
+        """)
+        
+        search_layout.addWidget(search_icon)
+        search_layout.addWidget(self.cmb_pasien_session, stretch=1)
+        
+        h_btn_layout = QHBoxLayout()
+        h_btn_layout.setSpacing(15)
+        
+        btn_add_patient_session = QPushButton("  Pasien Baru")
+        btn_add_patient_session.setIcon(qta.icon('fa5s.user-plus', color='white'))
+        btn_add_patient_session.setStyleSheet("""
+            QPushButton {
+                background-color: #2E7D32; 
+                color: white; 
+                font-weight: bold; 
+                border-radius: 8px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #388E3C;
+            }
+        """)
+        btn_add_patient_session.setFixedHeight(50)
         btn_add_patient_session.setCursor(Qt.PointingHandCursor)
         btn_add_patient_session.clicked.connect(self.show_add_patient_dialog)
         
-        btn_enter_session = QPushButton(" Mulai Sesi Pemeriksaan")
-        btn_enter_session.setIcon(qta.icon('fa5s.arrow-right', color='white'))
-        btn_enter_session.setStyleSheet("background-color: #2196F3; color: white; font-weight: bold; font-size: 14px; border-radius: 8px;")
-        btn_enter_session.setFixedHeight(50)
-        btn_enter_session.setCursor(Qt.PointingHandCursor)
-        btn_enter_session.clicked.connect(self.enter_active_session)
+        self.btn_enter_session = QPushButton("  Mulai Sesi Pemeriksaan")
+        self.btn_enter_session.setIcon(qta.icon('fa5s.arrow-right', color='white'))
+        self.btn_enter_session.setStyleSheet("""
+            QPushButton {
+                background-color: #112A54;
+                color: #64748B;
+                font-weight: bold; 
+                font-size: 14px; 
+                border-radius: 8px;
+            }
+        """)
+        self.btn_enter_session.setFixedHeight(50)
+        self.btn_enter_session.setCursor(Qt.PointingHandCursor)
+        self.btn_enter_session.clicked.connect(self.enter_active_session)
+        self.btn_enter_session.setEnabled(False) # Disabled until selected
         
+        self.cmb_pasien_session.currentTextChanged.connect(self.validate_session_start)
+        
+        h_btn_layout.addWidget(btn_add_patient_session, stretch=1)
+        h_btn_layout.addWidget(self.btn_enter_session, stretch=2)
+        
+        pre_panel_layout.addWidget(lbl_icon_pre)
         pre_panel_layout.addWidget(lbl_title_pre)
-        pre_panel_layout.addWidget(QLabel("Pilih Pasien:", styleSheet="color: #64748B; font-weight: bold;"))
-        pre_panel_layout.addWidget(self.cmb_pasien_session)
-        pre_panel_layout.addWidget(btn_add_patient_session)
+        pre_panel_layout.addWidget(lbl_subtitle_pre)
+        pre_panel_layout.addWidget(QLabel("Pilih Pasien:", styleSheet="color: #64748B; font-weight: bold; border: none; background: transparent;"))
+        pre_panel_layout.addWidget(search_container)
         pre_panel_layout.addStretch()
-        pre_panel_layout.addWidget(btn_enter_session)
+        pre_panel_layout.addLayout(h_btn_layout)
         
         pre_layout.addWidget(pre_panel)
         
@@ -657,100 +849,113 @@ class MainWindow(QMainWindow):
         active_layout.setContentsMargins(15, 15, 15, 15)
         active_layout.setSpacing(20)
         
-        # --- 1. PANEL PERSIAPAN (Atas) ---
-        prep_panel = QFrame()
-        prep_panel.setGraphicsEffect(create_shadow())
-        prep_panel.setStyleSheet("background-color: #081B3B; border-radius: 8px; border: 1px solid #112A54;")
-        prep_layout = QVBoxLayout(prep_panel)
-        prep_layout.setContentsMargins(20, 15, 20, 15)
-        prep_layout.setSpacing(15)
+        # --- 1. HEADER PANEL & INFO PASIEN ---
+        header_row = QHBoxLayout()
+        header_row.setSpacing(20)
         
-        # Baris 1: Judul dan Bluetooth
-        top_row = QHBoxLayout()
+        # Patient Info Card
+        info_panel = QFrame()
+        info_panel.setGraphicsEffect(create_shadow())
+        info_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        info_layout = QHBoxLayout(info_panel)
+        info_layout.setContentsMargins(20, 15, 20, 15)
         
-        lbl_pilih = QLabel("Pemeriksaan Pasien Aktif")
-        lbl_pilih.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none;")
+        icon_patient = QLabel()
+        icon_patient.setPixmap(qta.icon('fa5s.user', color='#64748B').pixmap(30, 30))
+        icon_patient.setStyleSheet("border: none; background: transparent;")
         
-        lbl_bluetooth = QLabel("⚫ Alat Disconnected")
-        lbl_bluetooth.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 14px; border: none; margin-left: 20px;")
+        patient_details = QVBoxLayout()
+        patient_details.setSpacing(2)
         
-        btn_connect = QPushButton(" Hubungkan Alat")
-        btn_connect.setIcon(qta.icon('fa5b.bluetooth', color='white'))
-        btn_connect.setObjectName("SecondaryButton")
-        btn_connect.setFixedSize(160, 40)
-        btn_connect.setCursor(Qt.PointingHandCursor)
+        self.lbl_info_nama = QLabel("Belum ada pasien dipilih")
+        self.lbl_info_nama.setStyleSheet("color: #FFFFFF; font-size: 18px; font-weight: 800; border: none; background: transparent;")
         
-        top_row.addWidget(lbl_pilih)
-        top_row.addStretch()
-        top_row.addWidget(lbl_bluetooth)
-        top_row.addWidget(btn_connect)
+        info_sub = QHBoxLayout()
+        self.lbl_info_rm = QLabel("RM: -")
+        self.lbl_info_usia = QLabel("Usia: -")
+        self.lbl_info_gender = QLabel("Gender: -")
         
-        # Baris 2: Data Diri Pasien
-        info_row = QFrame()
-        info_row.setStyleSheet("background-color: #112A54; border-radius: 6px; padding: 10px;")
-        info_layout = QHBoxLayout(info_row)
-        info_layout.setContentsMargins(10, 10, 10, 10)
+        for lbl in [self.lbl_info_rm, self.lbl_info_usia, self.lbl_info_gender]:
+            lbl.setStyleSheet("color: #8C9EBA; font-size: 13px; border: none; background: transparent; padding-right: 15px;")
+            info_sub.addWidget(lbl)
+        info_sub.addStretch()
         
-        self.lbl_info_rm = QLabel("<b>No RM:</b> -")
-        self.lbl_info_nama = QLabel("<b>Nama:</b> Belum ada pasien dipilih")
-        self.lbl_info_usia = QLabel("<b>Usia:</b> -")
-        self.lbl_info_gender = QLabel("<b>Gender:</b> -")
+        patient_details.addWidget(self.lbl_info_nama)
+        patient_details.addLayout(info_sub)
         
-        for lbl in [self.lbl_info_rm, self.lbl_info_nama, self.lbl_info_usia, self.lbl_info_gender]:
-            lbl.setStyleSheet("color: #E2E8F0; font-size: 13px; border: none;")
-            info_layout.addWidget(lbl)
-            
+        info_layout.addWidget(icon_patient)
+        info_layout.addSpacing(15)
+        info_layout.addLayout(patient_details)
         info_layout.addStretch()
         
-        prep_layout.addLayout(top_row)
-        prep_layout.addWidget(info_row)
+        # Device Connection Card
+        dev_panel = QFrame()
+        dev_panel.setGraphicsEffect(create_shadow())
+        dev_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        dev_layout = QHBoxLayout(dev_panel)
+        dev_layout.setContentsMargins(20, 15, 20, 15)
         
-        # --- 2. KONTROL SESI & INDIKATOR VITAL ---
-        control_layout = QHBoxLayout()
-        control_layout.setSpacing(15)
+        self.lbl_bluetooth = QLabel("Alat Disconnected")
+        self.lbl_bluetooth.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 15px; border: none; background: transparent;")
+        self.icon_bluetooth = QLabel()
+        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#FF5252').pixmap(24, 24))
+        self.icon_bluetooth.setStyleSheet("border: none; background: transparent;")
         
-        # Tombol Mulai/Selesai
-        action_panel = QVBoxLayout()
-        btn_start = QPushButton("  MULAI REKAM SESI")
-        btn_start.setIcon(qta.icon('fa5s.play', color='white'))
-        btn_start.setStyleSheet("""
-            QPushButton { background-color: #00E676; color: #081B3B; font-weight: 900; font-size: 15px; border-radius: 8px; border: none; }
-            QPushButton:hover { background-color: #69F0AE; }
+        btn_connect = QPushButton(" Hubungkan")
+        btn_connect.setStyleSheet("""
+            QPushButton {
+                background-color: #112A54; 
+                color: white; 
+                border-radius: 6px; 
+                padding: 10px 20px; 
+                font-weight: bold;
+                font-size: 13px;
+            }
+            QPushButton:hover { background-color: #1A3A70; }
         """)
-        btn_start.setFixedSize(250, 50)
-        btn_start.setCursor(Qt.PointingHandCursor)
+        btn_connect.setCursor(Qt.PointingHandCursor)
         
-        btn_stop = QPushButton("  SELESAIKAN SESI")
-        btn_stop.setIcon(qta.icon('fa5s.stop', color='white'))
-        btn_stop.setStyleSheet("background-color: #D32F2F; color: white; font-weight: bold; font-size: 14px; border-radius: 8px;")
-        btn_stop.setFixedSize(250, 50)
-        btn_stop.setCursor(Qt.PointingHandCursor)
-        btn_stop.setEnabled(False) # Dimatikan sampai sesi mulai
+        dev_layout.addWidget(self.icon_bluetooth)
+        dev_layout.addWidget(self.lbl_bluetooth)
+        dev_layout.addStretch()
+        dev_layout.addWidget(btn_connect)
         
-        action_panel.addWidget(btn_start)
-        action_panel.addWidget(btn_stop)
-        action_panel.addStretch()
+        header_row.addWidget(info_panel, stretch=2)
+        header_row.addWidget(dev_panel, stretch=1)
         
-        # Indikator Vital
-        card_hr = self.create_sensor_card("HEART RATE (BPM)", "82", "BPM", "#FF5252", "fa5s.heartbeat")
-        card_gsr = self.create_sensor_card("GSR (µS)", "14.2", "µS", "#40C4FF", "fa5s.bolt")
-        card_temp = self.create_sensor_card("TEMPERATURE (°C)", "36.5", "°C", "#FFB300", "fa5s.thermometer-half")
+        # --- 2. SENSOR CARDS ---
+        cards_layout = QHBoxLayout()
+        cards_layout.setSpacing(20)
         
-        control_layout.addLayout(action_panel)
-        control_layout.addWidget(card_hr)
-        control_layout.addWidget(card_gsr)
-        control_layout.addWidget(card_temp)
+        self.card_hr, self.lbl_val_hr = self.create_sensor_card("HEART RATE", "--", "BPM", "#FF5252", "fa5s.heartbeat")
+        self.card_gsr, self.lbl_val_gsr = self.create_sensor_card("GSR", "--", "µS", "#40C4FF", "fa5s.bolt")
+        self.card_temp, self.lbl_val_temp = self.create_sensor_card("TEMPERATURE", "--", "°C", "#FFB300", "fa5s.thermometer-half")
         
-        # --- 3. GRAFIK REAL-TIME ---
+        cards_layout.addWidget(self.card_hr)
+        cards_layout.addWidget(self.card_gsr)
+        cards_layout.addWidget(self.card_temp)
+        
+        # --- 3. GRAFIK & KONTROL SESI ---
+        main_content = QHBoxLayout()
+        main_content.setSpacing(20)
+        
+        # Grafik
         graph_panel = QFrame()
-        graph_panel.setObjectName("GraphPanel")
         graph_panel.setGraphicsEffect(create_shadow())
-        graph_panel.setStyleSheet("background-color: #081B3B; border-radius: 8px; border: 1px solid #112A54;")
+        graph_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
         gl = QVBoxLayout(graph_panel)
         gl.setContentsMargins(20, 20, 20, 20)
         
-        gl_title = QLabel("Data Pasien")
-        gl_title.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none;")
+        graph_header = QHBoxLayout()
+        gl_title = QLabel("Real-time Data Monitor")
+        gl_title.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none; background: transparent;")
+        
+        self.lbl_status_sesi = QLabel(" Sesi Belum Dimulai ")
+        self.lbl_status_sesi.setStyleSheet("color: #64748B; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #051024; border-radius: 6px;")
+        
+        graph_header.addWidget(gl_title)
+        graph_header.addStretch()
+        graph_header.addWidget(self.lbl_status_sesi)
         
         pg.setConfigOption('background', 'transparent')
         pg.setConfigOption('foreground', '#64748B')
@@ -759,93 +964,221 @@ class MainWindow(QMainWindow):
         self.plot.getAxis('bottom').setPen('#64748B')
         self.plot.showGrid(x=True, y=True, alpha=0.15)
         
-        # Fake ECG/GSR Data for UI Showcase
         import numpy as np
         self.x_data = np.linspace(0, 10, 300)
         self.phase = 0.0
-        self.y_data_hr = np.sin(self.x_data * 5 + self.phase) * 10 + 80 + np.random.normal(0, 1, 300)
-        self.y_data_gsr = np.sin(self.x_data + self.phase) * 5 + 15 + np.random.normal(0, 0.2, 300)
-        self.y_data_temp = np.ones(300) * 36.5 + np.random.normal(0, 0.05, 300)
+        self.y_data_hr = np.zeros(300)
+        self.y_data_gsr = np.zeros(300)
         
-        pen_hr = pg.mkPen(color='#FF5252', width=3)
-        pen_gsr = pg.mkPen(color='#40C4FF', width=3)
-        pen_temp = pg.mkPen(color='#FFB300', width=3)
+        self.curve_hr = self.plot.plot(self.x_data, self.y_data_hr, pen=pg.mkPen(color='#FF5252', width=2.5), name="Heart Rate")
+        self.curve_gsr = self.plot.plot(self.x_data, self.y_data_gsr, pen=pg.mkPen(color='#40C4FF', width=2.5), name="GSR")
         
-        self.curve_hr = self.plot.plot(self.x_data, self.y_data_hr, pen=pen_hr, name="Heart Rate")
-        self.curve_gsr = self.plot.plot(self.x_data, self.y_data_gsr, pen=pen_gsr, name="GSR")
-        self.curve_temp = self.plot.plot(self.x_data, self.y_data_temp, pen=pen_temp, name="Temperature")
-        
-        self.timer_graph = QTimer(self)
-        self.timer_graph.timeout.connect(self.update_fake_graph)
-        self.timer_graph.start(50)
-        
-        gl.addWidget(gl_title)
+        gl.addLayout(graph_header)
+        gl.addSpacing(10)
         gl.addWidget(self.plot)
         
-        # Rangkai Semua di Active Session
-        active_layout.addWidget(prep_panel)
-        active_layout.addLayout(control_layout)
-        active_layout.addWidget(graph_panel, stretch=1)
+        # Panel Kontrol Kanan
+        control_panel = QFrame()
+        control_panel.setFixedWidth(280)
+        control_panel.setGraphicsEffect(create_shadow())
+        control_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        cp_layout = QVBoxLayout(control_panel)
+        cp_layout.setContentsMargins(25, 25, 25, 25)
+        cp_layout.setSpacing(20)
+        
+        cp_title = QLabel("Kontrol Sesi")
+        cp_title.setAlignment(Qt.AlignCenter)
+        cp_title.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none; background: transparent; margin-bottom: 10px;")
+        
+        self.btn_start = QPushButton("  MULAI REKAM")
+        self.btn_start.setIcon(qta.icon('fa5s.play', color='white'))
+        self.btn_start.setStyleSheet("""
+            QPushButton { 
+                background-color: #00C853; 
+                color: white; 
+                font-weight: 900; 
+                font-size: 14px; 
+                border-radius: 8px; 
+                padding: 16px;
+            }
+            QPushButton:hover { background-color: #00E676; }
+        """)
+        self.btn_start.setCursor(Qt.PointingHandCursor)
+        self.btn_start.clicked.connect(self.toggle_session_recording)
+        
+        self.btn_stop = QPushButton("  SELESAI")
+        self.btn_stop.setIcon(qta.icon('fa5s.stop', color='white'))
+        self.btn_stop.setStyleSheet("""
+            QPushButton { 
+                background-color: #D32F2F; 
+                color: white; 
+                font-weight: 900; 
+                font-size: 14px; 
+                border-radius: 8px; 
+                padding: 16px;
+            }
+            QPushButton:hover { background-color: #F44336; }
+        """)
+        self.btn_stop.setCursor(Qt.PointingHandCursor)
+        self.btn_stop.setEnabled(False)
+        self.btn_stop.clicked.connect(self.stop_session_recording)
+        
+        btn_back = QPushButton(" Kembali")
+        btn_back.setIcon(qta.icon('fa5s.arrow-left', color='#8C9EBA'))
+        btn_back.setStyleSheet("""
+            QPushButton { 
+                background-color: transparent; 
+                color: #8C9EBA; 
+                font-weight: bold; 
+                border: 1px solid #1C3565; 
+                border-radius: 8px; 
+                padding: 12px;
+                font-size: 13px;
+            }
+            QPushButton:hover { background-color: #112A54; color: white; }
+        """)
+        btn_back.setCursor(Qt.PointingHandCursor)
+        btn_back.clicked.connect(lambda: self.session_stacked.setCurrentIndex(0))
+        
+        cp_layout.addWidget(cp_title)
+        cp_layout.addWidget(self.btn_start)
+        cp_layout.addWidget(self.btn_stop)
+        cp_layout.addStretch()
+        cp_layout.addWidget(btn_back)
+        
+        main_content.addWidget(graph_panel, stretch=1)
+        main_content.addWidget(control_panel)
+        
+        active_layout.addLayout(header_row)
+        active_layout.addLayout(cards_layout)
+        active_layout.addLayout(main_content, stretch=1)
         
         self.session_stacked.addWidget(self.page_pre_session)
         self.session_stacked.addWidget(self.page_active_session)
         self.session_stacked.setCurrentIndex(0)
+        
+        self.timer_graph = QTimer(self)
+        self.timer_graph.timeout.connect(self.update_fake_graph)
+        self.is_recording = False
+
+    def toggle_session_recording(self):
+        if not self.is_recording:
+            self.is_recording = True
+            self.timer_graph.start(50)
+            self.btn_start.setEnabled(False)
+            self.btn_start.setStyleSheet("""
+                QPushButton { 
+                    background-color: #2E7D32; 
+                    color: white; 
+                    font-weight: 900; 
+                    font-size: 14px; 
+                    border-radius: 8px; 
+                    padding: 16px;
+                }
+            """)
+            self.btn_start.setText("  MEREKAM...")
+            self.btn_stop.setEnabled(True)
+            self.lbl_status_sesi.setText(" Merekam Data... ")
+            self.lbl_status_sesi.setStyleSheet("color: #00E676; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #051024; border-radius: 6px;")
+            self.lbl_bluetooth.setText("Alat Terhubung")
+            self.lbl_bluetooth.setStyleSheet("color: #00E676; font-weight: bold; font-size: 15px; border: none; background: transparent;")
+            self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#00E676').pixmap(24, 24))
+
+    def stop_session_recording(self):
+        self.is_recording = False
+        self.timer_graph.stop()
+        self.btn_start.setEnabled(True)
+        self.btn_start.setStyleSheet("""
+            QPushButton { 
+                background-color: #00C853; 
+                color: white; 
+                font-weight: 900; 
+                font-size: 14px; 
+                border-radius: 8px; 
+                padding: 16px;
+            }
+            QPushButton:hover { background-color: #00E676; }
+        """)
+        self.btn_start.setText("  MULAI REKAM")
+        self.btn_stop.setEnabled(False)
+        self.lbl_status_sesi.setText(" Sesi Selesai ")
+        self.lbl_status_sesi.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #051024; border-radius: 6px;")
+        
+        # Reset data for next session
+        import numpy as np
+        self.y_data_hr = np.zeros(300)
+        self.y_data_gsr = np.zeros(300)
+        self.curve_hr.setData(self.x_data, self.y_data_hr)
+        self.curve_gsr.setData(self.x_data, self.y_data_gsr)
+        self.lbl_val_hr.setText("--")
+        self.lbl_val_gsr.setText("--")
+        self.lbl_val_temp.setText("--")
+        self.lbl_bluetooth.setText("Alat Disconnected")
+        self.lbl_bluetooth.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 15px; border: none; background: transparent;")
+        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#FF5252').pixmap(24, 24))
 
     def update_fake_graph(self):
         import numpy as np
         self.phase += 0.2
         # Geser gelombang agar beranimasi
         self.y_data_hr[:-1] = self.y_data_hr[1:]
-        self.y_data_hr[-1] = np.sin(self.x_data[-1] * 5 + self.phase) * 10 + 80 + np.random.normal(0, 1)
+        val_hr = np.sin(self.x_data[-1] * 5 + self.phase) * 10 + 80 + np.random.normal(0, 1)
+        self.y_data_hr[-1] = val_hr
         
         self.y_data_gsr[:-1] = self.y_data_gsr[1:]
-        self.y_data_gsr[-1] = np.sin(self.x_data[-1] + self.phase) * 5 + 15 + np.random.normal(0, 0.2)
+        val_gsr = np.sin(self.x_data[-1] + self.phase) * 5 + 15 + np.random.normal(0, 0.2)
+        self.y_data_gsr[-1] = val_gsr
         
-        self.y_data_temp[:-1] = self.y_data_temp[1:]
-        self.y_data_temp[-1] = 36.5 + np.random.normal(0, 0.05)
+        val_temp = 36.5 + np.random.normal(0, 0.05)
         
         self.curve_hr.setData(self.x_data, self.y_data_hr)
         self.curve_gsr.setData(self.x_data, self.y_data_gsr)
-        self.curve_temp.setData(self.x_data, self.y_data_temp)
+        
+        # Update Labels
+        self.lbl_val_hr.setText(f"{int(val_hr)}")
+        self.lbl_val_gsr.setText(f"{val_gsr:.1f}")
+        self.lbl_val_temp.setText(f"{val_temp:.1f}")
 
     def create_sensor_card(self, title_text, value_text, unit_text, color, icon_name=None):
         card = QFrame()
         card.setGraphicsEffect(create_shadow())
-        card.setFixedHeight(120)
-        card.setStyleSheet("background-color: #081B3B; border-radius: 8px; border: 1px solid #112A54;")
+        card.setFixedHeight(110)
+        card.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
         
-        layout = QVBoxLayout(card)
+        layout = QHBoxLayout(card)
         layout.setContentsMargins(20, 15, 20, 15)
-        layout.setSpacing(5)
         
-        # Title Row with Icon
-        top_layout = QHBoxLayout()
-        title = QLabel(title_text)
-        title.setStyleSheet("color: #8C9EBA; font-size: 13px; font-weight: 800; border: none; letter-spacing: 1px;")
-        top_layout.addWidget(title)
-        top_layout.addStretch()
-        
+        # Kiri: Icon + Title + Unit
+        left_layout = QVBoxLayout()
+        top_left = QHBoxLayout()
         if icon_name:
             icon_lbl = QLabel()
-            icon_lbl.setPixmap(qta.icon(icon_name, color=color).pixmap(20, 20))
-            icon_lbl.setStyleSheet("border: none;")
-            top_layout.addWidget(icon_lbl)
+            icon_lbl.setPixmap(qta.icon(icon_name, color=color).pixmap(18, 18))
+            icon_lbl.setStyleSheet("border: none; background: transparent;")
+            top_left.addWidget(icon_lbl)
             
-        # Value & Unit Row
-        v_lay = QHBoxLayout()
-        val = QLabel(value_text)
-        val.setStyleSheet(f"color: {color}; font-size: 42px; font-weight: 900; border: none;")
+        title = QLabel(title_text)
+        title.setStyleSheet("color: #8C9EBA; font-size: 14px; font-weight: bold; border: none; background: transparent;")
+        top_left.addWidget(title)
+        top_left.addStretch()
         
         unit = QLabel(unit_text)
-        unit.setStyleSheet("color: #64748B; font-size: 14px; border: none; font-weight: bold; margin-bottom: 8px;")
+        unit.setStyleSheet("color: #64748B; font-size: 13px; font-weight: bold; border: none; background: transparent;")
         
-        v_lay.addWidget(val)
-        v_lay.addWidget(unit)
-        v_lay.addStretch()
-        v_lay.setAlignment(Qt.AlignBottom)
-        layout.addWidget(title)
-        layout.addLayout(v_lay)
-        return card
+        left_layout.addLayout(top_left)
+        left_layout.addStretch()
+        left_layout.addWidget(unit)
+        
+        # Kanan: Value
+        val = QLabel(value_text)
+        val.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        val.setStyleSheet(f"color: {color}; font-size: 42px; font-weight: 900; border: none; background: transparent;")
+        
+        layout.addLayout(left_layout)
+        layout.addStretch()
+        layout.addWidget(val)
+        
+        return card, val
 
     def setup_setting_page(self):
         from PySide6.QtWidgets import QFormLayout, QGroupBox, QFileDialog, QScrollArea, QMessageBox
