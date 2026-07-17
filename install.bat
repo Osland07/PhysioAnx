@@ -1,34 +1,108 @@
 @echo off
-echo ==============================================
-echo  PhysioAnx - Instalasi Dependencies
-echo ==============================================
+title PhysioAnx - Installer
+chcp 65001 >nul
+echo.
+echo  ============================================================
+echo   PhysioAnx ^| Setup dan Instalasi Dependensi
+echo  ============================================================
 echo.
 
-:: Cek apakah Python terinstal
+:: Pindah ke direktori tempat .bat ini berada (penting agar path relatif benar)
+cd /d "%~dp0"
+
+:: ============================================================
+:: LANGKAH 1: Cek Python
+:: ============================================================
+echo [1/4] Mengecek instalasi Python...
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] Python tidak ditemukan. Pastikan Python sudah terinstal dan ditambahkan ke PATH.
+    echo.
+    echo  [ERROR] Python tidak ditemukan!
+    echo.
+    echo  Solusi:
+    echo    1. Download Python dari https://www.python.org/downloads/
+    echo    2. Saat instalasi, CENTANG "Add Python to PATH"
+    echo    3. Restart laptop, lalu jalankan install.bat lagi
+    echo.
     pause
-    exit /b
+    exit /b 1
 )
-
-:: Buat virtual environment jika belum ada
-if not exist "venv" (
-    echo [INFO] Membuat Virtual Environment (venv)...
-    python -m venv venv
-) else (
-    echo [INFO] Virtual Environment sudah ditemukan.
-)
-
-:: Aktifkan virtual environment dan install requirement
-echo [INFO] Menginstal / Memperbarui dependensi dari requirements.txt...
-call venv\Scripts\activate.bat
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-
+python --version
+echo  [OK] Python ditemukan.
 echo.
-echo ==============================================
-echo  Instalasi selesai tanpa masalah!
-echo  Silakan jalankan file "run.bat" untuk membuka aplikasi.
-echo ==============================================
+
+:: ============================================================
+:: LANGKAH 2: Buat Virtual Environment
+:: ============================================================
+echo [2/4] Menyiapkan Virtual Environment (venv)...
+if not exist "venv\Scripts\activate.bat" (
+    echo  Membuat venv baru...
+    python -m venv venv
+    if %errorlevel% neq 0 (
+        echo.
+        echo  [ERROR] Gagal membuat virtual environment.
+        echo  Coba jalankan sebagai Administrator atau cek apakah Python lengkap ter-install.
+        echo.
+        pause
+        exit /b 1
+    )
+    echo  [OK] Virtual environment berhasil dibuat.
+) else (
+    echo  [OK] Virtual environment sudah ada, digunakan kembali.
+)
+echo.
+
+:: ============================================================
+:: LANGKAH 3: Aktifkan venv
+:: ============================================================
+echo [3/4] Mengaktifkan Virtual Environment...
+call venv\Scripts\activate.bat
+if %errorlevel% neq 0 (
+    echo.
+    echo  [ERROR] Gagal mengaktifkan venv.
+    echo  Coba hapus folder "venv" dan jalankan install.bat lagi.
+    echo.
+    pause
+    exit /b 1
+)
+echo  [OK] Virtual environment aktif.
+echo.
+
+:: ============================================================
+:: LANGKAH 4: Install dependensi
+:: ============================================================
+echo [4/4] Menginstal semua library (mungkin memerlukan beberapa menit)...
+echo  Sedang mengupgrade pip...
+python -m pip install --upgrade pip --quiet
+echo  Sedang menginstall requirements...
+pip install -r requirements.txt
+if %errorlevel% neq 0 (
+    echo.
+    echo  [ERROR] Gagal menginstall library!
+    echo.
+    echo  Kemungkinan penyebab:
+    echo    - Tidak ada koneksi internet
+    echo    - Versi Python terlalu lama (butuh Python 3.10+)
+    echo    - requirements.txt tidak ditemukan
+    echo.
+    echo  Coba jalankan perintah ini secara manual di Command Prompt:
+    echo    pip install -r requirements.txt
+    echo.
+    pause
+    exit /b 1
+)
+echo.
+
+:: ============================================================
+:: SELESAI
+:: ============================================================
+echo  ============================================================
+echo   [SUKSES] Instalasi selesai tanpa error!
+echo  ============================================================
+echo.
+echo   Cara menjalankan aplikasi:
+echo     Klik dua kali file "run.bat"
+echo   atau jalankan perintah:
+echo     python app\main.py
+echo.
 pause
