@@ -86,7 +86,7 @@ class LoginWindow(QWidget):
             letter-spacing: 2px;
         """)
 
-        lbl_tagline = QLabel("Sistem Pemantauan Fisiologis\nTingkat Kecemasan Pasien")
+        lbl_tagline = QLabel("Sistem Pemantauan Tingkat Kecemasan")
         lbl_tagline.setAlignment(Qt.AlignCenter)
         lbl_tagline.setWordWrap(True)
         lbl_tagline.setStyleSheet("""

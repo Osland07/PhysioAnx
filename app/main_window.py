@@ -68,42 +68,6 @@ class MainWindow(QMainWindow):
         
         sidebar_layout.addWidget(title)
         sidebar_layout.addSpacing(30)
-
-        # Info user yang login
-        user_card = QFrame()
-        user_card.setStyleSheet("""
-            QFrame {
-                background-color: rgba(255,255,255,0.04);
-                border: 1px solid #1C3565;
-                border-radius: 8px;
-                margin: 0 16px;
-            }
-        """)
-        user_card_layout = QHBoxLayout(user_card)
-        user_card_layout.setContentsMargins(12, 10, 12, 10)
-        user_card_layout.setSpacing(10)
-
-        lbl_user_icon = QLabel()
-        lbl_user_icon.setPixmap(qta.icon('fa5s.user-circle', color='#40C4FF').pixmap(28, 28))
-        lbl_user_icon.setStyleSheet("background: transparent; border: none;")
-
-        user_info_col = QVBoxLayout()
-        user_info_col.setSpacing(1)
-        display_name = self.current_user.full_name if self.current_user else "Pengguna"
-        display_role = self.current_user.role.capitalize() if self.current_user else ""
-        lbl_uname = QLabel(display_name)
-        lbl_uname.setStyleSheet("color: #FFFFFF; font-size: 12px; font-weight: 700; background: transparent; border: none;")
-        lbl_urole = QLabel(display_role)
-        lbl_urole.setStyleSheet("color: #5C7AAA; font-size: 11px; background: transparent; border: none;")
-        user_info_col.addWidget(lbl_uname)
-        user_info_col.addWidget(lbl_urole)
-
-        user_card_layout.addWidget(lbl_user_icon)
-        user_card_layout.addLayout(user_info_col)
-        user_card_layout.addStretch()
-
-        sidebar_layout.addWidget(user_card)
-        sidebar_layout.addSpacing(20)
         sidebar_layout.addWidget(self.btn_pasien)
         sidebar_layout.addWidget(self.btn_session)
         sidebar_layout.addWidget(self.btn_report)
