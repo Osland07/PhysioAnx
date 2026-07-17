@@ -18,9 +18,9 @@ def create_shadow():
     return shadow
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, current_user=None):
         super().__init__()
-        init_db()
+        self.current_user = current_user
         self.setWindowTitle("PhysioAnx - Secure Medical Dashboard")
         self.setMinimumSize(1200, 750)
         
@@ -67,13 +67,75 @@ class MainWindow(QMainWindow):
         self.btn_setting.clicked.connect(lambda: self.switch_page(3))
         
         sidebar_layout.addWidget(title)
-        sidebar_layout.addSpacing(50)
+        sidebar_layout.addSpacing(30)
+
+        # Info user yang login
+        user_card = QFrame()
+        user_card.setStyleSheet("""
+            QFrame {
+                background-color: rgba(255,255,255,0.04);
+                border: 1px solid #1C3565;
+                border-radius: 8px;
+                margin: 0 16px;
+            }
+        """)
+        user_card_layout = QHBoxLayout(user_card)
+        user_card_layout.setContentsMargins(12, 10, 12, 10)
+        user_card_layout.setSpacing(10)
+
+        lbl_user_icon = QLabel()
+        lbl_user_icon.setPixmap(qta.icon('fa5s.user-circle', color='#40C4FF').pixmap(28, 28))
+        lbl_user_icon.setStyleSheet("background: transparent; border: none;")
+
+        user_info_col = QVBoxLayout()
+        user_info_col.setSpacing(1)
+        display_name = self.current_user.full_name if self.current_user else "Pengguna"
+        display_role = self.current_user.role.capitalize() if self.current_user else ""
+        lbl_uname = QLabel(display_name)
+        lbl_uname.setStyleSheet("color: #FFFFFF; font-size: 12px; font-weight: 700; background: transparent; border: none;")
+        lbl_urole = QLabel(display_role)
+        lbl_urole.setStyleSheet("color: #5C7AAA; font-size: 11px; background: transparent; border: none;")
+        user_info_col.addWidget(lbl_uname)
+        user_info_col.addWidget(lbl_urole)
+
+        user_card_layout.addWidget(lbl_user_icon)
+        user_card_layout.addLayout(user_info_col)
+        user_card_layout.addStretch()
+
+        sidebar_layout.addWidget(user_card)
+        sidebar_layout.addSpacing(20)
         sidebar_layout.addWidget(self.btn_pasien)
         sidebar_layout.addWidget(self.btn_session)
         sidebar_layout.addWidget(self.btn_report)
         sidebar_layout.addWidget(self.btn_setting)
         sidebar_layout.addStretch()
-        
+
+        # Tombol Logout
+        btn_logout = QPushButton("  Keluar")
+        btn_logout.setIcon(qta.icon('fa5s.sign-out-alt', color='#FF5252'))
+        btn_logout.setIconSize(QSize(16, 16))
+        btn_logout.setCursor(Qt.PointingHandCursor)
+        btn_logout.setStyleSheet("""
+            QPushButton {
+                background-color: transparent;
+                color: #FF5252;
+                font-weight: 600;
+                font-size: 13px;
+                border: 1px solid rgba(255,82,82,0.3);
+                border-radius: 6px;
+                padding: 8px 16px;
+                margin: 0 16px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: rgba(255,82,82,0.1);
+                border: 1px solid rgba(255,82,82,0.6);
+            }
+        """)
+        btn_logout.clicked.connect(self._do_logout)
+        sidebar_layout.addWidget(btn_logout)
+        sidebar_layout.addSpacing(10)
+
         footer_label = QLabel("PhysioAnx v1.0")
         footer_label.setAlignment(Qt.AlignCenter)
         footer_label.setStyleSheet("color: #475569; font-size: 11px; font-weight: bold; letter-spacing: 1px;")
@@ -145,12 +207,34 @@ class MainWindow(QMainWindow):
     def update_time(self):
         current_time = QTime.currentTime()
         jam = current_time.hour()
-        if 5 <= jam < 11: sapaan = "Selamat Pagi!"
-        elif 11 <= jam < 15: sapaan = "Selamat Siang!"
-        elif 15 <= jam < 18: sapaan = "Selamat Sore!"
-        else: sapaan = "Selamat Malam!"
-        self.greeting_label.setText(f"{sapaan}")
+        if 5 <= jam < 11: sapaan = "Selamat Pagi"
+        elif 11 <= jam < 15: sapaan = "Selamat Siang"
+        elif 15 <= jam < 18: sapaan = "Selamat Sore"
+        else: sapaan = "Selamat Malam"
+        nama = self.current_user.full_name if self.current_user else "Pengguna"
+        self.greeting_label.setText(f"{sapaan}, {nama}!")
         self.clock_label.setText(current_time.toString("HH:mm:ss"))
+
+    def _do_logout(self):
+        from PySide6.QtWidgets import QMessageBox
+        reply = QMessageBox.question(
+            self, "Konfirmasi Keluar",
+            "Apakah Anda yakin ingin keluar dari sistem?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            from login_window import LoginWindow
+            self.login_window = LoginWindow()
+            def _back_to_main():
+                user = self.login_window.get_logged_in_user()
+                self.login_window.close()
+                new_win = MainWindow(current_user=user)
+                new_win.show()
+            self.login_window.accept_login = _back_to_main
+            self.login_window.show()
+            self.close()
+
 
     def switch_page(self, index):
         self.stacked_widget.setCurrentIndex(index)
