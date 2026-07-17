@@ -9,7 +9,6 @@ class PatientDialog(QDialog):
         self.setWindowTitle("Registrasi Pasien Baru" if not patient_data else "Edit Data Pasien")
         self.setFixedSize(450, 500)
         
-        # Tema dialog agar serasi dengan aplikasi
         self.setStyleSheet("""
             QDialog {
                 background-color: #081B3B;
@@ -50,7 +49,6 @@ class PatientDialog(QDialog):
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
-        # Header Title
         lbl_title = QLabel("Formulir Data Pasien" if not patient_data else "Edit Profil Pasien")
         lbl_title.setStyleSheet("color: #FFD54F; font-size: 20px; font-weight: 900; margin-bottom: 10px;")
         lbl_title.setAlignment(Qt.AlignCenter)
@@ -59,23 +57,19 @@ class PatientDialog(QDialog):
         form_layout = QFormLayout()
         form_layout.setSpacing(15)
 
-        # Field: No. Rekam Medis
         self.inp_rm = QLineEdit()
         self.inp_rm.setReadOnly(True)
-        # Generator RM berurutan berdasarkan database
         new_rm = self.generate_sequential_rm()
         
         self.inp_rm.setText(new_rm if not patient_data else patient_data.no_rm)
         self.inp_rm.setStyleSheet("background-color: #041024; color: #64748B; border-color: #041024;")
         form_layout.addRow("No. Rekam Medis", self.inp_rm)
 
-        # Field: Nama Lengkap
         self.inp_nama = QLineEdit()
         self.inp_nama.setPlaceholderText("Masukkan nama lengkap pasien")
         if patient_data: self.inp_nama.setText(patient_data.full_name)
         form_layout.addRow("Nama Lengkap", self.inp_nama)
 
-        # Field: Tanggal Lahir
         self.inp_tgl_lahir = QDateEdit()
         self.inp_tgl_lahir.setCalendarPopup(True)
         self.inp_tgl_lahir.setDisplayFormat("dd MMMM yyyy")
@@ -84,14 +78,12 @@ class PatientDialog(QDialog):
             self.inp_tgl_lahir.setDate(patient_data.date_of_birth)
         form_layout.addRow("Tanggal Lahir", self.inp_tgl_lahir)
 
-        # Field: Jenis Kelamin
         self.inp_jk = QComboBox()
         self.inp_jk.addItems(["Laki-laki", "Perempuan"])
         if patient_data and patient_data.gender == "P":
             self.inp_jk.setCurrentText("Perempuan")
         form_layout.addRow("Jenis Kelamin", self.inp_jk)
 
-        # Field: Berat Badan
         self.inp_bb = QDoubleSpinBox()
         self.inp_bb.setRange(10.0, 300.0)
         self.inp_bb.setSuffix(" kg")
@@ -101,7 +93,6 @@ class PatientDialog(QDialog):
             self.inp_bb.setValue(60.0)
         form_layout.addRow("Berat Badan", self.inp_bb)
             
-        # Field: Tinggi Badan
         self.inp_tb = QSpinBox()
         self.inp_tb.setRange(50, 250)
         self.inp_tb.setSuffix(" cm")
@@ -114,7 +105,6 @@ class PatientDialog(QDialog):
         layout.addLayout(form_layout)
         layout.addStretch()
 
-        # Action Buttons
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(10)
 
@@ -146,7 +136,6 @@ class PatientDialog(QDialog):
         layout.addLayout(btn_layout)
 
     def get_data(self):
-        """Mengembalikan dictionary berisi data yang diinputkan."""
         return {
             "no_rm": self.inp_rm.text().strip(),
             "full_name": self.inp_nama.text().strip(),
@@ -162,22 +151,18 @@ class PatientDialog(QDialog):
         from datetime import datetime
         
         session = SessionLocal()
-        # Ambil pasien terakhir berdasarkan ID
         latest_patient = session.query(Patient).order_by(Patient.id.desc()).first()
         session.close()
         
-        # Format: RM-YYMM-XXX (contoh: RM-2406-001)
         current_yymm = datetime.now().strftime("%y%m")
         
         if latest_patient and latest_patient.no_rm.startswith(f"RM-{current_yymm}-"):
             try:
-                # Ambil 3 digit terakhir dan tambah 1
                 last_num = int(latest_patient.no_rm.split("-")[-1])
                 new_num = last_num + 1
             except:
                 new_num = 1
         else:
-            # Jika bulan/tahun berbeda atau belum ada data
             new_num = 1
             
         return f"RM-{current_yymm}-{new_num:03d}"

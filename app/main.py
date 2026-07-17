@@ -5,7 +5,6 @@ from models.database import init_db
 
 
 def load_stylesheet(app):
-    """Membaca file theme.qss untuk memberikan warna biru dan emas pada aplikasi"""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qss_path = os.path.join(current_dir, 'assets', 'styles', 'theme.qss')
 
@@ -17,16 +16,13 @@ def load_stylesheet(app):
 
 
 if __name__ == "__main__":
-    # Pastikan path module ditemukan
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
     app = QApplication(sys.argv)
     load_stylesheet(app)
 
-    # Inisialisasi database (buat tabel jika belum ada)
     init_db()
 
-    # ── Tampilkan halaman Login terlebih dahulu ──
     from login_window import LoginWindow
     from main_window import MainWindow
 

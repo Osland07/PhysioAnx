@@ -33,7 +33,6 @@ class LoginWindow(QWidget):
         self._ensure_default_user()
 
     def _ensure_default_user(self):
-        """Buat user admin default jika belum ada."""
         from models.database import SessionLocal
         from models.user import User
         session = SessionLocal()
@@ -53,7 +52,6 @@ class LoginWindow(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # ── KIRI: Banner / Branding ──────────────────────────────────
         left_panel = QFrame()
         left_panel.setStyleSheet("""
             QFrame {
@@ -70,7 +68,6 @@ class LoginWindow(QWidget):
         left_layout.setSpacing(0)
         left_layout.setAlignment(Qt.AlignCenter)
 
-        # Logo / ikon utama
         lbl_logo_icon = QLabel()
         lbl_logo_icon.setPixmap(qta.icon('fa5s.heartbeat', color='#40C4FF').pixmap(64, 64))
         lbl_logo_icon.setAlignment(Qt.AlignCenter)
@@ -96,7 +93,6 @@ class LoginWindow(QWidget):
             line-height: 1.6;
         """)
 
-        # Divider dekoratif
         divider = QFrame()
         divider.setFixedSize(60, 3)
         divider.setStyleSheet("background-color: #40C4FF; border-radius: 2px;")
@@ -119,7 +115,6 @@ class LoginWindow(QWidget):
         left_layout.addStretch()
         left_layout.addWidget(lbl_version)
 
-        # ── KANAN: Form Login ────────────────────────────────────────
         right_panel = QFrame()
         right_panel.setStyleSheet("QFrame { background-color: #081B3B; }")
         right_layout = QVBoxLayout(right_panel)
@@ -127,7 +122,6 @@ class LoginWindow(QWidget):
         right_layout.setSpacing(0)
         right_layout.setAlignment(Qt.AlignCenter)
 
-        # Card login
         card = QFrame()
         card.setFixedWidth(380)
         card.setStyleSheet("""
@@ -142,7 +136,6 @@ class LoginWindow(QWidget):
         card_layout.setContentsMargins(36, 36, 36, 36)
         card_layout.setSpacing(20)
 
-        # Header form
         lbl_welcome = QLabel("Selamat Datang")
         lbl_welcome.setStyleSheet("""
             color: #FFFFFF;
@@ -158,7 +151,6 @@ class LoginWindow(QWidget):
         sep.setFrameShape(QFrame.HLine)
         sep.setStyleSheet("background-color: #1C3565; border: none; max-height: 1px;")
 
-        # Input Username
         lbl_user = QLabel("Username")
         lbl_user.setStyleSheet("color: #8C9EBA; font-size: 12px; font-weight: 600; background: transparent; border: none;")
 
@@ -198,7 +190,6 @@ class LoginWindow(QWidget):
         user_row.addWidget(user_icon)
         user_row.addWidget(self.input_username)
 
-        # Input Password
         lbl_pass = QLabel("Password")
         lbl_pass.setStyleSheet("color: #8C9EBA; font-size: 12px; font-weight: 600; background: transparent; border: none;")
 
@@ -236,7 +227,6 @@ class LoginWindow(QWidget):
                 border-left: none;
             }
         """)
-        # Toggle show/hide password
         self.btn_toggle_pass = QPushButton()
         self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye', color='#5C7AAA'))
         self.btn_toggle_pass.setFixedSize(42, 44)
@@ -253,7 +243,6 @@ class LoginWindow(QWidget):
             QPushButton:checked { background-color: #0A1F40; }
         """)
         self.btn_toggle_pass.toggled.connect(self._toggle_password_visibility)
-        # Re-style password row: icon | input | toggle
         self.input_password.setStyleSheet("""
             QLineEdit {
                 background-color: #071733;
@@ -275,7 +264,6 @@ class LoginWindow(QWidget):
         pass_row.addWidget(self.input_password)
         pass_row.addWidget(self.btn_toggle_pass)
 
-        # Label error
         self.lbl_error = QLabel("")
         self.lbl_error.setAlignment(Qt.AlignCenter)
         self.lbl_error.setWordWrap(True)
@@ -292,7 +280,6 @@ class LoginWindow(QWidget):
         """)
         self.lbl_error.hide()
 
-        # Tombol Login
         self.btn_login = QPushButton("  Masuk")
         self.btn_login.setIcon(qta.icon('fa5s.sign-in-alt', color='white'))
         self.btn_login.setIconSize(QSize(16, 16))
@@ -323,7 +310,6 @@ class LoginWindow(QWidget):
         """)
         self.btn_login.clicked.connect(self._do_login)
 
-        # Info default user
         lbl_hint = QLabel("Default: admin / admin123")
         lbl_hint.setAlignment(Qt.AlignCenter)
         lbl_hint.setStyleSheet("color: #2A4A7A; font-size: 11px; background: transparent; border: none;")
@@ -341,7 +327,6 @@ class LoginWindow(QWidget):
 
         right_layout.addWidget(card, alignment=Qt.AlignCenter)
 
-        # Pasang Enter key untuk login
         self.input_username.returnPressed.connect(self._do_login)
         self.input_password.returnPressed.connect(self._do_login)
 
@@ -385,7 +370,6 @@ class LoginWindow(QWidget):
         self.lbl_error.show()
 
     def _shake_card(self):
-        """Efek getar ringan saat login gagal."""
         card = self.findChild(QFrame)
         if not card:
             return
@@ -403,7 +387,6 @@ class LoginWindow(QWidget):
         anim.start()
 
     def accept_login(self):
-        """Dipanggil main.py setelah login berhasil."""
         pass  # Di-override di main.py
 
     def get_logged_in_user(self):

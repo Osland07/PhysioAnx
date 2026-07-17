@@ -230,7 +230,6 @@ class MainWindow(QMainWindow):
             self.session_stacked.setCurrentIndex(1)
             
     def validate_session_start(self, text):
-        """Update tombol Mulai berdasarkan apakah pasien valid sudah dipilih."""
         if not hasattr(self, 'btn_enter_session'):
             return
 
@@ -269,7 +268,6 @@ class MainWindow(QMainWindow):
             self._clear_patient_preview()
 
     def _refresh_patient_preview(self, text):
-        """Update label preview kartu pasien setelah dipilih."""
         if not hasattr(self, 'prev_nama'):
             return
         rm = text.split(" - ")[0] if " - " in text else ""
@@ -301,7 +299,6 @@ class MainWindow(QMainWindow):
             self.prev_tb.setText(tb_str)
 
     def _clear_patient_preview(self):
-        """Reset semua label preview ke nilai default."""
         if not hasattr(self, 'prev_nama'):
             return
         self.prev_nama.setText("Belum Dipilih")
@@ -312,7 +309,6 @@ class MainWindow(QMainWindow):
 
 
     def enter_active_session(self):
-        """Mulai sesi aktif dan tampilkan halaman monitoring."""
         teks_pasien = self.cmb_pasien_session.currentText()
         rm_pasien = teks_pasien.split(" - ")[0] if " - " in teks_pasien else "-"
         nama_pasien = teks_pasien.split(" - ")[-1] if " - " in teks_pasien else teks_pasien
@@ -1469,7 +1465,6 @@ class MainWindow(QMainWindow):
         self.is_recording = False
 
     def _load_session_patient_table(self):
-        """Isi tabel daftar pasien pada halaman pre-session."""
         if not hasattr(self, 'tbl_session_pasien'):
             return
         session = SessionLocal()
@@ -1684,7 +1679,11 @@ class MainWindow(QMainWindow):
         form_store.setContentsMargins(25, 25, 25, 25)
         form_store.setSpacing(15)
         
-        self.input_dir = QLineEdit("C:/Users/oslan/Documents/PhysioAnx_Reports")
+        from PySide6.QtCore import QStandardPaths
+        import os
+        docs_path = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)
+        default_dir = os.path.join(docs_path, "PhysioAnx_Reports").replace("\\", "/")
+        self.input_dir = QLineEdit(default_dir)
         btn_browse = QPushButton("Pilih Folder")
         btn_browse.setStyleSheet(btn_style)
         btn_browse.clicked.connect(self.browse_folder)
@@ -1736,7 +1735,10 @@ class MainWindow(QMainWindow):
 
     def browse_folder(self):
         from PySide6.QtWidgets import QFileDialog
-        folder = QFileDialog.getExistingDirectory(self, "Pilih Folder Penyimpanan")
+        from PySide6.QtCore import QStandardPaths
+        
+        default_path = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)
+        folder = QFileDialog.getExistingDirectory(self, "Pilih Folder Penyimpanan", default_path)
         if folder:
             self.input_dir.setText(folder)
 
