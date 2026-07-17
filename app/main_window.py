@@ -568,9 +568,9 @@ class MainWindow(QMainWindow):
         table_layout.setContentsMargins(20, 20, 20, 20)
         table_layout.setSpacing(15)
         
-        self.table_sesi = QTableWidget(0, 6)
+        self.table_sesi = QTableWidget(0, 5)
         self.table_sesi.setHorizontalHeaderLabels([
-            "Tanggal Sesi", "No. RM - Nama Pasien", "Durasi", "Avg HR", "Indikasi", "Aksi"
+            "Tanggal Sesi", "No. RM - Nama Pasien", "Durasi", "Indikasi", "Aksi"
         ])
         
         # Konfigurasi Header Tabel
@@ -581,9 +581,8 @@ class MainWindow(QMainWindow):
         
         self.table_sesi.setColumnWidth(0, 150) # Tanggal
         self.table_sesi.setColumnWidth(2, 100) # Durasi
-        self.table_sesi.setColumnWidth(3, 100) # HR
-        self.table_sesi.setColumnWidth(4, 150) # Indikasi
-        self.table_sesi.setColumnWidth(5, 180) # Aksi
+        self.table_sesi.setColumnWidth(3, 150) # Indikasi
+        self.table_sesi.setColumnWidth(4, 180) # Aksi
         
         self.table_sesi.verticalHeader().setVisible(False)
         self.table_sesi.verticalHeader().setDefaultSectionSize(55)
@@ -608,10 +607,6 @@ class MainWindow(QMainWindow):
             item_durasi.setTextAlignment(Qt.AlignCenter)
             self.table_sesi.setItem(row, 2, item_durasi)
             
-            item_hr = QTableWidgetItem(data[3])
-            item_hr.setTextAlignment(Qt.AlignCenter)
-            self.table_sesi.setItem(row, 3, item_hr)
-            
             # Badge Indikasi Kecemasan
             lbl_indikasi = QLabel(data[4])
             lbl_indikasi.setAlignment(Qt.AlignCenter)
@@ -626,7 +621,7 @@ class MainWindow(QMainWindow):
             ind_layout = QHBoxLayout(ind_widget)
             ind_layout.setContentsMargins(5, 5, 5, 5)
             ind_layout.addWidget(lbl_indikasi)
-            self.table_sesi.setCellWidget(row, 4, ind_widget)
+            self.table_sesi.setCellWidget(row, 3, ind_widget)
             
             # Kolom Aksi
             action_widget = QWidget()
@@ -647,7 +642,7 @@ class MainWindow(QMainWindow):
             action_layout.addWidget(btn_detail)
             action_layout.addWidget(btn_pdf)
             action_layout.addStretch()
-            self.table_sesi.setCellWidget(row, 5, action_widget)
+            self.table_sesi.setCellWidget(row, 4, action_widget)
             
         # --- 4. PAGINATION PANEL ---
         pagination_layout = QHBoxLayout()
@@ -1201,9 +1196,11 @@ class MainWindow(QMainWindow):
         scroll_layout.setSpacing(30)
         scroll_layout.setContentsMargins(0, 0, 20, 0)
         
+        group_style = "QGroupBox { color: #69F0AE; font-size: 16px; font-weight: bold; border: 1px solid #112A54; border-radius: 8px; margin-top: 15px; padding-top: 25px; background-color: #081B3B; } QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; padding: 0 10px; left: 10px; } QLabel { color: #B0BEC5; font-size: 14px; } QLineEdit { background-color: #051024; color: white; border: 1px solid #112A54; border-radius: 4px; padding: 10px; }"
+        
         # 1. KONEKSI BLUETOOTH
         group_dev = QGroupBox(" Koneksi Bluetooth (ESP32)")
-        group_dev.setStyleSheet("QGroupBox { color: #69F0AE; font-size: 16px; font-weight: bold; border: 1px solid #112A54; border-radius: 8px; margin-top: 15px; padding-top: 25px; background-color: #081B3B; } QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; padding: 0 10px; left: 10px; } QLabel { color: #B0BEC5; font-size: 14px; } QLineEdit { background-color: #051024; color: white; border: 1px solid #112A54; border-radius: 4px; padding: 10px; }")
+        group_dev.setStyleSheet(group_style)
         
         form_dev = QFormLayout(group_dev)
         form_dev.setContentsMargins(25, 25, 25, 25)
@@ -1223,7 +1220,7 @@ class MainWindow(QMainWindow):
         btn_scan.setStyleSheet(btn_style)
         btn_reset.setStyleSheet("QPushButton { background-color: #D32F2F; color: white; border-radius: 4px; padding: 10px 15px; font-weight: bold; } QPushButton:hover { background-color: #B71C1C; }")
         
-        btn_scan.clicked.connect(lambda: QMessageBox.information(self, "Bluetooth", "Memindai perangkat...\\n(Simulasi: Perangkat ditemukan!)"))
+        btn_scan.clicked.connect(lambda: QMessageBox.information(self, "Bluetooth", "Memindai perangkat..."))
         btn_reset.clicked.connect(lambda: QMessageBox.information(self, "Reset", "Perangkat berhasil di-reset dan dilepaskan dari memori."))
         
         box_btn = QHBoxLayout()
@@ -1234,7 +1231,7 @@ class MainWindow(QMainWindow):
         
         # 2. PENYIMPANAN LAPORAN
         group_store = QGroupBox(" Penyimpanan Ekspor & Laporan")
-        group_store.setStyleSheet(group_dev.styleSheet())
+        group_store.setStyleSheet(group_style)
         form_store = QFormLayout(group_store)
         form_store.setContentsMargins(25, 25, 25, 25)
         form_store.setSpacing(15)
@@ -1249,19 +1246,34 @@ class MainWindow(QMainWindow):
         box_dir.addWidget(btn_browse)
         form_store.addRow(QLabel("Folder Output Laporan:"), box_dir)
         
-        # 3. KALIBRASI / THRESHOLD
-        group_cal = QGroupBox(" Kalibrasi Sensor (Default Baseline)")
-        group_cal.setStyleSheet(group_dev.styleSheet())
-        form_cal = QFormLayout(group_cal)
-        form_cal.setContentsMargins(25, 25, 25, 25)
-        form_cal.setSpacing(15)
+        # 3. TEMA TAMPILAN (UI)
+        group_theme = QGroupBox(" Tampilan UI (Mode)")
+        group_theme.setStyleSheet(group_style)
+        form_theme = QFormLayout(group_theme)
+        form_theme.setContentsMargins(25, 25, 25, 25)
+        form_theme.setSpacing(15)
         
-        form_cal.addRow(QLabel("Ambang Batas Heart Rate (BPM):"), QLineEdit("100"))
-        form_cal.addRow(QLabel("Ambang Batas Cemas GSR (µS):"), QLineEdit("20.5"))
+        btn_dark = QPushButton("Mode Gelap (Aktif)")
+        btn_light = QPushButton("Mode Terang")
+        
+        btn_dark.setStyleSheet("QPushButton { background-color: #1976D2; color: white; border-radius: 4px; padding: 10px 15px; font-weight: bold; }")
+        btn_light.setStyleSheet("QPushButton { background-color: #112A54; color: #8C9EBA; border-radius: 4px; padding: 10px 15px; font-weight: bold; border: 1px solid #1C3565; } QPushButton:hover { background-color: #1A3A70; color: white; }")
+        
+        btn_dark.setCursor(Qt.PointingHandCursor)
+        btn_light.setCursor(Qt.PointingHandCursor)
+        
+        btn_dark.clicked.connect(lambda: QMessageBox.information(self, "Tampilan", "Mode Gelap saat ini sudah aktif."))
+        btn_light.clicked.connect(lambda: QMessageBox.information(self, "Tampilan", "Mode Terang akan segera hadir di pembaruan selanjutnya!"))
+        
+        box_theme = QHBoxLayout()
+        box_theme.addWidget(btn_dark)
+        box_theme.addWidget(btn_light)
+        box_theme.addStretch()
+        form_theme.addRow(QLabel("Pilih Tema Aplikasi:"), box_theme)
         
         scroll_layout.addWidget(group_dev)
         scroll_layout.addWidget(group_store)
-        scroll_layout.addWidget(group_cal)
+        scroll_layout.addWidget(group_theme)
         scroll_layout.addStretch()
         
         scroll.setWidget(scroll_content)
