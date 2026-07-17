@@ -7,12 +7,9 @@ echo   PhysioAnx ^| Setup dan Instalasi Dependensi
 echo  ============================================================
 echo.
 
-:: Pindah ke direktori tempat .bat ini berada (penting agar path relatif benar)
 cd /d "%~dp0"
 
-:: ============================================================
-:: LANGKAH 1: Cek Python
-:: ============================================================
+
 echo [1/4] Mengecek instalasi Python...
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
@@ -31,9 +28,7 @@ python --version
 echo  [OK] Python ditemukan.
 echo.
 
-:: ============================================================
-:: LANGKAH 2: Buat Virtual Environment
-:: ============================================================
+
 echo [2/4] Menyiapkan Virtual Environment (venv)...
 if not exist "venv\Scripts\activate.bat" (
     echo  Membuat venv baru...
@@ -52,9 +47,7 @@ if not exist "venv\Scripts\activate.bat" (
 )
 echo.
 
-:: ============================================================
-:: LANGKAH 3: Aktifkan venv
-:: ============================================================
+
 echo [3/4] Mengaktifkan Virtual Environment...
 call venv\Scripts\activate.bat
 if %errorlevel% neq 0 (
@@ -68,9 +61,7 @@ if %errorlevel% neq 0 (
 echo  [OK] Virtual environment aktif.
 echo.
 
-:: ============================================================
-:: LANGKAH 4: Install dependensi
-:: ============================================================
+
 echo [4/4] Menginstal semua library (mungkin memerlukan beberapa menit)...
 echo  Sedang mengupgrade pip...
 python -m pip install --upgrade pip --quiet
@@ -93,9 +84,7 @@ if %errorlevel% neq 0 (
 )
 echo.
 
-:: ============================================================
-:: SELESAI
-:: ============================================================
+
 echo  ============================================================
 echo   [SUKSES] Instalasi selesai tanpa error!
 echo  ============================================================
