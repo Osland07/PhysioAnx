@@ -243,8 +243,8 @@ class MainWindow(QMainWindow):
         if is_valid:
             self.btn_enter_session.setStyleSheet("""
                 QPushButton {
-                    background-color: #1565C0;
-                    color: #FFFFFF;
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0083B0, stop:1 #00B4DB);
+                    color: white;
                     font-weight: bold;
                     font-size: 14px;
                     border-radius: 6px;
@@ -252,20 +252,19 @@ class MainWindow(QMainWindow):
                     padding: 0 20px;
                     letter-spacing: 0.5px;
                 }
-                QPushButton:hover { background-color: #1976D2; }
-                QPushButton:pressed { background-color: #0D47A1; }
+                QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00B4DB, stop:1 #00D2FF); }
             """)
             # Update preview kartu pasien
             self._refresh_patient_preview(text)
         else:
             self.btn_enter_session.setStyleSheet("""
                 QPushButton {
-                    background-color: #CFD8DC;
-                    color: #90A4AE;
+                    background-color: #EDF2F7;
+                    color: #A0AEC0;
                     font-weight: bold;
                     font-size: 14px;
                     border-radius: 6px;
-                    border: none;
+                    border: 1px solid #E2E8F0;
                     padding: 0 20px;
                 }
             """)
@@ -392,7 +391,7 @@ class MainWindow(QMainWindow):
         self.page_pre_session.setObjectName("PreSessionPage")
         self.page_pre_session.setStyleSheet("""
             QWidget#PreSessionPage {
-                background-color: #081B3B;
+                background-color: transparent;
             }
         """)
 
@@ -400,73 +399,38 @@ class MainWindow(QMainWindow):
         pre_root.setContentsMargins(0, 0, 0, 0)
         pre_root.setSpacing(0)
 
-        # --- BREADCRUMB / HEADER BAR ---
-        header_bar = QFrame()
-        header_bar.setFixedHeight(56)
-        header_bar.setStyleSheet("""
-            QFrame {
-                background-color: #0A1F40;
-                border-bottom: 2px solid #1C3565;
-            }
-        """)
-        header_bar_layout = QHBoxLayout(header_bar)
-        header_bar_layout.setContentsMargins(28, 0, 28, 0)
-        header_bar_layout.setSpacing(8)
 
-        # Breadcrumb icons + text
-        lbl_bc_icon = QLabel()
-        lbl_bc_icon.setPixmap(qta.icon('fa5s.heartbeat', color='#40C4FF').pixmap(18, 18))
-        lbl_bc_icon.setStyleSheet("background: transparent; border: none;")
-        lbl_bc1 = QLabel("Sesi Pemeriksaan")
-        lbl_bc1.setStyleSheet("color: #5C7AAA; font-size: 13px; font-weight: 600; background: transparent; border: none;")
-        lbl_bc_sep = QLabel("/")
-        lbl_bc_sep.setStyleSheet("color: #1C3565; font-size: 13px; background: transparent; border: none;")
-        lbl_bc2 = QLabel("Mulai Sesi Baru")
-        lbl_bc2.setStyleSheet("color: #FFFFFF; font-size: 13px; font-weight: 700; background: transparent; border: none;")
-
-        header_bar_layout.addWidget(lbl_bc_icon)
-        header_bar_layout.addWidget(lbl_bc1)
-        header_bar_layout.addWidget(lbl_bc_sep)
-        header_bar_layout.addWidget(lbl_bc2)
-        header_bar_layout.addStretch()
-
-        # Tanggal di kanan
-        from datetime import datetime
-        lbl_date = QLabel(datetime.now().strftime("%d %B %Y"))
-        lbl_date.setStyleSheet("color: #8C9EBA; font-size: 12px; font-weight: 600; background: transparent; border: none;")
-        header_bar_layout.addWidget(lbl_date)
-        pre_root.addWidget(header_bar)
 
         # --- KONTEN UTAMA (Scrollable) ---
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet("""
-            QScrollArea { border: none; background-color: #081B3B; }
+            QScrollArea { border: none; background-color: transparent; }
             QScrollBar:vertical {
-                background: #0A1F40; width: 8px; border-radius: 4px;
+                background: #F7FAFC; width: 8px; border-radius: 4px;
             }
             QScrollBar::handle:vertical {
-                background: #1C3565; border-radius: 4px; min-height: 40px;
+                background: #CBD5E0; border-radius: 4px; min-height: 40px;
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }
         """)
 
         scroll_content = QWidget()
-        scroll_content.setStyleSheet("background-color: #081B3B;")
+        scroll_content.setStyleSheet("background-color: transparent;")
         scroll_layout = QVBoxLayout(scroll_content)
         scroll_layout.setContentsMargins(28, 24, 28, 24)
         scroll_layout.setSpacing(20)
 
         # --- SECTION TITLE ---
-        sec_title = QLabel("Mulai Sesi Pemeriksaan Baru")
+        sec_title = QLabel("Persiapan Sesi Pemeriksaan")
         sec_title.setStyleSheet("""
-            color: #FFFFFF;
+            color: #2D3748;
             font-size: 22px;
             font-weight: 800;
             background: transparent;
         """)
         sec_sub = QLabel("Pilih pasien yang akan diperiksa, periksa data identitas, lalu mulai sesi pemantauan fisiologis.")
-        sec_sub.setStyleSheet("color: #8C9EBA; font-size: 13px; background: transparent;")
+        sec_sub.setStyleSheet("color: #718096; font-size: 13px; background: transparent;")
         scroll_layout.addWidget(sec_title)
         scroll_layout.addWidget(sec_sub)
 
@@ -478,8 +442,8 @@ class MainWindow(QMainWindow):
         left_panel = QFrame()
         left_panel.setStyleSheet("""
             QFrame {
-                background-color: #0F2040;
-                border: 1px solid #1C3565;
+                background-color: #FFFFFF;
+                border: 1px solid #E2E8F0;
                 border-radius: 10px;
             }
         """)
@@ -491,22 +455,22 @@ class MainWindow(QMainWindow):
         # Sub-header kiri
         left_hdr = QHBoxLayout()
         lbl_search_icon = QLabel()
-        lbl_search_icon.setPixmap(qta.icon('fa5s.user-injured', color='#40C4FF').pixmap(20, 20))
+        lbl_search_icon.setPixmap(qta.icon('fa5s.user-injured', color='#00B4DB').pixmap(20, 20))
         lbl_search_icon.setStyleSheet("background: transparent; border: none;")
         lbl_left_title = QLabel("Pencarian Pasien")
-        lbl_left_title.setStyleSheet("color: #FFFFFF; font-size: 15px; font-weight: 700; background: transparent; border: none;")
+        lbl_left_title.setStyleSheet("color: #2D3748; font-size: 15px; font-weight: 700; background: transparent; border: none;")
         btn_tambah_ps = QPushButton("  + Pasien Baru")
         btn_tambah_ps.setStyleSheet("""
             QPushButton {
-                background-color: #112A54;
-                color: #40C4FF;
+                background-color: #F7FAFC;
+                color: #2D3748;
                 font-weight: 700;
                 font-size: 12px;
                 border-radius: 5px;
-                border: 1.5px solid #1C3565;
+                border: 1.5px solid #E2E8F0;
                 padding: 5px 12px;
             }
-            QPushButton:hover { background-color: #1A3A70; }
+            QPushButton:hover { background-color: #E2E8F0; }
         """)
         btn_tambah_ps.setCursor(Qt.PointingHandCursor)
         btn_tambah_ps.clicked.connect(self.patient_ctrl.show_add_patient_dialog)
@@ -519,24 +483,24 @@ class MainWindow(QMainWindow):
         # Garis separator
         sep1 = QFrame()
         sep1.setFrameShape(QFrame.HLine)
-        sep1.setStyleSheet("color: #1C3565; background-color: #1C3565; border: none; max-height: 1px;")
+        sep1.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
         left_panel_layout.addWidget(sep1)
 
         # Search bar
         lbl_cari = QLabel("Cari Pasien (Nama / No. Rekam Medis):")
-        lbl_cari.setStyleSheet("color: #8C9EBA; font-size: 12px; font-weight: 600; background: transparent; border: none;")
+        lbl_cari.setStyleSheet("color: #4A5568; font-size: 12px; font-weight: 600; background: transparent; border: none;")
         left_panel_layout.addWidget(lbl_cari)
 
         search_row = QHBoxLayout()
         search_row.setSpacing(0)
 
         search_icon_lbl = QLabel()
-        search_icon_lbl.setPixmap(qta.icon('fa5s.search', color='#94A3B8').pixmap(16, 16))
+        search_icon_lbl.setPixmap(qta.icon('fa5s.search', color='#A0AEC0').pixmap(16, 16))
         search_icon_lbl.setFixedSize(40, 42)
         search_icon_lbl.setAlignment(Qt.AlignCenter)
         search_icon_lbl.setStyleSheet("""
-            background-color: #071733;
-            border: 1.5px solid #1C3565;
+            background-color: #F7FAFC;
+            border: 1.5px solid #E2E8F0;
             border-right: none;
             border-top-left-radius: 6px;
             border-bottom-left-radius: 6px;
@@ -549,30 +513,31 @@ class MainWindow(QMainWindow):
         self.cmb_pasien_session.setFixedHeight(42)
         self.cmb_pasien_session.setStyleSheet("""
             QComboBox {
-                background-color: #071733;
-                border: 1.5px solid #1C3565;
+                background-color: #F7FAFC;
+                border: 1.5px solid #E2E8F0;
                 border-left: none;
                 border-top-right-radius: 6px;
                 border-bottom-right-radius: 6px;
                 border-top-left-radius: 0px;
                 border-bottom-left-radius: 0px;
-                color: #FFFFFF;
+                color: #2D3748;
                 font-size: 13px;
                 padding-left: 8px;
             }
             QComboBox:focus {
-                border: 1.5px solid #40C4FF;
+                border: 1.5px solid #00B4DB;
                 border-left: none;
+                background-color: #FFFFFF;
             }
             QComboBox::drop-down { width: 30px; border: none; }
             QComboBox::down-arrow { image: none; width: 0; }
             QComboBox QAbstractItemView {
-                background-color: #0F2040;
-                color: #FFFFFF;
-                border: 1px solid #1C3565;
+                background-color: #FFFFFF;
+                color: #2D3748;
+                border: 1px solid #E2E8F0;
                 border-radius: 6px;
-                selection-background-color: #1A3A70;
-                selection-color: #40C4FF;
+                selection-background-color: #EBF8FA;
+                selection-color: #00B4DB;
                 outline: none;
                 font-size: 13px;
                 padding: 4px;
@@ -597,7 +562,7 @@ class MainWindow(QMainWindow):
 
         # Hint text
         lbl_hint = QLabel("💡  Pilih dari dropdown atau ketik untuk pencarian cepat.")
-        lbl_hint.setStyleSheet("color: #5C7AAA; font-size: 11px; background: transparent; border: none;")
+        lbl_hint.setStyleSheet("color: #718096; font-size: 11px; background: transparent; border: none;")
         left_panel_layout.addWidget(lbl_hint)
 
         left_panel_layout.addStretch()
@@ -606,18 +571,18 @@ class MainWindow(QMainWindow):
         status_frame = QFrame()
         status_frame.setStyleSheet("""
             QFrame {
-                background-color: #071733;
-                border: 1px solid #1C3565;
+                background-color: #EDF2F7;
+                border: 1px solid #E2E8F0;
                 border-radius: 6px;
             }
         """)
         status_layout = QHBoxLayout(status_frame)
         status_layout.setContentsMargins(14, 10, 14, 10)
         lbl_status_icon = QLabel()
-        lbl_status_icon.setPixmap(qta.icon('fa5s.info-circle', color='#94A3B8').pixmap(14, 14))
+        lbl_status_icon.setPixmap(qta.icon('fa5s.info-circle', color='#718096').pixmap(14, 14))
         lbl_status_icon.setStyleSheet("background: transparent; border: none;")
         lbl_status_text = QLabel("Silakan pilih pasien terlebih dahulu sebelum memulai sesi pemeriksaan.")
-        lbl_status_text.setStyleSheet("color: #8C9EBA; font-size: 12px; background: transparent; border: none;")
+        lbl_status_text.setStyleSheet("color: #4A5568; font-size: 12px; background: transparent; border: none;")
         status_layout.addWidget(lbl_status_icon)
         status_layout.addSpacing(6)
         status_layout.addWidget(lbl_status_text)
@@ -628,8 +593,8 @@ class MainWindow(QMainWindow):
         right_panel = QFrame()
         right_panel.setStyleSheet("""
             QFrame {
-                background-color: #0F2040;
-                border: 1px solid #1C3565;
+                background-color: #FFFFFF;
+                border: 1px solid #E2E8F0;
                 border-radius: 10px;
             }
         """)
@@ -643,10 +608,10 @@ class MainWindow(QMainWindow):
         # Sub-header kanan
         right_hdr = QHBoxLayout()
         lbl_prev_icon = QLabel()
-        lbl_prev_icon.setPixmap(qta.icon('fa5s.id-card', color='#40C4FF').pixmap(20, 20))
+        lbl_prev_icon.setPixmap(qta.icon('fa5s.id-card', color='#00B4DB').pixmap(20, 20))
         lbl_prev_icon.setStyleSheet("background: transparent; border: none;")
         lbl_right_title = QLabel("Identitas Pasien")
-        lbl_right_title.setStyleSheet("color: #FFFFFF; font-size: 15px; font-weight: 700; background: transparent; border: none;")
+        lbl_right_title.setStyleSheet("color: #2D3748; font-size: 15px; font-weight: 700; background: transparent; border: none;")
         right_hdr.addWidget(lbl_prev_icon)
         right_hdr.addWidget(lbl_right_title)
         right_hdr.addStretch()
@@ -654,23 +619,23 @@ class MainWindow(QMainWindow):
 
         sep2 = QFrame()
         sep2.setFrameShape(QFrame.HLine)
-        sep2.setStyleSheet("color: #1C3565; background-color: #1C3565; border: none; max-height: 1px;")
+        sep2.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
         right_panel_layout.addWidget(sep2)
 
         # Kartu avatar + nama pasien
         avatar_row = QHBoxLayout()
         avatar_row.setSpacing(14)
         avatar_lbl = QLabel()
-        avatar_lbl.setPixmap(qta.icon('fa5s.user-circle', color='#94A3B8').pixmap(52, 52))
+        avatar_lbl.setPixmap(qta.icon('fa5s.user-circle', color='#A0AEC0').pixmap(52, 52))
         avatar_lbl.setStyleSheet("background: transparent; border: none;")
         avatar_lbl.setFixedSize(52, 52)
 
         name_col = QVBoxLayout()
         name_col.setSpacing(3)
         self.prev_nama = QLabel("Belum Dipilih")
-        self.prev_nama.setStyleSheet("color: #FFFFFF; font-size: 16px; font-weight: 800; background: transparent; border: none;")
+        self.prev_nama.setStyleSheet("color: #2D3748; font-size: 16px; font-weight: 800; background: transparent; border: none;")
         self.prev_rm = QLabel("No. RM: -")
-        self.prev_rm.setStyleSheet("color: #8C9EBA; font-size: 12px; background: transparent; border: none;")
+        self.prev_rm.setStyleSheet("color: #718096; font-size: 12px; background: transparent; border: none;")
         name_col.addWidget(self.prev_nama)
         name_col.addWidget(self.prev_rm)
 
@@ -684,13 +649,13 @@ class MainWindow(QMainWindow):
             row = QHBoxLayout()
             row.setSpacing(10)
             ic = QLabel()
-            ic.setPixmap(qta.icon(icon_name, color='#5C7AAA').pixmap(14, 14))
+            ic.setPixmap(qta.icon(icon_name, color='#00B4DB').pixmap(14, 14))
             ic.setStyleSheet("background: transparent; border: none;")
             ic.setFixedWidth(20)
             lbl = QLabel(label)
-            lbl.setStyleSheet("color: #5C7AAA; font-size: 12px; min-width: 100px; background: transparent; border: none;")
+            lbl.setStyleSheet("color: #718096; font-size: 12px; min-width: 100px; background: transparent; border: none;")
             val = QLabel("-")
-            val.setStyleSheet("color: #E2E8F0; font-size: 12px; font-weight: 600; background: transparent; border: none;")
+            val.setStyleSheet("color: #2D3748; font-size: 12px; font-weight: 600; background: transparent; border: none;")
             setattr(self, value_attr, val)
             row.addWidget(ic)
             row.addWidget(lbl)
@@ -705,11 +670,11 @@ class MainWindow(QMainWindow):
 
         sep3 = QFrame()
         sep3.setFrameShape(QFrame.HLine)
-        sep3.setStyleSheet("color: #1C3565; background-color: #1C3565; border: none; max-height: 1px;")
+        sep3.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
         right_panel_layout.addWidget(sep3)
 
         # Tombol MULAI SESI
-        self.btn_enter_session = QPushButton("  Mulai Sesi Pemeriksaan")
+        self.btn_enter_session = QPushButton("  Mulai")
         self.btn_enter_session.setIcon(qta.icon('fa5s.play-circle', color='#90A4AE'))
         self.btn_enter_session.setIconSize(QSize(18, 18))
         self.btn_enter_session.setFixedHeight(46)
@@ -717,12 +682,12 @@ class MainWindow(QMainWindow):
         self.btn_enter_session.setToolTip("Pilih pasien terlebih dahulu untuk mengaktifkan tombol ini")
         self.btn_enter_session.setStyleSheet("""
             QPushButton {
-                background-color: #112A54;
-                color: #5C7AAA;
+                background-color: #EDF2F7;
+                color: #A0AEC0;
                 font-weight: bold;
                 font-size: 14px;
                 border-radius: 6px;
-                border: 1px solid #1C3565;
+                border: 1px solid #E2E8F0;
                 padding: 0 20px;
             }
         """)
