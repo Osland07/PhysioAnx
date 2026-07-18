@@ -383,7 +383,7 @@ class MainWindow(QMainWindow):
         # ================================================================
         from PySide6.QtWidgets import (
             QScrollArea, QSizePolicy, QTableWidget, QTableWidgetItem,
-            QHeaderView, QCompleter, QSplitter
+            QHeaderView, QCompleter, QSplitter, QGridLayout
         )
         from PySide6.QtCore import QDate
 
@@ -397,153 +397,57 @@ class MainWindow(QMainWindow):
 
         pre_root = QVBoxLayout(self.page_pre_session)
         pre_root.setContentsMargins(0, 0, 0, 0)
-        pre_root.setSpacing(0)
-
-
-
-        # --- KONTEN UTAMA (Scrollable) ---
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("""
-            QScrollArea { border: none; background-color: transparent; }
-            QScrollBar:vertical {
-                background: #F7FAFC; width: 8px; border-radius: 4px;
-            }
-            QScrollBar::handle:vertical {
-                background: #CBD5E0; border-radius: 4px; min-height: 40px;
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }
-        """)
-
-        scroll_content = QWidget()
-        scroll_content.setStyleSheet("background-color: transparent;")
-        scroll_layout = QVBoxLayout(scroll_content)
-        scroll_layout.setContentsMargins(28, 24, 28, 24)
-        scroll_layout.setSpacing(20)
+        pre_root.setSpacing(20)
 
         # --- SECTION TITLE ---
         sec_title = QLabel("Persiapan Sesi Pemeriksaan")
         sec_title.setStyleSheet("""
             color: #2D3748;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
             background: transparent;
         """)
-        sec_sub = QLabel("Pilih pasien yang akan diperiksa, periksa data identitas, lalu mulai sesi pemantauan fisiologis.")
-        sec_sub.setStyleSheet("color: #718096; font-size: 13px; background: transparent;")
-        scroll_layout.addWidget(sec_title)
-        scroll_layout.addWidget(sec_sub)
+        sec_sub = QLabel("Pilih pasien yang akan diperiksa, periksa data identitas, lalu mulai sesi.")
+        sec_sub.setStyleSheet("color: #718096; font-size: 14px; background: transparent;")
+        pre_root.addWidget(sec_title)
+        pre_root.addWidget(sec_sub)
 
-        # --- PANEL UTAMA: 2 kolom (Kiri: Pencarian, Kanan: Preview) ---
-        main_row = QHBoxLayout()
-        main_row.setSpacing(20)
+        # --- PANEL UTAMA: 2 Kolom Seamless ---
+        main_layout = QHBoxLayout()
+        main_layout.setSpacing(40)
+        main_layout.setContentsMargins(0, 10, 0, 0)
 
-        # ---- KOLOM KIRI: Pencarian & Pemilihan Pasien ----
-        left_panel = QFrame()
-        left_panel.setStyleSheet("""
-            QFrame {
-                background-color: #FFFFFF;
-                border: 1px solid #E2E8F0;
-                border-radius: 10px;
-            }
-        """)
-        left_panel.setGraphicsEffect(create_shadow())
-        left_panel_layout = QVBoxLayout(left_panel)
-        left_panel_layout.setContentsMargins(20, 20, 20, 20)
-        left_panel_layout.setSpacing(14)
+        # ==========================================
+        # KOLOM KIRI: Pencarian & Pilihan
+        # ==========================================
+        left_col = QVBoxLayout()
+        left_col.setSpacing(24)
 
-        # Sub-header kiri
-        left_hdr = QHBoxLayout()
-        lbl_search_icon = QLabel()
-        lbl_search_icon.setPixmap(qta.icon('fa5s.user-injured', color='#00B4DB').pixmap(20, 20))
-        lbl_search_icon.setStyleSheet("background: transparent; border: none;")
-        lbl_left_title = QLabel("Pencarian Pasien")
-        lbl_left_title.setStyleSheet("color: #2D3748; font-size: 15px; font-weight: 700; background: transparent; border: none;")
-        btn_tambah_ps = QPushButton("  + Pasien Baru")
-        btn_tambah_ps.setStyleSheet("""
-            QPushButton {
-                background-color: #F7FAFC;
-                color: #2D3748;
-                font-weight: 700;
-                font-size: 12px;
-                border-radius: 5px;
-                border: 1.5px solid #E2E8F0;
-                padding: 5px 12px;
-            }
-            QPushButton:hover { background-color: #E2E8F0; }
-        """)
-        btn_tambah_ps.setCursor(Qt.PointingHandCursor)
-        btn_tambah_ps.clicked.connect(self.patient_ctrl.show_add_patient_dialog)
-        left_hdr.addWidget(lbl_search_icon)
-        left_hdr.addWidget(lbl_left_title)
-        left_hdr.addStretch()
-        left_hdr.addWidget(btn_tambah_ps)
-        left_panel_layout.addLayout(left_hdr)
 
-        # Garis separator
-        sep1 = QFrame()
-        sep1.setFrameShape(QFrame.HLine)
-        sep1.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
-        left_panel_layout.addWidget(sep1)
-
-        # Search bar
-        lbl_cari = QLabel("Cari Pasien (Nama / No. Rekam Medis):")
-        lbl_cari.setStyleSheet("color: #4A5568; font-size: 12px; font-weight: 600; background: transparent; border: none;")
-        left_panel_layout.addWidget(lbl_cari)
-
-        search_row = QHBoxLayout()
-        search_row.setSpacing(0)
-
-        search_icon_lbl = QLabel()
-        search_icon_lbl.setPixmap(qta.icon('fa5s.search', color='#A0AEC0').pixmap(16, 16))
-        search_icon_lbl.setFixedSize(40, 42)
-        search_icon_lbl.setAlignment(Qt.AlignCenter)
-        search_icon_lbl.setStyleSheet("""
-            background-color: #F7FAFC;
-            border: 1.5px solid #E2E8F0;
-            border-right: none;
-            border-top-left-radius: 6px;
-            border-bottom-left-radius: 6px;
-        """)
-
+        
+        # Search Box Area
+        search_area = QVBoxLayout()
+        search_area.setSpacing(12)
+        
         self.cmb_pasien_session = QComboBox()
         self.cmb_pasien_session.setEditable(True)
         self.cmb_pasien_session.setInsertPolicy(QComboBox.NoInsert)
-        self.cmb_pasien_session.lineEdit().setPlaceholderText("Ketik nama pasien atau No. RM...")
-        self.cmb_pasien_session.setFixedHeight(42)
+        self.cmb_pasien_session.lineEdit().setPlaceholderText("Ketik nama pasien atau No. RM di sini...")
+        self.cmb_pasien_session.setFixedHeight(54)
         self.cmb_pasien_session.setStyleSheet("""
             QComboBox {
-                background-color: #F7FAFC;
-                border: 1.5px solid #E2E8F0;
-                border-left: none;
-                border-top-right-radius: 6px;
-                border-bottom-right-radius: 6px;
-                border-top-left-radius: 0px;
-                border-bottom-left-radius: 0px;
-                color: #2D3748;
-                font-size: 13px;
-                padding-left: 8px;
+                background-color: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 12px;
+                color: #2D3748; font-size: 15px; padding-left: 16px;
             }
-            QComboBox:focus {
-                border: 1.5px solid #00B4DB;
-                border-left: none;
-                background-color: #FFFFFF;
-            }
-            QComboBox::drop-down { width: 30px; border: none; }
+            QComboBox:focus { border: 2px solid #00B4DB; background-color: #FFFFFF; }
+            QComboBox::drop-down { width: 40px; border: none; }
             QComboBox::down-arrow { image: none; width: 0; }
             QComboBox QAbstractItemView {
-                background-color: #FFFFFF;
-                color: #2D3748;
-                border: 1px solid #E2E8F0;
-                border-radius: 6px;
-                selection-background-color: #EBF8FA;
-                selection-color: #00B4DB;
-                outline: none;
-                font-size: 13px;
-                padding: 4px;
+                background-color: #FFFFFF; color: #2D3748; border: 1px solid #E2E8F0; border-radius: 8px;
+                selection-background-color: #EBF8FA; selection-color: #00B4DB; font-size: 14px; padding: 6px; outline: none;
             }
         """)
-
+        
         completer = QCompleter(self.cmb_pasien_session.model(), self)
         completer.setCaseSensitivity(Qt.CaseInsensitive)
         completer.setFilterMode(Qt.MatchContains)
@@ -555,157 +459,138 @@ class MainWindow(QMainWindow):
             self.cmb_pasien_session.showPopup()
             original_mouse_press(event)
         self.cmb_pasien_session.lineEdit().mousePressEvent = _show_popup
-
-        search_row.addWidget(search_icon_lbl)
-        search_row.addWidget(self.cmb_pasien_session, stretch=1)
-        left_panel_layout.addLayout(search_row)
-
-        # Hint text
-        lbl_hint = QLabel("💡  Pilih dari dropdown atau ketik untuk pencarian cepat.")
-        lbl_hint.setStyleSheet("color: #718096; font-size: 11px; background: transparent; border: none;")
-        left_panel_layout.addWidget(lbl_hint)
-
-        left_panel_layout.addStretch()
-
-        # --- INFO STATUS ---
-        status_frame = QFrame()
-        status_frame.setStyleSheet("""
-            QFrame {
-                background-color: #EDF2F7;
-                border: 1px solid #E2E8F0;
-                border-radius: 6px;
+        
+        # Tombol Pasien Baru (di bawah pencarian)
+        btn_tambah_ps = QPushButton("  Daftarkan Pasien Baru")
+        btn_tambah_ps.setIcon(qta.icon('fa5s.plus', color='#00B4DB'))
+        btn_tambah_ps.setFixedHeight(46)
+        btn_tambah_ps.setStyleSheet("""
+            QPushButton {
+                background-color: #F7FAFC; color: #2D3748; font-weight: 700; font-size: 14px;
+                border-radius: 8px; border: 1px solid #E2E8F0;
             }
+            QPushButton:hover { background-color: #EDF2F7; }
         """)
-        status_layout = QHBoxLayout(status_frame)
-        status_layout.setContentsMargins(14, 10, 14, 10)
-        lbl_status_icon = QLabel()
-        lbl_status_icon.setPixmap(qta.icon('fa5s.info-circle', color='#718096').pixmap(14, 14))
-        lbl_status_icon.setStyleSheet("background: transparent; border: none;")
-        lbl_status_text = QLabel("Silakan pilih pasien terlebih dahulu sebelum memulai sesi pemeriksaan.")
-        lbl_status_text.setStyleSheet("color: #4A5568; font-size: 12px; background: transparent; border: none;")
-        status_layout.addWidget(lbl_status_icon)
-        status_layout.addSpacing(6)
-        status_layout.addWidget(lbl_status_text)
-        status_layout.addStretch()
-        left_panel_layout.addWidget(status_frame)
+        btn_tambah_ps.setCursor(Qt.PointingHandCursor)
+        btn_tambah_ps.clicked.connect(self.patient_ctrl.show_add_patient_dialog)
 
-        # ---- KOLOM KANAN: Preview Identitas Pasien ----
-        right_panel = QFrame()
-        right_panel.setStyleSheet("""
+        search_area.addWidget(self.cmb_pasien_session)
+        search_area.addWidget(btn_tambah_ps)
+        
+
+        left_col.addLayout(search_area)
+        left_col.addStretch()
+
+        # ==========================================
+        # KOLOM KANAN: Identitas & Mulai
+        # ==========================================
+        right_col = QVBoxLayout()
+        right_col.setSpacing(0)
+        
+        identity_card = QFrame()
+        identity_card.setStyleSheet("""
             QFrame {
                 background-color: #FFFFFF;
                 border: 1px solid #E2E8F0;
-                border-radius: 10px;
+                border-radius: 16px;
             }
         """)
-        right_panel.setGraphicsEffect(create_shadow())
-        right_panel.setMinimumWidth(320)
-        right_panel.setMaximumWidth(380)
-        right_panel_layout = QVBoxLayout(right_panel)
-        right_panel_layout.setContentsMargins(20, 20, 20, 20)
-        right_panel_layout.setSpacing(14)
+        identity_card.setGraphicsEffect(create_shadow())
+        identity_layout = QVBoxLayout(identity_card)
+        identity_layout.setContentsMargins(32, 32, 32, 32)
+        identity_layout.setSpacing(24)
 
-        # Sub-header kanan
-        right_hdr = QHBoxLayout()
-        lbl_prev_icon = QLabel()
-        lbl_prev_icon.setPixmap(qta.icon('fa5s.id-card', color='#00B4DB').pixmap(20, 20))
-        lbl_prev_icon.setStyleSheet("background: transparent; border: none;")
-        lbl_right_title = QLabel("Identitas Pasien")
-        lbl_right_title.setStyleSheet("color: #2D3748; font-size: 15px; font-weight: 700; background: transparent; border: none;")
-        right_hdr.addWidget(lbl_prev_icon)
-        right_hdr.addWidget(lbl_right_title)
-        right_hdr.addStretch()
-        right_panel_layout.addLayout(right_hdr)
-
-        sep2 = QFrame()
-        sep2.setFrameShape(QFrame.HLine)
-        sep2.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
-        right_panel_layout.addWidget(sep2)
-
-        # Kartu avatar + nama pasien
-        avatar_row = QHBoxLayout()
-        avatar_row.setSpacing(14)
+        # Profile Header (Avatar + Name)
+        prof_layout = QHBoxLayout()
+        prof_layout.setSpacing(20)
+        
         avatar_lbl = QLabel()
-        avatar_lbl.setPixmap(qta.icon('fa5s.user-circle', color='#A0AEC0').pixmap(52, 52))
+        avatar_lbl.setPixmap(qta.icon('fa5s.user-circle', color='#A0AEC0').pixmap(72, 72))
         avatar_lbl.setStyleSheet("background: transparent; border: none;")
-        avatar_lbl.setFixedSize(52, 52)
-
+        avatar_lbl.setFixedSize(72, 72)
+        
         name_col = QVBoxLayout()
-        name_col.setSpacing(3)
+        name_col.setSpacing(4)
         self.prev_nama = QLabel("Belum Dipilih")
-        self.prev_nama.setStyleSheet("color: #2D3748; font-size: 16px; font-weight: 800; background: transparent; border: none;")
-        self.prev_rm = QLabel("No. RM: -")
-        self.prev_rm.setStyleSheet("color: #718096; font-size: 12px; background: transparent; border: none;")
+        self.prev_nama.setStyleSheet("color: #2D3748; font-size: 22px; font-weight: 800; background: transparent; border: none;")
+        self.prev_rm = QLabel("Pilih pasien untuk melihat identitas")
+        self.prev_rm.setStyleSheet("color: #718096; font-size: 14px; background: transparent; border: none;")
         name_col.addWidget(self.prev_nama)
         name_col.addWidget(self.prev_rm)
+        name_col.addStretch()
+        
+        prof_layout.addWidget(avatar_lbl)
+        prof_layout.addLayout(name_col)
+        prof_layout.addStretch()
+        identity_layout.addLayout(prof_layout)
 
-        avatar_row.addWidget(avatar_lbl)
-        avatar_row.addLayout(name_col)
-        avatar_row.addStretch()
-        right_panel_layout.addLayout(avatar_row)
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
+        identity_layout.addWidget(sep)
 
-        # Grid detail identitas
-        def _make_detail_row(icon_name, label, value_attr):
-            row = QHBoxLayout()
-            row.setSpacing(10)
+        # Details Grid (2x2)
+        grid_layout = QGridLayout()
+        grid_layout.setSpacing(20)
+
+        def _make_grid_item(icon_name, label, value_attr, row, col):
+            wrap = QFrame()
+            wrap.setStyleSheet("background-color: #F7FAFC; border-radius: 10px; border: 1px solid #EDF2F7;")
+            l = QHBoxLayout(wrap)
+            l.setContentsMargins(16, 16, 16, 16)
+            l.setSpacing(14)
+            
             ic = QLabel()
-            ic.setPixmap(qta.icon(icon_name, color='#00B4DB').pixmap(14, 14))
+            ic.setPixmap(qta.icon(icon_name, color='#00B4DB').pixmap(22, 22))
             ic.setStyleSheet("background: transparent; border: none;")
-            ic.setFixedWidth(20)
-            lbl = QLabel(label)
-            lbl.setStyleSheet("color: #718096; font-size: 12px; min-width: 100px; background: transparent; border: none;")
+            
+            text_col = QVBoxLayout()
+            text_col.setSpacing(4)
+            lbl_title = QLabel(label)
+            lbl_title.setStyleSheet("color: #718096; font-size: 12px; background: transparent; border: none;")
             val = QLabel("-")
-            val.setStyleSheet("color: #2D3748; font-size: 12px; font-weight: 600; background: transparent; border: none;")
+            val.setStyleSheet("color: #2D3748; font-size: 16px; font-weight: 700; background: transparent; border: none;")
             setattr(self, value_attr, val)
-            row.addWidget(ic)
-            row.addWidget(lbl)
-            row.addWidget(val)
-            row.addStretch()
-            return row
+            
+            text_col.addWidget(lbl_title)
+            text_col.addWidget(val)
+            l.addWidget(ic)
+            l.addLayout(text_col)
+            l.addStretch()
+            
+            grid_layout.addWidget(wrap, row, col)
 
-        right_panel_layout.addLayout(_make_detail_row('fa5s.venus-mars', 'Jenis Kelamin', 'prev_jk'))
-        right_panel_layout.addLayout(_make_detail_row('fa5s.birthday-cake', 'Usia', 'prev_usia'))
-        right_panel_layout.addLayout(_make_detail_row('fa5s.weight', 'Berat Badan', 'prev_bb'))
-        right_panel_layout.addLayout(_make_detail_row('fa5s.ruler-vertical', 'Tinggi Badan', 'prev_tb'))
+        _make_grid_item('fa5s.venus-mars', 'Jenis Kelamin', 'prev_jk', 0, 0)
+        _make_grid_item('fa5s.birthday-cake', 'Usia', 'prev_usia', 0, 1)
+        _make_grid_item('fa5s.weight', 'Berat Badan (kg)', 'prev_bb', 1, 0)
+        _make_grid_item('fa5s.ruler-vertical', 'Tinggi Badan (cm)', 'prev_tb', 1, 1)
+        
+        identity_layout.addLayout(grid_layout)
+        identity_layout.addSpacing(10)
 
-        sep3 = QFrame()
-        sep3.setFrameShape(QFrame.HLine)
-        sep3.setStyleSheet("color: #E2E8F0; background-color: #E2E8F0; border: none; max-height: 1px;")
-        right_panel_layout.addWidget(sep3)
-
-        # Tombol MULAI SESI
+        # Tombol Mulai
         self.btn_enter_session = QPushButton("  Mulai")
-        self.btn_enter_session.setIcon(qta.icon('fa5s.play-circle', color='#90A4AE'))
+        self.btn_enter_session.setIcon(qta.icon('fa5s.play', color='#90A4AE'))
         self.btn_enter_session.setIconSize(QSize(18, 18))
-        self.btn_enter_session.setFixedHeight(46)
+        self.btn_enter_session.setFixedHeight(56)
         self.btn_enter_session.setCursor(Qt.PointingHandCursor)
-        self.btn_enter_session.setToolTip("Pilih pasien terlebih dahulu untuk mengaktifkan tombol ini")
         self.btn_enter_session.setStyleSheet("""
             QPushButton {
-                background-color: #EDF2F7;
-                color: #A0AEC0;
-                font-weight: bold;
-                font-size: 14px;
-                border-radius: 6px;
-                border: 1px solid #E2E8F0;
-                padding: 0 20px;
+                background-color: #EDF2F7; color: #A0AEC0; font-weight: bold; font-size: 16px;
+                border-radius: 10px; border: 1px solid #E2E8F0;
             }
         """)
         self.btn_enter_session.setEnabled(False)
         self.btn_enter_session.clicked.connect(self.enter_active_session)
-        right_panel_layout.addWidget(self.btn_enter_session)
+        identity_layout.addWidget(self.btn_enter_session)
 
-        right_panel_layout.addStretch()
+        right_col.addWidget(identity_card)
+        right_col.addStretch()
 
-        main_row.addWidget(left_panel, stretch=1)
-        main_row.addWidget(right_panel)
-        scroll_layout.addLayout(main_row)
-
-
-
-        scroll_layout.addStretch()
-        scroll.setWidget(scroll_content)
-        pre_root.addWidget(scroll)
+        main_layout.addLayout(left_col, stretch=4)
+        main_layout.addLayout(right_col, stretch=5)
+        
+        pre_root.addLayout(main_layout)
 
         # Connect validasi & finalize
         self.cmb_pasien_session.currentTextChanged.connect(self.validate_session_start)
