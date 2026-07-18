@@ -11,37 +11,38 @@ class PatientDialog(QDialog):
         
         self.setStyleSheet("""
             QDialog {
-                background-color: #081B3B;
-                color: #FFFFFF;
+                background-color: #FFFFFF;
+                color: #2D3748;
             }
             QLabel {
-                color: #8C9EBA;
+                color: #4A5568;
                 font-weight: bold;
                 font-size: 13px;
             }
             QLineEdit, QComboBox, QDateEdit, QTextEdit, QSpinBox, QDoubleSpinBox {
-                background-color: #071733;
-                border: 2px solid #112A54;
+                background-color: #F7FAFC;
+                border: 2px solid #E2E8F0;
                 border-radius: 6px;
                 padding: 8px;
-                color: #FFFFFF;
+                color: #2D3748;
                 font-size: 14px;
             }
             QSpinBox, QDoubleSpinBox {
                 padding-right: 25px;
             }
             QLineEdit:focus, QComboBox:focus, QDateEdit:focus, QTextEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
-                border: 2px solid #FFD54F;
+                border: 2px solid #00B4DB;
+                background-color: #FFFFFF;
             }
             QComboBox::drop-down {
                 border: none;
                 width: 30px;
             }
             QComboBox QAbstractItemView {
-                background-color: #071733;
-                color: #FFFFFF;
-                selection-background-color: #1565C0;
-                border: 1px solid #112A54;
+                background-color: #FFFFFF;
+                color: #2D3748;
+                selection-background-color: #EBF8FA;
+                border: 1px solid #E2E8F0;
             }
         """)
 
@@ -50,7 +51,7 @@ class PatientDialog(QDialog):
         layout.setSpacing(15)
 
         lbl_title = QLabel("Formulir Data Pasien" if not patient_data else "Edit Profil Pasien")
-        lbl_title.setStyleSheet("color: #FFD54F; font-size: 20px; font-weight: 900; margin-bottom: 10px;")
+        lbl_title.setStyleSheet("color: #2D3748; font-size: 20px; font-weight: 900; margin-bottom: 10px;")
         lbl_title.setAlignment(Qt.AlignCenter)
         layout.addWidget(lbl_title)
 
@@ -62,7 +63,7 @@ class PatientDialog(QDialog):
         new_rm = self.generate_sequential_rm()
         
         self.inp_rm.setText(new_rm if not patient_data else patient_data.no_rm)
-        self.inp_rm.setStyleSheet("background-color: #041024; color: #64748B; border-color: #041024;")
+        self.inp_rm.setStyleSheet("background-color: #EDF2F7; color: #A0AEC0; border-color: #E2E8F0;")
         form_layout.addRow("No. Rekam Medis", self.inp_rm)
 
         self.inp_nama = QLineEdit()
@@ -112,20 +113,20 @@ class PatientDialog(QDialog):
         self.btn_cancel.setIcon(qta.icon('fa5s.times', color='white'))
         self.btn_cancel.setStyleSheet("""
             QPushButton {
-                background-color: #FF5252; color: white; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: none;
+                background-color: #EDF2F7; color: #E53E3E; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: 1px solid #E2E8F0;
             }
-            QPushButton:hover { background-color: #D32F2F; }
+            QPushButton:hover { background-color: #E2E8F0; }
         """)
         self.btn_cancel.setCursor(Qt.PointingHandCursor)
         self.btn_cancel.clicked.connect(self.reject)
 
         self.btn_save = QPushButton(" Simpan Data")
-        self.btn_save.setIcon(qta.icon('fa5s.save', color='#1A1A1A'))
+        self.btn_save.setIcon(qta.icon('fa5s.save', color='white'))
         self.btn_save.setStyleSheet("""
             QPushButton {
-                background-color: #FFD54F; color: #1A1A1A; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: none;
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0083B0, stop:1 #00B4DB); color: white; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: none;
             }
-            QPushButton:hover { background-color: #FFC107; }
+            QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00B4DB, stop:1 #00D2FF); }
         """)
         self.btn_save.setCursor(Qt.PointingHandCursor)
         self.btn_save.clicked.connect(self.accept)

@@ -50,7 +50,15 @@ class PatientController:
             item_umur.setTextAlignment(Qt.AlignCenter)
             self.view.table_pasien.setItem(row, 2, item_umur)
             
-            item_jk = QTableWidgetItem(p.gender)
+            # Format Gender
+            if p.gender in ["L", "Laki-laki"]:
+                gender_display = "Laki-laki"
+            elif p.gender in ["P", "Perempuan"]:
+                gender_display = "Perempuan"
+            else:
+                gender_display = p.gender
+                
+            item_jk = QTableWidgetItem(gender_display)
             item_jk.setTextAlignment(Qt.AlignCenter)
             self.view.table_pasien.setItem(row, 3, item_jk)
             

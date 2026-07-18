@@ -143,8 +143,8 @@ class LoginWindow(QWidget):
         lbl_welcome = QLabel("Welcome")
         lbl_welcome.setStyleSheet("""
             color: #2D3748;
-            font-size: 28px;
-            font-weight: 900;
+            font-size: 24px;
+            font-weight: 800;
             background: transparent;
             border: none;
         """)
@@ -287,7 +287,7 @@ class LoginWindow(QWidget):
         """)
         self.btn_login.clicked.connect(self._do_login)
 
-        lbl_hint = QLabel("Default: admin / admin123")
+        lbl_hint = QLabel("Username : admin\nPassword : admin123")
         lbl_hint.setAlignment(Qt.AlignCenter)
         lbl_hint.setStyleSheet("color: #A0AEC0; font-size: 12px; background: transparent; border: none;")
 

@@ -21,7 +21,7 @@ class PatientView(QWidget):
         title.setObjectName("HeaderTitle")
         
         self.btn_add = QPushButton(" Registrasi Pasien Baru")
-        self.btn_add.setIcon(qta.icon('fa5s.user-plus', color='#1A1A1A'))
+        self.btn_add.setIcon(qta.icon('fa5s.user-plus', color='white'))
         self.btn_add.setIconSize(QSize(18, 18))
         self.btn_add.setObjectName("PrimaryButton")
         self.btn_add.setFixedSize(220, 45)
@@ -49,7 +49,7 @@ class PatientView(QWidget):
         self.cmb_gender_pasien.setFixedSize(210, 40)
         
         self.btn_filter = QPushButton(" Filter")
-        self.btn_filter.setIcon(qta.icon('fa5s.filter', color='white'))
+        self.btn_filter.setIcon(qta.icon('fa5s.filter', color='#2D3748'))
         self.btn_filter.setObjectName("SecondaryButton")
         self.btn_filter.setFixedSize(100, 40)
         self.btn_filter.setCursor(Qt.PointingHandCursor)
@@ -69,7 +69,7 @@ class PatientView(QWidget):
         
         self.table_pasien = QTableWidget(0, 5)
         self.table_pasien.setHorizontalHeaderLabels([
-            "No. RM", "Nama Pasien", "Umur", "L/P", "Aksi"
+            "No. RM", "Nama Pasien", "Umur", "Gender", "Aksi"
         ])
         
         header = self.table_pasien.horizontalHeader()
@@ -78,7 +78,7 @@ class PatientView(QWidget):
         
         self.table_pasien.setColumnWidth(0, 130)
         self.table_pasien.setColumnWidth(2, 80)
-        self.table_pasien.setColumnWidth(3, 50)
+        self.table_pasien.setColumnWidth(3, 90)
         self.table_pasien.setColumnWidth(4, 260)
         
         self.table_pasien.verticalHeader().setVisible(False)
@@ -91,15 +91,15 @@ class PatientView(QWidget):
         # --- 4. PAGINATION PANEL ---
         pagination_layout = QHBoxLayout()
         self.lbl_info = QLabel()
-        self.lbl_info.setStyleSheet("color: #8C9EBA; font-size: 13px;")
+        self.lbl_info.setStyleSheet("color: #718096; font-size: 13px;")
         
         self.btn_prev = QPushButton(" Prev")
-        self.btn_prev.setIcon(qta.icon('fa5s.chevron-left', color='white'))
+        self.btn_prev.setIcon(qta.icon('fa5s.chevron-left', color='#2D3748'))
         self.btn_prev.setObjectName("SecondaryButton")
         self.btn_prev.setFixedSize(80, 30)
         
         self.btn_next = QPushButton(" Next")
-        self.btn_next.setIcon(qta.icon('fa5s.chevron-right', color='white'))
+        self.btn_next.setIcon(qta.icon('fa5s.chevron-right', color='#2D3748'))
         self.btn_next.setLayoutDirection(Qt.RightToLeft)
         self.btn_next.setObjectName("SecondaryButton")
         self.btn_next.setFixedSize(80, 30)
