@@ -1,0 +1,9 @@
+Daftar Library dan Fungsinya:
+
+1. PySide6 : Untuk membuat tampilan UI (jendela, tombol, menu).
+2. bleak : Untuk menghubungkan laptop ke alat sensor lewat Bluetooth.
+3. pyqtgraph : Untuk menampilkan grafik detak jantung/sensor yang bergerak mulus (real-time).
+4. qasync : Agar aplikasi tidak hang/macet saat membaca data Bluetooth.
+5. SQLAlchemy : Untuk mengelola dan menyimpan data pasien ke database.
+6. QtAwesome : Untuk menampilkan ikon-ikon pada UI aplikasi.
+7. numpy : Untuk menghitung angka dan data dari sensor dengan cepat.
