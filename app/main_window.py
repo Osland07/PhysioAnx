@@ -154,6 +154,12 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.sidebar)
         main_layout.addWidget(content_area)
         
+        # Sinkronisasi jam dari internet di thread terpisah agar UI tidak beku
+        import threading
+        from services.time_service import TimeService
+        time_service = TimeService.get_instance()
+        threading.Thread(target=time_service.sync_time, daemon=True).start()
+        
         self.update_time()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
@@ -167,15 +173,16 @@ class MainWindow(QMainWindow):
 
 
     def update_time(self):
-        current_time = QTime.currentTime()
-        jam = current_time.hour()
+        from services.time_service import TimeService
+        current_time = TimeService.get_instance().get_current_time()
+        jam = current_time.hour
         if 5 <= jam < 11: sapaan = "Selamat Pagi"
         elif 11 <= jam < 15: sapaan = "Selamat Siang"
         elif 15 <= jam < 18: sapaan = "Selamat Sore"
         else: sapaan = "Selamat Malam"
         nama = self.current_user.full_name if self.current_user else "Pengguna"
         self.greeting_label.setText(f"{sapaan}, {nama}!")
-        self.clock_label.setText(current_time.toString("HH:mm:ss"))
+        self.clock_label.setText(current_time.strftime("%H:%M:%S"))
 
     def _do_logout(self):
         from PySide6.QtWidgets import QMessageBox

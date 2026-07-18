@@ -52,13 +52,14 @@ class LoginWindow(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
+        # ================= KIRI (BRANDING) =================
         left_panel = QFrame()
         left_panel.setStyleSheet("""
             QFrame {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #051024,
-                    stop:1 #0A1F40
+                    stop:0 #00B4DB,
+                    stop:1 #0083B0
                 );
             }
         """)
@@ -69,7 +70,7 @@ class LoginWindow(QWidget):
         left_layout.setAlignment(Qt.AlignCenter)
 
         lbl_logo_icon = QLabel()
-        lbl_logo_icon.setPixmap(qta.icon('fa5s.heartbeat', color='#40C4FF').pixmap(64, 64))
+        lbl_logo_icon.setPixmap(qta.icon('fa5s.heartbeat', color='#FFFFFF').pixmap(64, 64))
         lbl_logo_icon.setAlignment(Qt.AlignCenter)
         lbl_logo_icon.setStyleSheet("background: transparent; border: none;")
 
@@ -87,22 +88,23 @@ class LoginWindow(QWidget):
         lbl_tagline.setAlignment(Qt.AlignCenter)
         lbl_tagline.setWordWrap(True)
         lbl_tagline.setStyleSheet("""
-            color: #8C9EBA;
-            font-size: 14px;
+            color: #E0F2F1;
+            font-size: 15px;
+            font-weight: 500;
             background: transparent;
             line-height: 1.6;
         """)
 
         divider = QFrame()
         divider.setFixedSize(60, 3)
-        divider.setStyleSheet("background-color: #40C4FF; border-radius: 2px;")
+        divider.setStyleSheet("background-color: #FFFFFF; border-radius: 2px; opacity: 0.5;")
         divider_row = QHBoxLayout()
         divider_row.setAlignment(Qt.AlignCenter)
         divider_row.addWidget(divider)
 
         lbl_version = QLabel("v1.0.0")
         lbl_version.setAlignment(Qt.AlignCenter)
-        lbl_version.setStyleSheet("color: #2A4A7A; font-size: 11px; background: transparent;")
+        lbl_version.setStyleSheet("color: #B2EBF2; font-size: 11px; background: transparent;")
 
         left_layout.addStretch()
         left_layout.addWidget(lbl_logo_icon)
@@ -115,8 +117,9 @@ class LoginWindow(QWidget):
         left_layout.addStretch()
         left_layout.addWidget(lbl_version)
 
+        # ================= KANAN (FORM LOGIN) =================
         right_panel = QFrame()
-        right_panel.setStyleSheet("QFrame { background-color: #081B3B; }")
+        right_panel.setStyleSheet("QFrame { background-color: #F4F7F9; }")
         right_layout = QVBoxLayout(right_panel)
         right_layout.setContentsMargins(70, 0, 70, 0)
         right_layout.setSpacing(0)
@@ -126,160 +129,134 @@ class LoginWindow(QWidget):
         card.setFixedWidth(380)
         card.setStyleSheet("""
             QFrame {
-                background-color: #0F2040;
-                border: 1px solid #1C3565;
+                background-color: #FFFFFF;
+                border: 1px solid #E2E8F0;
                 border-radius: 16px;
             }
         """)
-        card.setGraphicsEffect(create_shadow(blur=40, opacity=100, offset_y=10))
+        # Shadow lebih lembut untuk mode terang
+        card.setGraphicsEffect(create_shadow(blur=30, opacity=15, offset_y=8))
         card_layout = QVBoxLayout(card)
         card_layout.setContentsMargins(36, 36, 36, 36)
         card_layout.setSpacing(20)
 
-        lbl_welcome = QLabel("Selamat Datang")
+        lbl_welcome = QLabel("Welcome")
         lbl_welcome.setStyleSheet("""
-            color: #FFFFFF;
-            font-size: 24px;
-            font-weight: 800;
+            color: #2D3748;
+            font-size: 28px;
+            font-weight: 900;
             background: transparent;
             border: none;
         """)
-        lbl_sub = QLabel("Masuk ke sistem untuk melanjutkan")
-        lbl_sub.setStyleSheet("color: #5C7AAA; font-size: 13px; background: transparent; border: none;")
 
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
-        sep.setStyleSheet("background-color: #1C3565; border: none; max-height: 1px;")
+        sep.setStyleSheet("background-color: #E2E8F0; border: none; max-height: 1px;")
 
+        # === USERNAME ===
         lbl_user = QLabel("Username")
-        lbl_user.setStyleSheet("color: #8C9EBA; font-size: 12px; font-weight: 600; background: transparent; border: none;")
+        lbl_user.setStyleSheet("color: #4A5568; font-size: 12px; font-weight: 700; background: transparent; border: none;")
 
-        user_row = QHBoxLayout()
-        user_row.setSpacing(0)
-        user_icon = QLabel()
-        user_icon.setPixmap(qta.icon('fa5s.user', color='#5C7AAA').pixmap(15, 15))
-        user_icon.setFixedSize(42, 44)
-        user_icon.setAlignment(Qt.AlignCenter)
-        user_icon.setStyleSheet("""
-            background-color: #071733;
-            border: 1.5px solid #1C3565;
-            border-right: none;
-            border-top-left-radius: 7px;
-            border-bottom-left-radius: 7px;
+        user_frame = QFrame()
+        user_frame.setFixedHeight(44)
+        user_frame.setStyleSheet("""
+            QFrame {
+                background-color: #F7FAFC;
+                border: 1.5px solid #E2E8F0;
+                border-radius: 8px;
+            }
         """)
+        user_row = QHBoxLayout(user_frame)
+        user_row.setContentsMargins(12, 0, 12, 0)
+        user_row.setSpacing(10)
+        
+        user_icon = QLabel()
+        user_icon.setPixmap(qta.icon('fa5s.user', color='#A0AEC0').pixmap(15, 15))
+        user_icon.setStyleSheet("border: none; background: transparent;")
 
         self.input_username = QLineEdit()
         self.input_username.setPlaceholderText("Masukkan username...")
-        self.input_username.setFixedHeight(44)
         self.input_username.setStyleSheet("""
             QLineEdit {
-                background-color: #071733;
-                border: 1.5px solid #1C3565;
-                border-left: none;
-                border-top-right-radius: 7px;
-                border-bottom-right-radius: 7px;
-                color: #FFFFFF;
-                font-size: 13px;
-                padding: 0 12px;
-            }
-            QLineEdit:focus {
-                border: 1.5px solid #40C4FF;
-                border-left: none;
+                background: transparent;
+                border: none;
+                color: #2D3748;
+                font-size: 14px;
             }
         """)
         user_row.addWidget(user_icon)
         user_row.addWidget(self.input_username)
 
+        # === PASSWORD ===
         lbl_pass = QLabel("Password")
-        lbl_pass.setStyleSheet("color: #8C9EBA; font-size: 12px; font-weight: 600; background: transparent; border: none;")
+        lbl_pass.setStyleSheet("color: #4A5568; font-size: 12px; font-weight: 700; background: transparent; border: none;")
 
-        pass_row = QHBoxLayout()
-        pass_row.setSpacing(0)
-        pass_icon = QLabel()
-        pass_icon.setPixmap(qta.icon('fa5s.lock', color='#5C7AAA').pixmap(15, 15))
-        pass_icon.setFixedSize(42, 44)
-        pass_icon.setAlignment(Qt.AlignCenter)
-        pass_icon.setStyleSheet("""
-            background-color: #071733;
-            border: 1.5px solid #1C3565;
-            border-right: none;
-            border-top-left-radius: 7px;
-            border-bottom-left-radius: 7px;
+        pass_frame = QFrame()
+        pass_frame.setFixedHeight(44)
+        pass_frame.setStyleSheet("""
+            QFrame {
+                background-color: #F7FAFC;
+                border: 1.5px solid #E2E8F0;
+                border-radius: 8px;
+            }
         """)
+        pass_row = QHBoxLayout(pass_frame)
+        pass_row.setContentsMargins(12, 0, 12, 0)
+        pass_row.setSpacing(10)
+        
+        pass_icon = QLabel()
+        pass_icon.setPixmap(qta.icon('fa5s.lock', color='#A0AEC0').pixmap(15, 15))
+        pass_icon.setStyleSheet("border: none; background: transparent;")
 
         self.input_password = QLineEdit()
         self.input_password.setPlaceholderText("Masukkan password...")
         self.input_password.setEchoMode(QLineEdit.Password)
-        self.input_password.setFixedHeight(44)
         self.input_password.setStyleSheet("""
             QLineEdit {
-                background-color: #071733;
-                border: 1.5px solid #1C3565;
-                border-left: none;
-                border-top-right-radius: 7px;
-                border-bottom-right-radius: 7px;
-                color: #FFFFFF;
-                font-size: 13px;
-                padding: 0 12px;
-            }
-            QLineEdit:focus {
-                border: 1.5px solid #40C4FF;
-                border-left: none;
+                background: transparent;
+                border: none;
+                color: #2D3748;
+                font-size: 14px;
             }
         """)
+        
         self.btn_toggle_pass = QPushButton()
-        self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye', color='#5C7AAA'))
-        self.btn_toggle_pass.setFixedSize(42, 44)
+        self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye', color='#A0AEC0'))
+        self.btn_toggle_pass.setFixedSize(24, 24)
         self.btn_toggle_pass.setCursor(Qt.PointingHandCursor)
         self.btn_toggle_pass.setCheckable(True)
         self.btn_toggle_pass.setStyleSheet("""
             QPushButton {
-                background-color: #071733;
-                border: 1.5px solid #1C3565;
-                border-left: none;
-                border-top-right-radius: 7px;
-                border-bottom-right-radius: 7px;
+                background: transparent;
+                border: none;
             }
-            QPushButton:checked { background-color: #0A1F40; }
+            QPushButton:hover { background-color: #E2E8F0; border-radius: 4px; }
         """)
         self.btn_toggle_pass.toggled.connect(self._toggle_password_visibility)
-        self.input_password.setStyleSheet("""
-            QLineEdit {
-                background-color: #071733;
-                border: 1.5px solid #1C3565;
-                border-left: none;
-                border-right: none;
-                border-radius: 0px;
-                color: #FFFFFF;
-                font-size: 13px;
-                padding: 0 12px;
-            }
-            QLineEdit:focus {
-                border: 1.5px solid #40C4FF;
-                border-left: none;
-                border-right: none;
-            }
-        """)
+        
         pass_row.addWidget(pass_icon)
         pass_row.addWidget(self.input_password)
         pass_row.addWidget(self.btn_toggle_pass)
 
+        # === PESAN ERROR ===
         self.lbl_error = QLabel("")
         self.lbl_error.setAlignment(Qt.AlignCenter)
         self.lbl_error.setWordWrap(True)
         self.lbl_error.setFixedHeight(32)
         self.lbl_error.setStyleSheet("""
             QLabel {
-                color: #FF5252;
-                font-size: 12px;
-                background-color: rgba(255,82,82,0.1);
-                border: 1px solid rgba(255,82,82,0.3);
+                color: #C53030;
+                font-size: 13px;
+                font-weight: bold;
+                background-color: #FED7D7;
+                border: 1px solid #FEB2B2;
                 border-radius: 5px;
                 padding: 4px 8px;
             }
         """)
         self.lbl_error.hide()
 
+        # === TOMBOL LOGIN ===
         self.btn_login = QPushButton("  Masuk")
         self.btn_login.setIcon(qta.icon('fa5s.sign-in-alt', color='white'))
         self.btn_login.setIconSize(QSize(16, 16))
@@ -289,12 +266,12 @@ class LoginWindow(QWidget):
             QPushButton {
                 background: qlineargradient(
                     x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #1565C0,
-                    stop:1 #1976D2
+                    stop:0 #0083B0,
+                    stop:1 #00B4DB
                 );
                 color: #FFFFFF;
                 font-weight: bold;
-                font-size: 15px;
+                font-size: 16px;
                 border-radius: 8px;
                 border: none;
                 letter-spacing: 0.5px;
@@ -302,25 +279,24 @@ class LoginWindow(QWidget):
             QPushButton:hover {
                 background: qlineargradient(
                     x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #1976D2,
-                    stop:1 #2196F3
+                    stop:0 #00B4DB,
+                    stop:1 #00D2FF
                 );
             }
-            QPushButton:pressed { background-color: #0D47A1; }
+            QPushButton:pressed { background-color: #007299; }
         """)
         self.btn_login.clicked.connect(self._do_login)
 
         lbl_hint = QLabel("Default: admin / admin123")
         lbl_hint.setAlignment(Qt.AlignCenter)
-        lbl_hint.setStyleSheet("color: #2A4A7A; font-size: 11px; background: transparent; border: none;")
+        lbl_hint.setStyleSheet("color: #A0AEC0; font-size: 12px; background: transparent; border: none;")
 
         card_layout.addWidget(lbl_welcome)
-        card_layout.addWidget(lbl_sub)
         card_layout.addWidget(sep)
         card_layout.addWidget(lbl_user)
-        card_layout.addLayout(user_row)
+        card_layout.addWidget(user_frame)
         card_layout.addWidget(lbl_pass)
-        card_layout.addLayout(pass_row)
+        card_layout.addWidget(pass_frame)
         card_layout.addWidget(self.lbl_error)
         card_layout.addWidget(self.btn_login)
         card_layout.addWidget(lbl_hint)
@@ -336,10 +312,10 @@ class LoginWindow(QWidget):
     def _toggle_password_visibility(self, checked: bool):
         if checked:
             self.input_password.setEchoMode(QLineEdit.Normal)
-            self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye-slash', color='#40C4FF'))
+            self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye-slash', color='#3182CE'))
         else:
             self.input_password.setEchoMode(QLineEdit.Password)
-            self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye', color='#5C7AAA'))
+            self.btn_toggle_pass.setIcon(qta.icon('fa5s.eye', color='#A0AEC0'))
 
     def _do_login(self):
         from models.database import SessionLocal
@@ -362,7 +338,7 @@ class LoginWindow(QWidget):
             self.accept_login()
         else:
             self._shake_card()
-            self._show_error("Username atau password salah. Silakan coba lagi.")
+            self._show_error("Username atau password salah.")
             self.input_password.clear()
 
     def _show_error(self, msg: str):
