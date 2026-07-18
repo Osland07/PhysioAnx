@@ -339,8 +339,11 @@ class MainWindow(QMainWindow):
 
         if hasattr(self, 'session_stacked'):
             self.session_stacked.setCurrentIndex(1)
+            self.toggle_session_recording()
 
-
+    def exit_active_session(self):
+        self.stop_session_recording()
+        self.session_stacked.setCurrentIndex(0)
 
     def load_patients_to_combobox(self):
         if not hasattr(self, 'cmb_pasien_session'):
@@ -603,12 +606,41 @@ class MainWindow(QMainWindow):
 
         self.page_active_session = QWidget()
         active_layout = QVBoxLayout(self.page_active_session)
-        active_layout.setContentsMargins(15, 15, 15, 15)
-        active_layout.setSpacing(20)
+        active_layout.setContentsMargins(15, 10, 15, 10)
+        active_layout.setSpacing(10)
         
-        # --- 1. HEADER PANEL & INFO PASIEN ---
+        # --- 1. KONTROL ATAS (KEMBALI & STATUS) ---
+        kontrol_row = QHBoxLayout()
+        
+        btn_back = QPushButton(" Kembali")
+        btn_back.setIcon(qta.icon('fa5s.arrow-left', color='#718096'))
+        btn_back.setStyleSheet("""
+            QPushButton { 
+                background-color: #FFFFFF; 
+                color: #718096; 
+                font-weight: bold; 
+                border: 1px solid #E2E8F0; 
+                border-radius: 6px; 
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            QPushButton:hover { background-color: #F7FAFC; color: #2D3748; }
+        """)
+        btn_back.setCursor(Qt.PointingHandCursor)
+        btn_back.clicked.connect(self.exit_active_session)
+        
+        self.lbl_status_sesi = QLabel(" Sesi Belum Dimulai ")
+        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px;")
+        
+        kontrol_row.addWidget(btn_back)
+        kontrol_row.addStretch()
+        kontrol_row.addWidget(self.lbl_status_sesi)
+        
+        active_layout.addLayout(kontrol_row)
+        
+        # --- 2. HEADER PANEL & INFO PASIEN ---
         header_row = QHBoxLayout()
-        header_row.setSpacing(20)
+        header_row.setSpacing(15)
         
         # Patient Info Card
         info_panel = QFrame()
@@ -681,102 +713,12 @@ class MainWindow(QMainWindow):
         header_row.addWidget(info_panel, stretch=2)
         header_row.addWidget(dev_panel, stretch=1)
         
-        # --- 2. SENSOR CARDS ---
-        cards_layout = QHBoxLayout()
-        cards_layout.setSpacing(20)
-        
-        self.card_hr, self.lbl_val_hr = self.create_sensor_card("HEART RATE", "--", "BPM", "#FF5252", "fa5s.heartbeat")
-        self.card_gsr, self.lbl_val_gsr = self.create_sensor_card("SKIN CONDUCTANCE", "--", "µS", "#40C4FF", "fa5s.bolt")
-        self.card_temp, self.lbl_val_temp = self.create_sensor_card("SKIN TEMPERATURE", "--", "°C", "#FFB300", "fa5s.thermometer-half")
-        
-        cards_layout.addWidget(self.card_hr)
-        cards_layout.addWidget(self.card_gsr)
-        cards_layout.addWidget(self.card_temp)
-        
-        # --- 3. GRAFIK & KONTROL SESI ---
-        main_content = QHBoxLayout()
-        main_content.setSpacing(20)
-        
-        # Grafik
-        graph_panel = QFrame()
-        graph_panel.setGraphicsEffect(create_shadow())
-        graph_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
-        gl = QVBoxLayout(graph_panel)
-        gl.setContentsMargins(20, 20, 20, 20)
-        
-        graph_header = QHBoxLayout()
-        
-        btn_back = QPushButton(" Kembali")
-        btn_back.setIcon(qta.icon('fa5s.arrow-left', color='#718096'))
-        btn_back.setStyleSheet("""
-            QPushButton { 
-                background-color: #F7FAFC; 
-                color: #718096; 
-                font-weight: bold; 
-                border: 1px solid #E2E8F0; 
-                border-radius: 6px; 
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-            QPushButton:hover { background-color: #E2E8F0; color: #2D3748; }
-        """)
-        btn_back.setCursor(Qt.PointingHandCursor)
-        btn_back.clicked.connect(lambda: self.session_stacked.setCurrentIndex(0))
-        
-        gl_title = QLabel("Real-time Data Monitor")
-        gl_title.setStyleSheet("color: #2D3748; font-weight: bold; font-size: 16px; border: none; background: transparent; margin-left: 10px;")
-        
-        self.lbl_status_sesi = QLabel(" Sesi Belum Dimulai ")
-        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #F7FAFC; border: 1px solid #E2E8F0; border-radius: 6px;")
-        
-        self.btn_start = QPushButton("  MULAI REKAM")
-        self.btn_start.setIcon(qta.icon('fa5s.play', color='white'))
-        self.btn_start.setStyleSheet("""
-            QPushButton { 
-                background-color: #00C853; 
-                color: white; 
-                font-weight: 900; 
-                font-size: 12px; 
-                border-radius: 6px; 
-                padding: 6px 14px;
-            }
-            QPushButton:hover { background-color: #00E676; }
-            QPushButton:disabled { background-color: #A0AEC0; }
-        """)
-        self.btn_start.setCursor(Qt.PointingHandCursor)
-        self.btn_start.clicked.connect(self.toggle_session_recording)
-
-        self.btn_stop = QPushButton("  STOP")
-        self.btn_stop.setIcon(qta.icon('fa5s.stop', color='white'))
-        self.btn_stop.setStyleSheet("""
-            QPushButton { 
-                background-color: #FF5252; 
-                color: white; 
-                font-weight: 900; 
-                font-size: 12px; 
-                border-radius: 6px; 
-                padding: 6px 14px;
-            }
-            QPushButton:hover { background-color: #FF8A80; }
-            QPushButton:disabled { background-color: #A0AEC0; }
-        """)
-        self.btn_stop.setCursor(Qt.PointingHandCursor)
-        self.btn_stop.setEnabled(False)
-        self.btn_stop.clicked.connect(self.stop_session_recording)
-
-        graph_header.addWidget(btn_back)
-        graph_header.addWidget(gl_title)
-        graph_header.addStretch()
-        graph_header.addWidget(self.lbl_status_sesi)
-        graph_header.addSpacing(10)
-        graph_header.addWidget(self.btn_start)
-        graph_header.addWidget(self.btn_stop)
+        # --- 3. SENSOR & GRAFIK ROWS ---
+        main_content = QVBoxLayout()
+        main_content.setSpacing(8)
         
         pg.setConfigOption('background', 'transparent')
         pg.setConfigOption('foreground', '#718096')
-        
-        self.plot_layout = pg.GraphicsLayoutWidget()
-        self.plot_layout.setStyleSheet("background: transparent; border: none;")
         
         import numpy as np
         self.x_data = np.linspace(0, 10, 300)
@@ -785,39 +727,67 @@ class MainWindow(QMainWindow):
         self.y_data_gsr = np.zeros(300)
         self.y_data_temp = np.zeros(300)
         
-        # 1. Heart Rate Plot
-        self.plot_hr = self.plot_layout.addPlot(title="Heart Rate (BPM)")
-        self.plot_hr.getAxis('left').setPen('#CBD5E0')
-        self.plot_hr.getAxis('bottom').setPen('#CBD5E0')
-        self.plot_hr.showGrid(x=True, y=True, alpha=0.15)
-        self.curve_hr = self.plot_hr.plot(self.x_data, self.y_data_hr, pen=pg.mkPen(color='#FF5252', width=2.5))
+        def create_row_card(title_text, unit_text, color, icon_name, y_data):
+            row_frame = QFrame()
+            row_frame.setGraphicsEffect(create_shadow())
+            row_frame.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
+            
+            row_layout = QHBoxLayout(row_frame)
+            row_layout.setContentsMargins(15, 5, 15, 5)
+            
+            plot = pg.PlotWidget()
+            plot.getAxis('left').setPen('#CBD5E0')
+            plot.getAxis('bottom').setPen('#CBD5E0')
+            plot.showGrid(x=True, y=True, alpha=0.15)
+            curve = plot.plot(self.x_data, y_data, pen=pg.mkPen(color=color, width=2.5))
+            
+            val_panel = QFrame()
+            val_panel.setStyleSheet("border: none; background: transparent;")
+            val_panel.setFixedWidth(220)
+            v_layout = QVBoxLayout(val_panel)
+            v_layout.setAlignment(Qt.AlignCenter)
+            
+            top_h = QHBoxLayout()
+            icon_lbl = QLabel()
+            icon_lbl.setPixmap(qta.icon(icon_name, color=color).pixmap(24, 24))
+            top_h.addWidget(icon_lbl)
+            lbl_title = QLabel(title_text)
+            lbl_title.setStyleSheet("color: #718096; font-size: 12px; font-weight: bold;")
+            top_h.addWidget(lbl_title)
+            top_h.addStretch()
+            v_layout.addLayout(top_h)
+            
+            val_lbl = QLabel("--")
+            val_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            val_lbl.setStyleSheet(f"color: {color}; font-size: 42px; font-weight: 900;")
+            
+            unit_lbl = QLabel(unit_text)
+            unit_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            unit_lbl.setStyleSheet("color: #A0AEC0; font-size: 14px; font-weight: bold;")
+            
+            v_layout.addWidget(val_lbl)
+            v_layout.addWidget(unit_lbl)
+            
+            row_layout.addWidget(plot, stretch=4)
+            
+            sep = QFrame()
+            sep.setFrameShape(QFrame.VLine)
+            sep.setStyleSheet("color: #E2E8F0;")
+            row_layout.addWidget(sep)
+            
+            row_layout.addWidget(val_panel)
+            
+            return row_frame, curve, val_lbl
+            
+        self.row_hr, self.curve_hr, self.lbl_val_hr = create_row_card("HEART RATE", "BPM", "#FF5252", "fa5s.heartbeat", self.y_data_hr)
+        self.row_gsr, self.curve_gsr, self.lbl_val_gsr = create_row_card("SKIN CONDUCTANCE", "µS", "#40C4FF", "fa5s.bolt", self.y_data_gsr)
+        self.row_temp, self.curve_temp, self.lbl_val_temp = create_row_card("SKIN TEMPERATURE", "°C", "#FFB300", "fa5s.thermometer-half", self.y_data_temp)
         
-        self.plot_layout.nextRow()
-        
-        # 2. Skin Conductance Plot
-        self.plot_gsr = self.plot_layout.addPlot(title="Skin Conductance (µS)")
-        self.plot_gsr.getAxis('left').setPen('#CBD5E0')
-        self.plot_gsr.getAxis('bottom').setPen('#CBD5E0')
-        self.plot_gsr.showGrid(x=True, y=True, alpha=0.15)
-        self.curve_gsr = self.plot_gsr.plot(self.x_data, self.y_data_gsr, pen=pg.mkPen(color='#40C4FF', width=2.5))
-        
-        self.plot_layout.nextRow()
-        
-        # 3. Skin Temperature Plot
-        self.plot_temp = self.plot_layout.addPlot(title="Skin Temperature (°C)")
-        self.plot_temp.getAxis('left').setPen('#CBD5E0')
-        self.plot_temp.getAxis('bottom').setPen('#CBD5E0')
-        self.plot_temp.showGrid(x=True, y=True, alpha=0.15)
-        self.curve_temp = self.plot_temp.plot(self.x_data, self.y_data_temp, pen=pg.mkPen(color='#FFB300', width=2.5))
-        
-        gl.addLayout(graph_header)
-        gl.addSpacing(10)
-        gl.addWidget(self.plot_layout)
-        
-        main_content.addWidget(graph_panel, stretch=1)
+        main_content.addWidget(self.row_hr, stretch=1)
+        main_content.addWidget(self.row_gsr, stretch=1)
+        main_content.addWidget(self.row_temp, stretch=1)
         
         active_layout.addLayout(header_row)
-        active_layout.addLayout(cards_layout)
         active_layout.addLayout(main_content, stretch=1)
         
         self.session_stacked.addWidget(self.page_active_session)
@@ -833,21 +803,8 @@ class MainWindow(QMainWindow):
         if not self.is_recording:
             self.is_recording = True
             self.timer_graph.start(50)
-            self.btn_start.setEnabled(False)
-            self.btn_start.setStyleSheet("""
-                QPushButton { 
-                    background-color: #2E7D32; 
-                    color: white; 
-                    font-weight: 900; 
-                    font-size: 14px; 
-                    border-radius: 8px; 
-                    padding: 16px;
-                }
-            """)
-            self.btn_start.setText("  MEREKAM...")
-            self.btn_stop.setEnabled(True)
-            self.lbl_status_sesi.setText(" Merekam Data... ")
-            self.lbl_status_sesi.setStyleSheet("color: #00E676; font-weight: bold; font-size: 12px; border: 1px solid #B2F5EA; padding: 6px 12px; background-color: #E6FFFA; border-radius: 6px;")
+            self.lbl_status_sesi.setText(" 🔴 Recording ")
+            self.lbl_status_sesi.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 12px; border: 1px solid #FED7D7; padding: 6px 12px; background-color: #FFF5F5; border-radius: 6px;")
             self.lbl_bluetooth.setText("Alat Terhubung")
             self.lbl_bluetooth.setStyleSheet("color: #00E676; font-weight: bold; font-size: 15px; border: none; background: transparent;")
             self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#00E676').pixmap(24, 24))
@@ -855,22 +812,8 @@ class MainWindow(QMainWindow):
     def stop_session_recording(self):
         self.is_recording = False
         self.timer_graph.stop()
-        self.btn_start.setEnabled(True)
-        self.btn_start.setStyleSheet("""
-            QPushButton { 
-                background-color: #00C853; 
-                color: white; 
-                font-weight: 900; 
-                font-size: 14px; 
-                border-radius: 8px; 
-                padding: 16px;
-            }
-            QPushButton:hover { background-color: #00E676; }
-        """)
-        self.btn_start.setText("  MULAI REKAM")
-        self.btn_stop.setEnabled(False)
         self.lbl_status_sesi.setText(" Sesi Selesai ")
-        self.lbl_status_sesi.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 12px; border: 1px solid #FED7D7; padding: 6px 12px; background-color: #FFF5F5; border-radius: 6px;")
+        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: 1px solid #E2E8F0; padding: 6px 12px; background-color: #F7FAFC; border-radius: 6px;")
         
         # Reset data for next session
         import numpy as np
@@ -912,46 +855,7 @@ class MainWindow(QMainWindow):
         self.lbl_val_gsr.setText(f"{val_gsr:.1f}")
         self.lbl_val_temp.setText(f"{val_temp:.1f}")
 
-    def create_sensor_card(self, title_text, value_text, unit_text, color, icon_name=None):
-        card = QFrame()
-        card.setGraphicsEffect(create_shadow())
-        card.setFixedHeight(110)
-        card.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
-        
-        layout = QHBoxLayout(card)
-        layout.setContentsMargins(20, 15, 20, 15)
-        
-        # Kiri: Icon + Title + Unit
-        left_layout = QVBoxLayout()
-        top_left = QHBoxLayout()
-        if icon_name:
-            icon_lbl = QLabel()
-            icon_lbl.setPixmap(qta.icon(icon_name, color=color).pixmap(18, 18))
-            icon_lbl.setStyleSheet("border: none; background: transparent;")
-            top_left.addWidget(icon_lbl)
-            
-        title = QLabel(title_text)
-        title.setStyleSheet("color: #718096; font-size: 14px; font-weight: bold; border: none; background: transparent;")
-        top_left.addWidget(title)
-        top_left.addStretch()
-        
-        unit = QLabel(unit_text)
-        unit.setStyleSheet("color: #A0AEC0; font-size: 13px; font-weight: bold; border: none; background: transparent;")
-        
-        left_layout.addLayout(top_left)
-        left_layout.addStretch()
-        left_layout.addWidget(unit)
-        
-        # Kanan: Value
-        val = QLabel(value_text)
-        val.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        val.setStyleSheet(f"color: {color}; font-size: 42px; font-weight: 900; border: none; background: transparent;")
-        
-        layout.addLayout(left_layout)
-        layout.addStretch()
-        layout.addWidget(val)
-        
-        return card, val
+
 
 
 
