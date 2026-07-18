@@ -729,30 +729,90 @@ class MainWindow(QMainWindow):
         self.lbl_status_sesi = QLabel(" Sesi Belum Dimulai ")
         self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #F7FAFC; border: 1px solid #E2E8F0; border-radius: 6px;")
         
+        self.btn_start = QPushButton("  MULAI REKAM")
+        self.btn_start.setIcon(qta.icon('fa5s.play', color='white'))
+        self.btn_start.setStyleSheet("""
+            QPushButton { 
+                background-color: #00C853; 
+                color: white; 
+                font-weight: 900; 
+                font-size: 12px; 
+                border-radius: 6px; 
+                padding: 6px 14px;
+            }
+            QPushButton:hover { background-color: #00E676; }
+            QPushButton:disabled { background-color: #A0AEC0; }
+        """)
+        self.btn_start.setCursor(Qt.PointingHandCursor)
+        self.btn_start.clicked.connect(self.toggle_session_recording)
+
+        self.btn_stop = QPushButton("  STOP")
+        self.btn_stop.setIcon(qta.icon('fa5s.stop', color='white'))
+        self.btn_stop.setStyleSheet("""
+            QPushButton { 
+                background-color: #FF5252; 
+                color: white; 
+                font-weight: 900; 
+                font-size: 12px; 
+                border-radius: 6px; 
+                padding: 6px 14px;
+            }
+            QPushButton:hover { background-color: #FF8A80; }
+            QPushButton:disabled { background-color: #A0AEC0; }
+        """)
+        self.btn_stop.setCursor(Qt.PointingHandCursor)
+        self.btn_stop.setEnabled(False)
+        self.btn_stop.clicked.connect(self.stop_session_recording)
+
         graph_header.addWidget(btn_back)
         graph_header.addWidget(gl_title)
         graph_header.addStretch()
         graph_header.addWidget(self.lbl_status_sesi)
+        graph_header.addSpacing(10)
+        graph_header.addWidget(self.btn_start)
+        graph_header.addWidget(self.btn_stop)
         
         pg.setConfigOption('background', 'transparent')
         pg.setConfigOption('foreground', '#718096')
-        self.plot = pg.PlotWidget()
-        self.plot.getAxis('left').setPen('#CBD5E0')
-        self.plot.getAxis('bottom').setPen('#CBD5E0')
-        self.plot.showGrid(x=True, y=True, alpha=0.15)
+        
+        self.plot_layout = pg.GraphicsLayoutWidget()
+        self.plot_layout.setStyleSheet("background: transparent; border: none;")
         
         import numpy as np
         self.x_data = np.linspace(0, 10, 300)
         self.phase = 0.0
         self.y_data_hr = np.zeros(300)
         self.y_data_gsr = np.zeros(300)
+        self.y_data_temp = np.zeros(300)
         
-        self.curve_hr = self.plot.plot(self.x_data, self.y_data_hr, pen=pg.mkPen(color='#FF5252', width=2.5), name="Heart Rate")
-        self.curve_gsr = self.plot.plot(self.x_data, self.y_data_gsr, pen=pg.mkPen(color='#40C4FF', width=2.5), name="Skin Conductance")
+        # 1. Heart Rate Plot
+        self.plot_hr = self.plot_layout.addPlot(title="Heart Rate (BPM)")
+        self.plot_hr.getAxis('left').setPen('#CBD5E0')
+        self.plot_hr.getAxis('bottom').setPen('#CBD5E0')
+        self.plot_hr.showGrid(x=True, y=True, alpha=0.15)
+        self.curve_hr = self.plot_hr.plot(self.x_data, self.y_data_hr, pen=pg.mkPen(color='#FF5252', width=2.5))
+        
+        self.plot_layout.nextRow()
+        
+        # 2. Skin Conductance Plot
+        self.plot_gsr = self.plot_layout.addPlot(title="Skin Conductance (µS)")
+        self.plot_gsr.getAxis('left').setPen('#CBD5E0')
+        self.plot_gsr.getAxis('bottom').setPen('#CBD5E0')
+        self.plot_gsr.showGrid(x=True, y=True, alpha=0.15)
+        self.curve_gsr = self.plot_gsr.plot(self.x_data, self.y_data_gsr, pen=pg.mkPen(color='#40C4FF', width=2.5))
+        
+        self.plot_layout.nextRow()
+        
+        # 3. Skin Temperature Plot
+        self.plot_temp = self.plot_layout.addPlot(title="Skin Temperature (°C)")
+        self.plot_temp.getAxis('left').setPen('#CBD5E0')
+        self.plot_temp.getAxis('bottom').setPen('#CBD5E0')
+        self.plot_temp.showGrid(x=True, y=True, alpha=0.15)
+        self.curve_temp = self.plot_temp.plot(self.x_data, self.y_data_temp, pen=pg.mkPen(color='#FFB300', width=2.5))
         
         gl.addLayout(graph_header)
         gl.addSpacing(10)
-        gl.addWidget(self.plot)
+        gl.addWidget(self.plot_layout)
         
         main_content.addWidget(graph_panel, stretch=1)
         
@@ -816,8 +876,10 @@ class MainWindow(QMainWindow):
         import numpy as np
         self.y_data_hr = np.zeros(300)
         self.y_data_gsr = np.zeros(300)
+        self.y_data_temp = np.zeros(300)
         self.curve_hr.setData(self.x_data, self.y_data_hr)
         self.curve_gsr.setData(self.x_data, self.y_data_gsr)
+        self.curve_temp.setData(self.x_data, self.y_data_temp)
         self.lbl_val_hr.setText("--")
         self.lbl_val_gsr.setText("--")
         self.lbl_val_temp.setText("--")
@@ -837,10 +899,13 @@ class MainWindow(QMainWindow):
         val_gsr = np.sin(self.x_data[-1] + self.phase) * 5 + 15 + np.random.normal(0, 0.2)
         self.y_data_gsr[-1] = val_gsr
         
+        self.y_data_temp[:-1] = self.y_data_temp[1:]
         val_temp = 36.5 + np.random.normal(0, 0.05)
+        self.y_data_temp[-1] = val_temp
         
         self.curve_hr.setData(self.x_data, self.y_data_hr)
         self.curve_gsr.setData(self.x_data, self.y_data_gsr)
+        self.curve_temp.setData(self.x_data, self.y_data_temp)
         
         # Update Labels
         self.lbl_val_hr.setText(f"{int(val_hr)}")

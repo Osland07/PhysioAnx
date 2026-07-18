@@ -78,7 +78,7 @@ class PatientView(QWidget):
         
         self.table_pasien.setColumnWidth(0, 130)
         self.table_pasien.setColumnWidth(2, 80)
-        self.table_pasien.setColumnWidth(3, 90)
+        self.table_pasien.setColumnWidth(3, 120)
         self.table_pasien.setColumnWidth(4, 260)
         
         self.table_pasien.verticalHeader().setVisible(False)
