@@ -257,7 +257,7 @@ class LoginWindow(QWidget):
         self.lbl_error.hide()
 
         # === TOMBOL LOGIN ===
-        self.btn_login = QPushButton("  Masuk")
+        self.btn_login = QPushButton("  Login")
         self.btn_login.setIcon(qta.icon('fa5s.sign-in-alt', color='white'))
         self.btn_login.setIconSize(QSize(16, 16))
         self.btn_login.setFixedHeight(48)

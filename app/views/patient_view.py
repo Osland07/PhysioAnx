@@ -17,7 +17,7 @@ class PatientView(QWidget):
         
         # --- 1. HEADER (Judul & Tombol Registrasi) ---
         header_layout = QHBoxLayout()
-        title = QLabel("Data Pasien (Rekam Medis)")
+        title = QLabel("Patients")
         title.setObjectName("HeaderTitle")
         
         self.btn_add = QPushButton(" Registrasi Pasien Baru")

@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         title.setObjectName("AppTitle")
         title.setAlignment(Qt.AlignCenter)
         
-        self.btn_pasien = QPushButton(" Data Pasien")
+        self.btn_pasien = QPushButton(" Patients")
         self.btn_pasien.setIcon(qta.icon('fa5s.users', color='#8C9EBA'))
         self.btn_pasien.setIconSize(QSize(20, 20))
         
@@ -176,11 +176,10 @@ class MainWindow(QMainWindow):
         from services.time_service import TimeService
         current_time = TimeService.get_instance().get_current_time()
         jam = current_time.hour
-        if 5 <= jam < 11: sapaan = "Selamat Pagi"
-        elif 11 <= jam < 15: sapaan = "Selamat Siang"
-        elif 15 <= jam < 18: sapaan = "Selamat Sore"
-        else: sapaan = "Selamat Malam"
-        nama = self.current_user.full_name if self.current_user else "Pengguna"
+        if 5 <= jam < 12: sapaan = "Good Morning"
+        elif 12 <= jam < 17: sapaan = "Good Afternoon"
+        else: sapaan = "Good Evening"
+        nama = self.current_user.full_name if self.current_user else "User"
         self.greeting_label.setText(f"{sapaan}, {nama}!")
         self.clock_label.setText(current_time.strftime("%H:%M:%S"))
 
@@ -362,8 +361,6 @@ class MainWindow(QMainWindow):
             completer.setModel(self.cmb_pasien_session.model())
             
         session.close()
-        # Juga perbarui tabel daftar pasien di halaman pre-session
-        self._load_session_patient_table()
 
 
 
@@ -739,95 +736,7 @@ class MainWindow(QMainWindow):
         main_row.addWidget(right_panel)
         scroll_layout.addLayout(main_row)
 
-        # --- TABEL DAFTAR PASIEN TERDAFTAR ---
-        tbl_outer = QFrame()
-        tbl_outer.setStyleSheet("""
-            QFrame {
-                background-color: #0F2040;
-                border: 1px solid #1C3565;
-                border-radius: 10px;
-            }
-        """)
-        tbl_outer.setGraphicsEffect(create_shadow())
-        tbl_outer_layout = QVBoxLayout(tbl_outer)
-        tbl_outer_layout.setContentsMargins(20, 18, 20, 18)
-        tbl_outer_layout.setSpacing(14)
 
-        tbl_hdr = QHBoxLayout()
-        lbl_tbl_icon = QLabel()
-        lbl_tbl_icon.setPixmap(qta.icon('fa5s.list-alt', color='#40C4FF').pixmap(18, 18))
-        lbl_tbl_icon.setStyleSheet("background: transparent; border: none;")
-        lbl_tbl_title = QLabel("Daftar Pasien Terdaftar")
-        lbl_tbl_title.setStyleSheet("color: #FFFFFF; font-size: 14px; font-weight: 700; background: transparent; border: none;")
-        lbl_tbl_sub = QLabel("(Klik baris untuk memilih pasien)")
-        lbl_tbl_sub.setStyleSheet("color: #5C7AAA; font-size: 12px; background: transparent; border: none;")
-        tbl_hdr.addWidget(lbl_tbl_icon)
-        tbl_hdr.addWidget(lbl_tbl_title)
-        tbl_hdr.addSpacing(6)
-        tbl_hdr.addWidget(lbl_tbl_sub)
-        tbl_hdr.addStretch()
-        tbl_outer_layout.addLayout(tbl_hdr)
-
-        sep_tbl = QFrame()
-        sep_tbl.setFrameShape(QFrame.HLine)
-        sep_tbl.setStyleSheet("color: #1C3565; background-color: #1C3565; border: none; max-height: 1px;")
-        tbl_outer_layout.addWidget(sep_tbl)
-
-        self.tbl_session_pasien = QTableWidget(0, 4)
-        self.tbl_session_pasien.setHorizontalHeaderLabels(["No. RM", "Nama Pasien", "Usia", "Jenis Kelamin"])
-        self.tbl_session_pasien.setStyleSheet("""
-            QTableWidget {
-                background-color: #0F2040;
-                border: none;
-                gridline-color: #112A54;
-                color: #E2E8F0;
-                font-size: 13px;
-                outline: none;
-            }
-            QTableWidget::item {
-                padding: 10px 12px;
-                border-bottom: 1px solid #112A54;
-            }
-            QTableWidget::item:selected {
-                background-color: #1A3A70;
-                color: #40C4FF;
-            }
-            QHeaderView::section {
-                background-color: #071733;
-                color: #8C9EBA;
-                font-weight: 700;
-                font-size: 12px;
-                padding: 10px 12px;
-                border: none;
-                border-bottom: 2px solid #1C3565;
-            }
-        """)
-        self.tbl_session_pasien.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.tbl_session_pasien.setSelectionBehavior(QTableWidget.SelectRows)
-        self.tbl_session_pasien.setSelectionMode(QTableWidget.SingleSelection)
-        self.tbl_session_pasien.setShowGrid(False)
-        self.tbl_session_pasien.verticalHeader().setVisible(False)
-        self.tbl_session_pasien.verticalHeader().setDefaultSectionSize(48)
-        self.tbl_session_pasien.setFixedHeight(220)
-
-        hdr_tbl = self.tbl_session_pasien.horizontalHeader()
-        hdr_tbl.setSectionResizeMode(0, QHeaderView.Fixed)
-        hdr_tbl.setSectionResizeMode(1, QHeaderView.Stretch)
-        hdr_tbl.setSectionResizeMode(2, QHeaderView.Fixed)
-        hdr_tbl.setSectionResizeMode(3, QHeaderView.Fixed)
-        self.tbl_session_pasien.setColumnWidth(0, 130)
-        self.tbl_session_pasien.setColumnWidth(2, 80)
-        self.tbl_session_pasien.setColumnWidth(3, 130)
-
-        def _on_tbl_row_clicked(row, col):
-            rm_item = self.tbl_session_pasien.item(row, 0)
-            nm_item = self.tbl_session_pasien.item(row, 1)
-            if rm_item and nm_item:
-                self.cmb_pasien_session.setCurrentText(f"{rm_item.text()} - {nm_item.text()}")
-        self.tbl_session_pasien.cellClicked.connect(_on_tbl_row_clicked)
-
-        tbl_outer_layout.addWidget(self.tbl_session_pasien)
-        scroll_layout.addWidget(tbl_outer)
 
         scroll_layout.addStretch()
         scroll.setWidget(scroll_content)
@@ -1007,40 +916,7 @@ class MainWindow(QMainWindow):
         self.timer_graph.timeout.connect(self.update_fake_graph)
         self.is_recording = False
 
-    def _load_session_patient_table(self):
-        if not hasattr(self, 'tbl_session_pasien'):
-            return
-        session = SessionLocal()
-        patients = session.query(Patient).order_by(Patient.full_name).all()
-        session.close()
 
-        self.tbl_session_pasien.setRowCount(len(patients))
-        for row, p in enumerate(patients):
-            item_rm = QTableWidgetItem(p.no_rm)
-            item_rm.setFlags(item_rm.flags() & ~Qt.ItemIsEditable)
-            self.tbl_session_pasien.setItem(row, 0, item_rm)
-
-            item_nm = QTableWidgetItem(p.full_name)
-            item_nm.setFlags(item_nm.flags() & ~Qt.ItemIsEditable)
-            self.tbl_session_pasien.setItem(row, 1, item_nm)
-
-            usia_str = "-"
-            if p.date_of_birth:
-                today = date.today()
-                age = today.year - p.date_of_birth.year - (
-                    (today.month, today.day) < (p.date_of_birth.month, p.date_of_birth.day)
-                )
-                usia_str = f"{age} Thn"
-            item_usia = QTableWidgetItem(usia_str)
-            item_usia.setTextAlignment(Qt.AlignCenter)
-            item_usia.setFlags(item_usia.flags() & ~Qt.ItemIsEditable)
-            self.tbl_session_pasien.setItem(row, 2, item_usia)
-
-            jk_str = "Laki-laki" if p.gender == "L" else "Perempuan"
-            item_jk = QTableWidgetItem(jk_str)
-            item_jk.setTextAlignment(Qt.AlignCenter)
-            item_jk.setFlags(item_jk.flags() & ~Qt.ItemIsEditable)
-            self.tbl_session_pasien.setItem(row, 3, item_jk)
 
     def toggle_session_recording(self):
         if not self.is_recording:
