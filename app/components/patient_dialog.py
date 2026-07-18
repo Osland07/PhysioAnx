@@ -110,7 +110,7 @@ class PatientDialog(QDialog):
         btn_layout.setSpacing(10)
 
         self.btn_cancel = QPushButton(" Batal")
-        self.btn_cancel.setIcon(qta.icon('fa5s.times', color='white'))
+        self.btn_cancel.setIcon(qta.icon('fa5s.times', color='#E53E3E'))
         self.btn_cancel.setStyleSheet("""
             QPushButton {
                 background-color: #EDF2F7; color: #E53E3E; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: 1px solid #E2E8F0;
