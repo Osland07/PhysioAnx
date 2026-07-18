@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
     def __init__(self, current_user=None):
         super().__init__()
         self.current_user = current_user
-        self.setWindowTitle("PhysioAnx - Secure Medical Dashboard")
+        self.setWindowTitle("PhysioAnx")
         self.setMinimumSize(1200, 750)
         
         main_widget = QWidget()
