@@ -613,19 +613,19 @@ class MainWindow(QMainWindow):
         # Patient Info Card
         info_panel = QFrame()
         info_panel.setGraphicsEffect(create_shadow())
-        info_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        info_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         info_layout = QHBoxLayout(info_panel)
         info_layout.setContentsMargins(20, 15, 20, 15)
         
         icon_patient = QLabel()
-        icon_patient.setPixmap(qta.icon('fa5s.user', color='#64748B').pixmap(30, 30))
+        icon_patient.setPixmap(qta.icon('fa5s.user', color='#A0AEC0').pixmap(30, 30))
         icon_patient.setStyleSheet("border: none; background: transparent;")
         
         patient_details = QVBoxLayout()
         patient_details.setSpacing(2)
         
         self.lbl_info_nama = QLabel("Belum ada pasien dipilih")
-        self.lbl_info_nama.setStyleSheet("color: #FFFFFF; font-size: 18px; font-weight: 800; border: none; background: transparent;")
+        self.lbl_info_nama.setStyleSheet("color: #2D3748; font-size: 18px; font-weight: 800; border: none; background: transparent;")
         
         info_sub = QHBoxLayout()
         self.lbl_info_rm = QLabel("RM: -")
@@ -633,7 +633,7 @@ class MainWindow(QMainWindow):
         self.lbl_info_gender = QLabel("Gender: -")
         
         for lbl in [self.lbl_info_rm, self.lbl_info_usia, self.lbl_info_gender]:
-            lbl.setStyleSheet("color: #8C9EBA; font-size: 13px; border: none; background: transparent; padding-right: 15px;")
+            lbl.setStyleSheet("color: #718096; font-size: 13px; border: none; background: transparent; padding-right: 15px;")
             info_sub.addWidget(lbl)
         info_sub.addStretch()
         
@@ -648,7 +648,7 @@ class MainWindow(QMainWindow):
         # Device Connection Card
         dev_panel = QFrame()
         dev_panel.setGraphicsEffect(create_shadow())
-        dev_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        dev_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         dev_layout = QHBoxLayout(dev_panel)
         dev_layout.setContentsMargins(20, 15, 20, 15)
         
@@ -661,14 +661,15 @@ class MainWindow(QMainWindow):
         btn_connect = QPushButton(" Hubungkan")
         btn_connect.setStyleSheet("""
             QPushButton {
-                background-color: #112A54; 
-                color: white; 
+                background-color: #EBF8FA; 
+                color: #00B4DB; 
                 border-radius: 6px; 
                 padding: 10px 20px; 
                 font-weight: bold;
                 font-size: 13px;
+                border: 1px solid #BEE3F8;
             }
-            QPushButton:hover { background-color: #1A3A70; }
+            QPushButton:hover { background-color: #00B4DB; color: white; }
         """)
         btn_connect.setCursor(Qt.PointingHandCursor)
         
@@ -699,34 +700,34 @@ class MainWindow(QMainWindow):
         # Grafik
         graph_panel = QFrame()
         graph_panel.setGraphicsEffect(create_shadow())
-        graph_panel.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        graph_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         gl = QVBoxLayout(graph_panel)
         gl.setContentsMargins(20, 20, 20, 20)
         
         graph_header = QHBoxLayout()
         
         btn_back = QPushButton(" Kembali")
-        btn_back.setIcon(qta.icon('fa5s.arrow-left', color='#8C9EBA'))
+        btn_back.setIcon(qta.icon('fa5s.arrow-left', color='#718096'))
         btn_back.setStyleSheet("""
             QPushButton { 
-                background-color: transparent; 
-                color: #8C9EBA; 
+                background-color: #F7FAFC; 
+                color: #718096; 
                 font-weight: bold; 
-                border: 1px solid #1C3565; 
+                border: 1px solid #E2E8F0; 
                 border-radius: 6px; 
                 padding: 6px 12px;
                 font-size: 12px;
             }
-            QPushButton:hover { background-color: #112A54; color: white; }
+            QPushButton:hover { background-color: #E2E8F0; color: #2D3748; }
         """)
         btn_back.setCursor(Qt.PointingHandCursor)
         btn_back.clicked.connect(lambda: self.session_stacked.setCurrentIndex(0))
         
         gl_title = QLabel("Real-time Data Monitor")
-        gl_title.setStyleSheet("color: #FFFFFF; font-weight: bold; font-size: 16px; border: none; background: transparent; margin-left: 10px;")
+        gl_title.setStyleSheet("color: #2D3748; font-weight: bold; font-size: 16px; border: none; background: transparent; margin-left: 10px;")
         
         self.lbl_status_sesi = QLabel(" Sesi Belum Dimulai ")
-        self.lbl_status_sesi.setStyleSheet("color: #64748B; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #051024; border-radius: 6px;")
+        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #F7FAFC; border: 1px solid #E2E8F0; border-radius: 6px;")
         
         graph_header.addWidget(btn_back)
         graph_header.addWidget(gl_title)
@@ -734,10 +735,10 @@ class MainWindow(QMainWindow):
         graph_header.addWidget(self.lbl_status_sesi)
         
         pg.setConfigOption('background', 'transparent')
-        pg.setConfigOption('foreground', '#64748B')
+        pg.setConfigOption('foreground', '#718096')
         self.plot = pg.PlotWidget()
-        self.plot.getAxis('left').setPen('#64748B')
-        self.plot.getAxis('bottom').setPen('#64748B')
+        self.plot.getAxis('left').setPen('#CBD5E0')
+        self.plot.getAxis('bottom').setPen('#CBD5E0')
         self.plot.showGrid(x=True, y=True, alpha=0.15)
         
         import numpy as np
@@ -786,7 +787,7 @@ class MainWindow(QMainWindow):
             self.btn_start.setText("  MEREKAM...")
             self.btn_stop.setEnabled(True)
             self.lbl_status_sesi.setText(" Merekam Data... ")
-            self.lbl_status_sesi.setStyleSheet("color: #00E676; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #051024; border-radius: 6px;")
+            self.lbl_status_sesi.setStyleSheet("color: #00E676; font-weight: bold; font-size: 12px; border: 1px solid #B2F5EA; padding: 6px 12px; background-color: #E6FFFA; border-radius: 6px;")
             self.lbl_bluetooth.setText("Alat Terhubung")
             self.lbl_bluetooth.setStyleSheet("color: #00E676; font-weight: bold; font-size: 15px; border: none; background: transparent;")
             self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#00E676').pixmap(24, 24))
@@ -809,7 +810,7 @@ class MainWindow(QMainWindow):
         self.btn_start.setText("  MULAI REKAM")
         self.btn_stop.setEnabled(False)
         self.lbl_status_sesi.setText(" Sesi Selesai ")
-        self.lbl_status_sesi.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #051024; border-radius: 6px;")
+        self.lbl_status_sesi.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 12px; border: 1px solid #FED7D7; padding: 6px 12px; background-color: #FFF5F5; border-radius: 6px;")
         
         # Reset data for next session
         import numpy as np
@@ -850,7 +851,7 @@ class MainWindow(QMainWindow):
         card = QFrame()
         card.setGraphicsEffect(create_shadow())
         card.setFixedHeight(110)
-        card.setStyleSheet("background-color: #0F2040; border-radius: 12px; border: 1px solid #1C3565;")
+        card.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         
         layout = QHBoxLayout(card)
         layout.setContentsMargins(20, 15, 20, 15)
@@ -865,12 +866,12 @@ class MainWindow(QMainWindow):
             top_left.addWidget(icon_lbl)
             
         title = QLabel(title_text)
-        title.setStyleSheet("color: #8C9EBA; font-size: 14px; font-weight: bold; border: none; background: transparent;")
+        title.setStyleSheet("color: #718096; font-size: 14px; font-weight: bold; border: none; background: transparent;")
         top_left.addWidget(title)
         top_left.addStretch()
         
         unit = QLabel(unit_text)
-        unit.setStyleSheet("color: #64748B; font-size: 13px; font-weight: bold; border: none; background: transparent;")
+        unit.setStyleSheet("color: #A0AEC0; font-size: 13px; font-weight: bold; border: none; background: transparent;")
         
         left_layout.addLayout(top_left)
         left_layout.addStretch()
