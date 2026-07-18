@@ -606,8 +606,8 @@ class MainWindow(QMainWindow):
 
         self.page_active_session = QWidget()
         active_layout = QVBoxLayout(self.page_active_session)
-        active_layout.setContentsMargins(15, 10, 15, 10)
-        active_layout.setSpacing(10)
+        active_layout.setContentsMargins(15, 8, 15, 8)
+        active_layout.setSpacing(6)
         
         # --- 1. KONTROL ATAS (KEMBALI & STATUS) ---
         kontrol_row = QHBoxLayout()
@@ -629,12 +629,26 @@ class MainWindow(QMainWindow):
         btn_back.setCursor(Qt.PointingHandCursor)
         btn_back.clicked.connect(self.exit_active_session)
         
-        self.lbl_status_sesi = QLabel(" Sesi Belum Dimulai ")
-        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; padding: 6px 12px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px;")
+        self.status_panel = QFrame()
+        self.status_panel.setStyleSheet("border: 1px solid #E2E8F0; background-color: #F7FAFC; border-radius: 6px;")
+        
+        status_layout = QHBoxLayout(self.status_panel)
+        status_layout.setContentsMargins(12, 6, 12, 6)
+        status_layout.setSpacing(8)
+        
+        self.lbl_record_dot = QFrame()
+        self.lbl_record_dot.setFixedSize(10, 10)
+        self.lbl_record_dot.setStyleSheet("background-color: transparent; border-radius: 5px; border: none;")
+        
+        self.lbl_status_sesi = QLabel("Sesi Belum Dimulai")
+        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; background: transparent;")
+        
+        status_layout.addWidget(self.lbl_record_dot)
+        status_layout.addWidget(self.lbl_status_sesi)
         
         kontrol_row.addWidget(btn_back)
         kontrol_row.addStretch()
-        kontrol_row.addWidget(self.lbl_status_sesi)
+        kontrol_row.addWidget(self.status_panel)
         
         active_layout.addLayout(kontrol_row)
         
@@ -642,12 +656,12 @@ class MainWindow(QMainWindow):
         header_row = QHBoxLayout()
         header_row.setSpacing(15)
         
-        # Patient Info Card
         info_panel = QFrame()
+        info_panel.setFixedHeight(85)
         info_panel.setGraphicsEffect(create_shadow())
         info_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         info_layout = QHBoxLayout(info_panel)
-        info_layout.setContentsMargins(20, 15, 20, 15)
+        info_layout.setContentsMargins(20, 10, 20, 10)
         
         icon_patient = QLabel()
         icon_patient.setPixmap(qta.icon('fa5s.user', color='#A0AEC0').pixmap(30, 30))
@@ -679,43 +693,45 @@ class MainWindow(QMainWindow):
         
         # Device Connection Card
         dev_panel = QFrame()
+        dev_panel.setFixedHeight(85)
         dev_panel.setGraphicsEffect(create_shadow())
         dev_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         dev_layout = QHBoxLayout(dev_panel)
-        dev_layout.setContentsMargins(20, 15, 20, 15)
+        dev_layout.setContentsMargins(20, 10, 20, 10)
         
-        self.lbl_bluetooth = QLabel("Alat Disconnected")
-        self.lbl_bluetooth.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 15px; border: none; background: transparent;")
+        self.lbl_bluetooth = QLabel("Belum Terhubung")
+        self.lbl_bluetooth.setStyleSheet("color: #A0AEC0; font-weight: bold; font-size: 14px; border: none; background: transparent;")
         self.icon_bluetooth = QLabel()
-        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#FF5252').pixmap(24, 24))
+        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#A0AEC0').pixmap(24, 24))
         self.icon_bluetooth.setStyleSheet("border: none; background: transparent;")
         
-        btn_connect = QPushButton(" Hubungkan")
-        btn_connect.setStyleSheet("""
+        self.btn_connect = QPushButton(" Hubungkan")
+        self.btn_connect.setIcon(qta.icon('fa5s.link', color='#FFFFFF'))
+        self.btn_connect.setStyleSheet("""
             QPushButton {
-                background-color: #EBF8FA; 
-                color: #00B4DB; 
+                background-color: #3182CE; 
+                color: #FFFFFF; 
                 border-radius: 6px; 
-                padding: 10px 20px; 
+                padding: 8px 16px; 
                 font-weight: bold;
                 font-size: 13px;
-                border: 1px solid #BEE3F8;
+                border: none;
             }
-            QPushButton:hover { background-color: #00B4DB; color: white; }
+            QPushButton:hover { background-color: #2B6CB0; }
         """)
-        btn_connect.setCursor(Qt.PointingHandCursor)
+        self.btn_connect.setCursor(Qt.PointingHandCursor)
         
         dev_layout.addWidget(self.icon_bluetooth)
         dev_layout.addWidget(self.lbl_bluetooth)
         dev_layout.addStretch()
-        dev_layout.addWidget(btn_connect)
+        dev_layout.addWidget(self.btn_connect)
         
         header_row.addWidget(info_panel, stretch=2)
         header_row.addWidget(dev_panel, stretch=1)
         
         # --- 3. SENSOR & GRAFIK ROWS ---
         main_content = QVBoxLayout()
-        main_content.setSpacing(8)
+        main_content.setSpacing(6)
         
         pg.setConfigOption('background', 'transparent')
         pg.setConfigOption('foreground', '#718096')
@@ -729,11 +745,12 @@ class MainWindow(QMainWindow):
         
         def create_row_card(title_text, unit_text, color, icon_name, y_data):
             row_frame = QFrame()
+            row_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             row_frame.setGraphicsEffect(create_shadow())
             row_frame.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
             
             row_layout = QHBoxLayout(row_frame)
-            row_layout.setContentsMargins(15, 5, 15, 5)
+            row_layout.setContentsMargins(15, 2, 15, 2)
             
             plot = pg.PlotWidget()
             plot.getAxis('left').setPen('#CBD5E0')
@@ -743,11 +760,13 @@ class MainWindow(QMainWindow):
             
             val_panel = QFrame()
             val_panel.setStyleSheet("border: none; background: transparent;")
-            val_panel.setFixedWidth(220)
+            val_panel.setFixedWidth(160)
             v_layout = QVBoxLayout(val_panel)
+            v_layout.setContentsMargins(2, 0, 2, 0)
             v_layout.setAlignment(Qt.AlignCenter)
             
             top_h = QHBoxLayout()
+            top_h.setSpacing(4)
             icon_lbl = QLabel()
             icon_lbl.setPixmap(qta.icon(icon_name, color=color).pixmap(24, 24))
             top_h.addWidget(icon_lbl)
@@ -803,17 +822,38 @@ class MainWindow(QMainWindow):
         if not self.is_recording:
             self.is_recording = True
             self.timer_graph.start(50)
-            self.lbl_status_sesi.setText(" 🔴 Recording ")
-            self.lbl_status_sesi.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 12px; border: 1px solid #FED7D7; padding: 6px 12px; background-color: #FFF5F5; border-radius: 6px;")
+            self.lbl_status_sesi.setText("Recording")
+            self.lbl_status_sesi.setStyleSheet("color: #FF0000; font-weight: bold; font-size: 12px; border: none; background: transparent;")
+            self.status_panel.setStyleSheet("border: 1px solid #FED7D7; background-color: #FFF5F5; border-radius: 6px;")
+            self.is_dot_visible = True
+            self.lbl_record_dot.setStyleSheet("background-color: #FF0000; border-radius: 5px; border: none;")
+            self.blink_counter = 0
             self.lbl_bluetooth.setText("Alat Terhubung")
             self.lbl_bluetooth.setStyleSheet("color: #00E676; font-weight: bold; font-size: 15px; border: none; background: transparent;")
             self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#00E676').pixmap(24, 24))
+            
+            self.btn_connect.setText(" Putuskan")
+            self.btn_connect.setIcon(qta.icon('fa5s.unlink', color='#4A5568'))
+            self.btn_connect.setStyleSheet("""
+                QPushButton {
+                    background-color: #E2E8F0; 
+                    color: #4A5568; 
+                    border-radius: 6px; 
+                    padding: 8px 16px; 
+                    font-weight: bold;
+                    font-size: 13px;
+                    border: none;
+                }
+                QPushButton:hover { background-color: #CBD5E0; }
+            """)
 
     def stop_session_recording(self):
         self.is_recording = False
         self.timer_graph.stop()
-        self.lbl_status_sesi.setText(" Sesi Selesai ")
-        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: 1px solid #E2E8F0; padding: 6px 12px; background-color: #F7FAFC; border-radius: 6px;")
+        self.lbl_status_sesi.setText("Sesi Selesai")
+        self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; background: transparent;")
+        self.status_panel.setStyleSheet("border: 1px solid #E2E8F0; background-color: #F7FAFC; border-radius: 6px;")
+        self.lbl_record_dot.setStyleSheet("background-color: transparent; border-radius: 5px; border: none;")
         
         # Reset data for next session
         import numpy as np
@@ -826,12 +866,37 @@ class MainWindow(QMainWindow):
         self.lbl_val_hr.setText("--")
         self.lbl_val_gsr.setText("--")
         self.lbl_val_temp.setText("--")
-        self.lbl_bluetooth.setText("Alat Disconnected")
-        self.lbl_bluetooth.setStyleSheet("color: #FF5252; font-weight: bold; font-size: 15px; border: none; background: transparent;")
-        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#FF5252').pixmap(24, 24))
+        self.lbl_bluetooth.setText("Belum Terhubung")
+        self.lbl_bluetooth.setStyleSheet("color: #A0AEC0; font-weight: bold; font-size: 14px; border: none; background: transparent;")
+        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#A0AEC0').pixmap(24, 24))
+        
+        self.btn_connect.setText(" Hubungkan")
+        self.btn_connect.setIcon(qta.icon('fa5s.link', color='#FFFFFF'))
+        self.btn_connect.setStyleSheet("""
+            QPushButton {
+                background-color: #3182CE; 
+                color: #FFFFFF; 
+                border-radius: 6px; 
+                padding: 8px 16px; 
+                font-weight: bold;
+                font-size: 13px;
+                border: none;
+            }
+            QPushButton:hover { background-color: #2B6CB0; }
+        """)
 
     def update_fake_graph(self):
         import numpy as np
+        
+        self.blink_counter += 1
+        if self.blink_counter % 10 == 0:
+            if getattr(self, 'is_dot_visible', False):
+                self.lbl_record_dot.setStyleSheet("background-color: transparent; border-radius: 5px; border: none;")
+                self.is_dot_visible = False
+            else:
+                self.lbl_record_dot.setStyleSheet("background-color: #FF0000; border-radius: 5px; border: none;")
+                self.is_dot_visible = True
+            
         self.phase += 0.2
         # Geser gelombang agar beranimasi
         self.y_data_hr[:-1] = self.y_data_hr[1:]
