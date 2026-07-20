@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey, String
 from datetime import datetime
 from .database import Base
 
@@ -10,3 +10,4 @@ class Session(Base):
     start_time = Column(DateTime, default=datetime.utcnow)
     end_time = Column(DateTime, nullable=True)
     psychologist_notes = Column(Text, nullable=True)
+    anxiety_level = Column(String(50), nullable=True)

@@ -45,6 +45,10 @@ class MainWindow(QMainWindow):
         title.setObjectName("AppTitle")
         title.setAlignment(Qt.AlignCenter)
         
+        self.btn_dashboard = QPushButton(" Dashboard")
+        self.btn_dashboard.setIcon(qta.icon('fa5s.chart-pie', color='#8C9EBA'))
+        self.btn_dashboard.setIconSize(QSize(20, 20))
+        
         self.btn_pasien = QPushButton(" Patients")
         self.btn_pasien.setIcon(qta.icon('fa5s.users', color='#8C9EBA'))
         self.btn_pasien.setIconSize(QSize(20, 20))
@@ -61,13 +65,15 @@ class MainWindow(QMainWindow):
         self.btn_help.setIcon(qta.icon('fa5s.question-circle', color='#8C9EBA'))
         self.btn_help.setIconSize(QSize(20, 20))
         
-        self.btn_pasien.clicked.connect(lambda: self.switch_page(0))
-        self.btn_session.clicked.connect(lambda: self.switch_page(1))
-        self.btn_report.clicked.connect(lambda: self.switch_page(2))
-        self.btn_help.clicked.connect(lambda: self.switch_page(3))
+        self.btn_dashboard.clicked.connect(lambda: self.switch_page(0))
+        self.btn_pasien.clicked.connect(lambda: self.switch_page(1))
+        self.btn_session.clicked.connect(lambda: self.switch_page(2))
+        self.btn_report.clicked.connect(lambda: self.switch_page(3))
+        self.btn_help.clicked.connect(lambda: self.switch_page(4))
         
         sidebar_layout.addWidget(title)
         sidebar_layout.addSpacing(30)
+        sidebar_layout.addWidget(self.btn_dashboard)
         sidebar_layout.addWidget(self.btn_pasien)
         sidebar_layout.addWidget(self.btn_session)
         sidebar_layout.addWidget(self.btn_report)
@@ -135,6 +141,9 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.stacked_widget.setContentsMargins(40, 30, 40, 40)
         
+        from views.dashboard_view import DashboardView
+        self.page_dashboard = DashboardView()
+        
         from views.patient_view import PatientView
         from controllers.patient_controller import PatientController
         
@@ -153,10 +162,11 @@ class MainWindow(QMainWindow):
 
         self.page_help = HelpView()
         
-        self.stacked_widget.addWidget(self.page_pasien)       # 0
-        self.stacked_widget.addWidget(self.page_live_session) # 1
-        self.stacked_widget.addWidget(self.page_report)       # 2
-        self.stacked_widget.addWidget(self.page_help)         # 3
+        self.stacked_widget.addWidget(self.page_dashboard)    # 0
+        self.stacked_widget.addWidget(self.page_pasien)       # 1
+        self.stacked_widget.addWidget(self.page_live_session) # 2
+        self.stacked_widget.addWidget(self.page_report)       # 3
+        self.stacked_widget.addWidget(self.page_help)         # 4
         
         self.content_layout.addWidget(self.top_bar)
         self.content_layout.addWidget(self.stacked_widget)
@@ -221,7 +231,7 @@ class MainWindow(QMainWindow):
         self.sidebar.show()
         self.top_bar.show()
         
-        buttons = [self.btn_pasien, self.btn_session, self.btn_report, self.btn_help]
+        buttons = [self.btn_dashboard, self.btn_pasien, self.btn_session, self.btn_report, self.btn_help]
         for btn in buttons:
             btn.setObjectName("MenuButton")
             btn.style().unpolish(btn)

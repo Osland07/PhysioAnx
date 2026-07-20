@@ -314,7 +314,6 @@ class ReportController:
     </tr>
   </table>
 
-  <p><b>Kesimpulan Pemeriksaan:</b></p>
   <p>Berdasarkan analisis data fluktuasi <i>Heart Rate</i> dan lonjakan <i>Galvanic Skin Response</i> (GSR) di atas, pasien terindikasi mengalami tingkat kecemasan <b>{sev.upper()}</b>. Hasil ini menunjukkan adanya hiperaktivitas pada saraf simpatis selama sesi perekaman.</p>
 
   <p>Demikian surat hasil pemeriksaan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
