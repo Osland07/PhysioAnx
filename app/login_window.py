@@ -157,7 +157,7 @@ class LoginWindow(QWidget):
         user_icon.setStyleSheet("border: none; background: transparent;")
 
         self.input_username = QLineEdit()
-        self.input_username.setPlaceholderText("Masukkan username...")
+        self.input_username.setPlaceholderText("Enter username...")
         self.input_username.setStyleSheet("""
             QLineEdit {
                 background: transparent;
@@ -191,7 +191,7 @@ class LoginWindow(QWidget):
         pass_icon.setStyleSheet("border: none; background: transparent;")
 
         self.input_password = QLineEdit()
-        self.input_password.setPlaceholderText("Masukkan password...")
+        self.input_password.setPlaceholderText("Enter password...")
         self.input_password.setEchoMode(QLineEdit.Password)
         self.input_password.setStyleSheet("""
             QLineEdit {
@@ -307,7 +307,7 @@ class LoginWindow(QWidget):
         password = self.input_password.text()
 
         if not username or not password:
-            self._show_error("Username dan password tidak boleh kosong.")
+            self._show_error("Username and password cannot be empty.")
             return
 
         session = SessionLocal()
@@ -320,7 +320,7 @@ class LoginWindow(QWidget):
             self.accept_login()
         else:
             self._shake_card()
-            self._show_error("Username atau password salah.")
+            self._show_error("Invalid username or password.")
             self.input_password.clear()
 
     def _show_error(self, msg: str):
