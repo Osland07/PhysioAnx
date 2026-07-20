@@ -227,6 +227,10 @@ class MainWindow(QMainWindow):
     def switch_page(self, index):
         self.stacked_widget.setCurrentIndex(index)
         
+        # Auto-refresh dashboard jika dibuka
+        if index == 0 and hasattr(self, 'page_dashboard'):
+            self.page_dashboard.refresh_dashboard()
+        
         # Tampilkan sidebar dan topbar
         self.sidebar.show()
         self.top_bar.show()

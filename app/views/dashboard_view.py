@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QGridLayout, QProgressBar
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QGridLayout, QProgressBar, QPushButton
 )
 from PySide6.QtCore import Qt
 import qtawesome as qta
@@ -42,14 +42,7 @@ class DashboardView(QWidget):
         title.setObjectName("HeaderTitle")
         header.addWidget(title)
         
-        btn_refresh = QPushButton(" Refresh Data")
-        btn_refresh.setIcon(qta.icon('fa5s.sync', color='white'))
-        btn_refresh.setStyleSheet("background-color: #3182CE; color: white; border-radius: 8px; padding: 8px 16px; font-weight: bold;")
-        btn_refresh.setCursor(Qt.PointingHandCursor)
-        btn_refresh.clicked.connect(self.refresh_dashboard)
-        
         header.addStretch()
-        header.addWidget(btn_refresh)
         root.addLayout(header)
 
         # ── Stats Cards ──────────────────────────────────────────────────────────
