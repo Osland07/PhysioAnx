@@ -57,13 +57,9 @@ class DashboardView(QWidget):
         severe_cnt = self.anx_counts["Severe"]
         self.card3 = self._build_stat_card("Severe Cases", str(severe_cnt), "fa5s.exclamation-triangle", "#E53E3E")
         
-        # Avg duration mock or calculation
-        self.card4 = self._build_stat_card("Avg. Duration", "15m", "fa5s.clock", "#D69E2E")
-
         grid.addWidget(self.card1, 0, 0)
         grid.addWidget(self.card2, 0, 1)
         grid.addWidget(self.card3, 0, 2)
-        grid.addWidget(self.card4, 0, 3)
         root.addLayout(grid)
 
         # ── Content Split (Chart & Progress Bars) ──────────────────────────────

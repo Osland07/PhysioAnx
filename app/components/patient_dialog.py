@@ -71,13 +71,57 @@ class PatientDialog(QDialog):
         if patient_data: self.inp_nama.setText(patient_data.full_name)
         form_layout.addRow("Nama Lengkap", self.inp_nama)
 
-        self.inp_tgl_lahir = QDateEdit()
-        self.inp_tgl_lahir.setCalendarPopup(True)
-        self.inp_tgl_lahir.setDisplayFormat("dd MMMM yyyy")
-        self.inp_tgl_lahir.setDate(QDate.currentDate().addYears(-20))
+        self.layout_tgl = QHBoxLayout()
+        self.layout_tgl.setSpacing(5)
+        
+        self.inp_tgl_hari = QComboBox()
+        self.inp_tgl_hari.addItems([f"{i:02d}" for i in range(1, 32)])
+        
+        self.inp_tgl_bulan = QComboBox()
+        self.inp_tgl_bulan.addItems([
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ])
+        
+        self.inp_tgl_tahun = QComboBox()
+        current_year = QDate.currentDate().year()
+        self.inp_tgl_tahun.addItems([str(i) for i in range(current_year, current_year - 120, -1)])
+        
+        self.layout_tgl.addWidget(self.inp_tgl_hari)
+        self.layout_tgl.addWidget(self.inp_tgl_bulan)
+        self.layout_tgl.addWidget(self.inp_tgl_tahun)
+        
+        default_date = QDate.currentDate().addYears(-20)
         if patient_data and patient_data.date_of_birth:
-            self.inp_tgl_lahir.setDate(patient_data.date_of_birth)
-        form_layout.addRow("Tanggal Lahir", self.inp_tgl_lahir)
+            try:
+                # If it's a PySide6 QDate
+                default_date = QDate(patient_data.date_of_birth.year(), patient_data.date_of_birth.month(), patient_data.date_of_birth.day())
+            except TypeError:
+                # If it's a Python datetime.date
+                default_date = QDate(patient_data.date_of_birth.year, patient_data.date_of_birth.month, patient_data.date_of_birth.day)
+            
+        self.inp_tgl_hari.setCurrentText(f"{default_date.day():02d}")
+        self.inp_tgl_bulan.setCurrentIndex(default_date.month() - 1)
+        self.inp_tgl_tahun.setCurrentText(str(default_date.year()))
+
+        def update_days():
+            year = int(self.inp_tgl_tahun.currentText())
+            month = self.inp_tgl_bulan.currentIndex() + 1
+            days_in_month = QDate(year, month, 1).daysInMonth()
+            
+            current_day = self.inp_tgl_hari.currentText()
+            self.inp_tgl_hari.clear()
+            self.inp_tgl_hari.addItems([f"{i:02d}" for i in range(1, days_in_month + 1)])
+            
+            if int(current_day) <= days_in_month:
+                self.inp_tgl_hari.setCurrentText(current_day)
+            else:
+                self.inp_tgl_hari.setCurrentText(f"{days_in_month:02d}")
+
+        self.inp_tgl_bulan.currentIndexChanged.connect(update_days)
+        self.inp_tgl_tahun.currentTextChanged.connect(update_days)
+        
+        form_layout.addRow("Tanggal Lahir", self.layout_tgl)
 
         self.inp_jk = QComboBox()
         self.inp_jk.addItems(["Laki-laki", "Perempuan"])
@@ -137,10 +181,15 @@ class PatientDialog(QDialog):
         layout.addLayout(btn_layout)
 
     def get_data(self):
+        from datetime import date
+        year = int(self.inp_tgl_tahun.currentText())
+        month = self.inp_tgl_bulan.currentIndex() + 1
+        day = int(self.inp_tgl_hari.currentText())
+        
         return {
             "no_rm": self.inp_rm.text().strip(),
             "full_name": self.inp_nama.text().strip(),
-            "date_of_birth": self.inp_tgl_lahir.date().toPython(), # Returns datetime.date
+            "date_of_birth": date(year, month, day),
             "gender": "L" if self.inp_jk.currentText() == "Laki-laki" else "P",
             "weight": self.inp_bb.value(),
             "height": self.inp_tb.value()
@@ -149,21 +198,19 @@ class PatientDialog(QDialog):
     def generate_sequential_rm(self):
         from models.database import SessionLocal
         from models.patient import Patient
-        from datetime import datetime
         
         session = SessionLocal()
         latest_patient = session.query(Patient).order_by(Patient.id.desc()).first()
         session.close()
         
-        current_yymm = datetime.now().strftime("%y%m")
-        
-        if latest_patient and latest_patient.no_rm.startswith(f"ID-{current_yymm}-"):
+        if latest_patient and latest_patient.no_rm.startswith("ID"):
             try:
-                last_num = int(latest_patient.no_rm.split("-")[-1])
+                # Ambil 5 digit setelah tulisan "ID"
+                last_num = int(latest_patient.no_rm[2:])
                 new_num = last_num + 1
-            except:
+            except ValueError:
                 new_num = 1
         else:
             new_num = 1
             
-        return f"ID-{current_yymm}-{new_num:03d}"
+        return f"ID{new_num:05d}"
