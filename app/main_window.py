@@ -262,7 +262,6 @@ class MainWindow(QMainWindow):
             return
 
         is_valid = " - " in text and len(text) > 5
-        self.btn_enter_session.setEnabled(is_valid)
 
         if is_valid:
             self.btn_enter_session.setStyleSheet("""
@@ -337,6 +336,18 @@ class MainWindow(QMainWindow):
 
     def enter_active_session(self):
         teks_pasien = self.cmb_pasien_session.currentText()
+        is_valid = " - " in teks_pasien and len(teks_pasien) > 5
+        
+        if not is_valid:
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self, 
+                "Perhatian",
+                "Silakan isi atau pilih pasien terlebih dahulu dari daftar sebelum memulai sesi.\n\nJika pasien belum terdaftar, klik tombol 'Daftarkan Pasien Baru'.",
+                QMessageBox.Ok
+            )
+            return
+
         rm_pasien = teks_pasien.split(" - ")[0] if " - " in teks_pasien else "-"
         nama_pasien = teks_pasien.split(" - ")[-1] if " - " in teks_pasien else teks_pasien
         usia_pasien = "-"
@@ -593,7 +604,7 @@ class MainWindow(QMainWindow):
         identity_layout.addSpacing(10)
 
         # Tombol Mulai
-        self.btn_enter_session = QPushButton("  Mulai")
+        self.btn_enter_session = QPushButton("  Start")
         self.btn_enter_session.setIcon(qta.icon('fa5s.play', color='#90A4AE'))
         self.btn_enter_session.setIconSize(QSize(18, 18))
         self.btn_enter_session.setFixedHeight(56)
@@ -604,7 +615,6 @@ class MainWindow(QMainWindow):
                 border-radius: 10px; border: 1px solid #E2E8F0;
             }
         """)
-        self.btn_enter_session.setEnabled(False)
         self.btn_enter_session.clicked.connect(self.enter_active_session)
         identity_layout.addWidget(self.btn_enter_session)
 
