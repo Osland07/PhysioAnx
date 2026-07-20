@@ -90,7 +90,7 @@ class SettingsView(QWidget):
         scroll_layout.addWidget(gen_group)
         
         # --- 2. DEVICE CONNECTION SETTINGS ---
-        dev_group = self._create_card_group("fa5s.bluetooth", "Device Configuration")
+        dev_group = self._create_card_group("fa5b.bluetooth", "Device Configuration")
         dev_form = QFormLayout()
         dev_form.setVerticalSpacing(15)
         
