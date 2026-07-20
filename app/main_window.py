@@ -534,38 +534,25 @@ class MainWindow(QMainWindow):
 
         # Profile Header (Avatar + Name)
         prof_layout = QHBoxLayout()
-        prof_layout.setSpacing(24)
+        prof_layout.setSpacing(20)
         
-        avatar_wrap = QFrame()
-        avatar_wrap.setFixedSize(84, 84)
-        avatar_wrap.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #00B4DB, stop:1 #0083B0); border-radius: 42px;")
-        avatar_l = QHBoxLayout(avatar_wrap)
-        avatar_l.setContentsMargins(0, 0, 0, 0)
         avatar_lbl = QLabel()
-        avatar_lbl.setPixmap(qta.icon('fa5s.user', color='white').pixmap(40, 40))
-        avatar_lbl.setAlignment(Qt.AlignCenter)
+        avatar_lbl.setPixmap(qta.icon('fa5s.user-circle', color='#A0AEC0').pixmap(64, 64))
         avatar_lbl.setStyleSheet("background: transparent; border: none;")
-        avatar_l.addWidget(avatar_lbl)
+        avatar_lbl.setFixedSize(64, 64)
         
         name_col = QVBoxLayout()
-        name_col.setSpacing(6)
-        name_col.setAlignment(Qt.AlignVCenter)
+        name_col.setSpacing(4)
         self.prev_nama = QLabel("Belum Dipilih")
-        self.prev_nama.setStyleSheet("color: #1A202C; font-size: 26px; font-weight: 900; background: transparent; border: none;")
-        
-        rm_wrap = QFrame()
-        rm_wrap.setStyleSheet("background-color: #EDF2F7; border-radius: 6px;")
-        rm_l = QHBoxLayout(rm_wrap)
-        rm_l.setContentsMargins(8, 4, 8, 4)
+        self.prev_nama.setStyleSheet("color: #2D3748; font-size: 20px; font-weight: bold; background: transparent; border: none;")
         self.prev_rm = QLabel("ID: -")
-        self.prev_rm.setStyleSheet("color: #4A5568; font-size: 13px; font-weight: 700; background: transparent; border: none;")
-        rm_l.addWidget(self.prev_rm)
+        self.prev_rm.setStyleSheet("color: #718096; font-size: 14px; background: transparent; border: none;")
         
         name_col.addWidget(self.prev_nama)
-        name_col.addWidget(rm_wrap, alignment=Qt.AlignLeft)
+        name_col.addWidget(self.prev_rm)
         name_col.addStretch()
         
-        prof_layout.addWidget(avatar_wrap)
+        prof_layout.addWidget(avatar_lbl)
         prof_layout.addLayout(name_col)
         prof_layout.addStretch()
         identity_layout.addLayout(prof_layout)
@@ -577,53 +564,30 @@ class MainWindow(QMainWindow):
 
         # Details Grid (2x2)
         grid_layout = QGridLayout()
-        grid_layout.setSpacing(20)
+        grid_layout.setSpacing(15)
 
-        def _make_grid_item(icon_name, label, value_attr, row, col, bg_color, icon_color):
+        def _make_grid_item(label, value_attr, row, col):
             wrap = QFrame()
-            wrap.setStyleSheet(f"""
-                QFrame {{
-                    background-color: {bg_color};
-                    border-radius: 12px;
-                    border: none;
-                }}
-            """)
-            l = QHBoxLayout(wrap)
-            l.setContentsMargins(20, 20, 20, 20)
-            l.setSpacing(16)
+            wrap.setStyleSheet("background-color: #F7FAFC; border: 1px solid #E2E8F0; border-radius: 6px;")
+            l = QVBoxLayout(wrap)
+            l.setContentsMargins(12, 12, 12, 12)
+            l.setSpacing(4)
             
-            ic_wrap = QFrame()
-            ic_wrap.setFixedSize(46, 46)
-            ic_wrap.setStyleSheet(f"background-color: #FFFFFF; border-radius: 23px;")
-            ic_l = QHBoxLayout(ic_wrap)
-            ic_l.setContentsMargins(0, 0, 0, 0)
-            ic = QLabel()
-            ic.setPixmap(qta.icon(icon_name, color=icon_color).pixmap(22, 22))
-            ic.setAlignment(Qt.AlignCenter)
-            ic_l.addWidget(ic)
-            
-            text_col = QVBoxLayout()
-            text_col.setSpacing(2)
             lbl_title = QLabel(label)
-            lbl_title.setStyleSheet("color: #4A5568; font-size: 13px; font-weight: 700; background: transparent; border: none;")
+            lbl_title.setStyleSheet("color: #718096; font-size: 12px; font-weight: bold; background: transparent; border: none;")
             val = QLabel("-")
-            val.setStyleSheet(f"color: {icon_color}; font-size: 18px; font-weight: 900; background: transparent; border: none;")
+            val.setStyleSheet("color: #2D3748; font-size: 15px; font-weight: normal; background: transparent; border: none;")
             setattr(self, value_attr, val)
             
-            text_col.addWidget(lbl_title)
-            text_col.addWidget(val)
-            text_col.addStretch()
-            
-            l.addWidget(ic_wrap)
-            l.addLayout(text_col)
-            l.addStretch()
+            l.addWidget(lbl_title)
+            l.addWidget(val)
             
             grid_layout.addWidget(wrap, row, col)
 
-        _make_grid_item('fa5s.venus-mars', 'Jenis Kelamin', 'prev_jk', 0, 0, "#F0F5FF", "#4C51BF")
-        _make_grid_item('fa5s.birthday-cake', 'Usia', 'prev_usia', 0, 1, "#E6FFFA", "#319795")
-        _make_grid_item('fa5s.weight', 'Berat Badan', 'prev_bb', 1, 0, "#FFF5F5", "#C53030")
-        _make_grid_item('fa5s.ruler-vertical', 'Tinggi Badan', 'prev_tb', 1, 1, "#FFFFF0", "#B7791F")
+        _make_grid_item('Jenis Kelamin', 'prev_jk', 0, 0)
+        _make_grid_item('Usia', 'prev_usia', 0, 1)
+        _make_grid_item('Berat Badan (kg)', 'prev_bb', 1, 0)
+        _make_grid_item('Tinggi Badan (cm)', 'prev_tb', 1, 1)
         
         identity_layout.addLayout(grid_layout)
         identity_layout.addSpacing(10)
