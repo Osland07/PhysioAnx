@@ -1,11 +1,20 @@
 import qtawesome as qta
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QLineEdit, QComboBox, QFrame, QScrollArea, QGridLayout,
     QGroupBox, QFormLayout
 )
-from PyQt5.QtCore import Qt, QSize
-from utils.helpers import create_shadow
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QGraphicsDropShadowEffect
+
+def create_shadow():
+    shadow = QGraphicsDropShadowEffect()
+    shadow.setBlurRadius(25)
+    shadow.setXOffset(0)
+    shadow.setYOffset(8)
+    shadow.setColor(QColor(0, 0, 0, 90))
+    return shadow
 
 class SettingsView(QWidget):
     def __init__(self, parent=None):

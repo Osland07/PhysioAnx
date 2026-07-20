@@ -28,7 +28,7 @@ class HelpView(QWidget):
 
         # ── Header ───────────────────────────────────────────────────────────────
         header = QHBoxLayout()
-        title = QLabel("Help & Panduan")
+        title = QLabel("Help Center")
         title.setObjectName("HeaderTitle")
         header.addWidget(title)
         header.addStretch()
@@ -68,84 +68,84 @@ class HelpView(QWidget):
                 "icon":  "fa5s.users",
                 "color": "#3182CE",
                 "title": "Patients",
-                "desc":  "Halaman manajemen data pasien.",
+                "desc":  "Patient data management page.",
                 "items": [
-                    ("Registrasi Pasien Baru",
-                     "Klik tombol 'Registrasi Pasien Baru' di pojok kanan atas. "
-                     "Isi formulir data diri pasien (Nama, No. RM, Tanggal Lahir, "
-                     "Jenis Kelamin, Berat, Tinggi Badan), lalu klik Simpan."),
-                    ("Cari Pasien",
-                     "Ketik nama atau No. RM di kolom pencarian. Gunakan filter "
-                     "Jenis Kelamin untuk mempersempit hasil, lalu klik Filter."),
-                    ("Edit / Hapus Pasien",
-                     "Gunakan tombol Edit atau Hapus pada kolom Aksi di setiap baris tabel."),
+                    ("Register New Patient",
+                     "Click the 'Register New Patient' button in the top right corner. "
+                     "Fill out the patient identity form (Name, Medical Record No., Date of Birth, "
+                     "Gender, Weight, Height), then click Save."),
+                    ("Search Patients",
+                     "Type a name or Medical Record No. in the search bar. Use the Gender filter "
+                     "to narrow down results, then click Filter."),
+                    ("Edit / Delete Patient",
+                     "Use the Edit or Delete buttons in the Action column of each table row."),
                 ],
             },
             {
                 "icon":  "fa5s.heartbeat",
                 "color": "#E53E3E",
-                "title": "Sesi Pemeriksaan",
-                "desc":  "Halaman untuk memulai dan memantau sesi rekaman sensor secara real-time.",
+                "title": "Active Session",
+                "desc":  "Page to start and monitor real-time sensor recording sessions.",
                 "items": [
-                    ("Memilih Pasien",
-                     "Ketik nama atau No. RM di kolom pencarian, lalu pilih pasien "
-                     "dari dropdown. Data identitas pasien akan tampil di kartu sebelah kanan."),
-                    ("Memulai Sesi",
-                     "Setelah pasien dipilih, tombol 'Mulai' akan aktif. Klik tombol "
-                     "tersebut untuk masuk ke halaman monitoring live sensor."),
-                    ("Monitoring Sensor",
-                     "Grafik Heart Rate (BPM), Skin Conductance (µS), dan Skin Temperature (°C) "
-                     "diperbarui secara real-time dari perangkat Bluetooth yang terhubung."),
-                    ("Mengakhiri Sesi",
-                     "Klik tombol 'Kembali' untuk menghentikan rekaman dan kembali "
-                     "ke halaman pemilihan pasien."),
+                    ("Selecting a Patient",
+                     "Type a name or Medical Record No. in the search bar, then select a patient "
+                     "from the dropdown. Patient identity data will appear on the right card."),
+                    ("Starting a Session",
+                     "Once a patient is selected, the 'Start' button becomes active. Click the button "
+                     "to enter the live sensor monitoring page."),
+                    ("Sensor Monitoring",
+                     "Heart Rate (BPM), Skin Conductance (µS), and Skin Temperature (°C) graphs "
+                     "are updated in real-time from the connected Bluetooth device."),
+                    ("Ending a Session",
+                     "Click the 'Back' button to stop recording and return "
+                     "to the patient selection page."),
                 ],
             },
             {
                 "icon":  "fa5s.file-medical-alt",
                 "color": "#38A169",
-                "title": "Riwayat Sesi",
-                "desc":  "Daftar seluruh sesi pemeriksaan yang telah tersimpan.",
+                "title": "Session History",
+                "desc":  "List of all saved examination sessions.",
                 "items": [
-                    ("Mencari Riwayat",
-                     "Gunakan kolom pencarian untuk mencari berdasarkan ID atau nama pasien. "
-                     "Filter 'Kategori' memungkinkan pencarian berdasarkan tingkat kecemasan."),
-                    ("Melihat Detail Sesi",
-                     "Klik tombol 'Detail' pada kolom Aksi untuk membuka jendela "
-                     "detail sesi lengkap beserta replay grafik sensor."),
-                    ("Ekspor Laporan",
-                     "Gunakan tombol 'PDF' untuk ekspor laporan PDF atau 'Excel' "
-                     "untuk ekspor ke format spreadsheet."),
-                    ("Tingkat Kecemasan",
-                     "Hasil analisis ditampilkan dengan badge berwarna: "
-                     "Minimal (hijau), Mild (kuning), Moderate (oranye), Severe (merah)."),
+                    ("Search History",
+                     "Use the search bar to find by patient ID or name. "
+                     "The 'Category' filter allows searching by anxiety level."),
+                    ("View Session Details",
+                     "Click the 'Detail' button in the Action column to open the "
+                     "full session details window along with sensor graph replay."),
+                    ("Export Reports",
+                     "Use the 'PDF' button to export a PDF report or 'Excel' "
+                     "to export to a spreadsheet format."),
+                    ("Anxiety Levels",
+                     "Analysis results are displayed with colored badges: "
+                     "Minimal (green), Mild (yellow), Moderate (orange), Severe (red)."),
                 ],
             },
             {
                 "icon":  "fa5s.chart-line",
                 "color": "#D69E2E",
-                "title": "Detail Sesi & Replay",
-                "desc":  "Jendela detail sesi menampilkan identitas pasien dan replay data sensor.",
+                "title": "Session Details & Replay",
+                "desc":  "The session details window shows patient identity and sensor data replay.",
                 "items": [
-                    ("Memutar Replay",
-                     "Klik tombol 'Play' untuk memulai animasi replay data sensor. "
-                     "Klik lagi untuk menjeda."),
+                    ("Play Replay",
+                     "Click the 'Play' button to start the sensor data replay animation. "
+                     "Click again to pause."),
                     ("Reset Replay",
-                     "Klik tombol 'Reset' untuk mengembalikan grafik ke kondisi awal "
-                     "dan memulai replay dari awal."),
-                    ("Membaca Grafik",
-                     "Sumbu Y menunjukkan nilai sensor, sumbu X menunjukkan waktu (relative). "
-                     "Tiga grafik: Heart Rate (merah), Skin Conductance (biru), "
-                     "Skin Temperature (kuning)."),
+                     "Click the 'Reset' button to return the graphs to their initial state "
+                     "and restart the replay from the beginning."),
+                    ("Reading the Graphs",
+                     "The Y-axis shows the sensor value, the X-axis shows time (relative). "
+                     "Three graphs: Heart Rate (red), Skin Conductance (blue), "
+                     "Skin Temperature (yellow)."),
                 ],
             },
             {
                 "icon":  "fa5s.info-circle",
                 "color": "#805AD5",
-                "title": "Informasi Sistem",
-                "desc":  "Tentang PhysioAnx.",
+                "title": "System Information",
+                "desc":  "About PhysioAnx.",
                 "items": [
-                    ("Versi Aplikasi", "PhysioAnx v1.0 — Sistem Monitoring Kecemasan Fisiologis."),
+                    ("Application Version", "PhysioAnx v1.0 — Physiological Anxiety Monitoring System."),
                 ],
             },
         ]

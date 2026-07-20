@@ -79,11 +79,16 @@ class MainWindow(QMainWindow):
         self.btn_help.setIcon(qta.icon('fa5s.question-circle', color='#FFFFFF'))
         self.btn_help.setIconSize(QSize(20, 20))
         
+        self.btn_settings = QPushButton(" Settings")
+        self.btn_settings.setIcon(qta.icon('fa5s.cog', color='#FFFFFF'))
+        self.btn_settings.setIconSize(QSize(20, 20))
+        
         self.btn_dashboard.clicked.connect(lambda: self.switch_page(0))
         self.btn_pasien.clicked.connect(lambda: self.switch_page(1))
         self.btn_session.clicked.connect(lambda: self.switch_page(2))
         self.btn_report.clicked.connect(lambda: self.switch_page(3))
         self.btn_help.clicked.connect(lambda: self.switch_page(4))
+        self.btn_settings.clicked.connect(lambda: self.switch_page(5))
         
         sidebar_layout.addWidget(logo_container)
         sidebar_layout.addSpacing(30)
@@ -92,6 +97,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(self.btn_session)
         sidebar_layout.addWidget(self.btn_report)
         sidebar_layout.addWidget(self.btn_help)
+        sidebar_layout.addWidget(self.btn_settings)
         sidebar_layout.addStretch()
 
         # Tombol Logout
@@ -158,6 +164,7 @@ class MainWindow(QMainWindow):
         from views.patient_view import PatientView
         from controllers.patient_controller import PatientController
         
+        self.page_dashboard = DashboardView()
         self.page_pasien = PatientView()
         self.patient_ctrl = PatientController(self.page_pasien, self)
         
@@ -167,17 +174,20 @@ class MainWindow(QMainWindow):
         from views.report_view import ReportView
         from controllers.report_controller import ReportController
         from views.help_view import HelpView
+        from views.settings_view import SettingsView
         
         self.page_report = ReportView()
         self.report_ctrl = ReportController(self.page_report, self)
 
         self.page_help = HelpView()
+        self.page_settings = SettingsView()
         
         self.stacked_widget.addWidget(self.page_dashboard)    # 0
         self.stacked_widget.addWidget(self.page_pasien)       # 1
         self.stacked_widget.addWidget(self.page_live_session) # 2
         self.stacked_widget.addWidget(self.page_report)       # 3
         self.stacked_widget.addWidget(self.page_help)         # 4
+        self.stacked_widget.addWidget(self.page_settings)     # 5
         
         self.content_layout.addWidget(self.top_bar)
         self.content_layout.addWidget(self.stacked_widget)
@@ -246,7 +256,7 @@ class MainWindow(QMainWindow):
         self.sidebar.show()
         self.top_bar.show()
         
-        buttons = [self.btn_dashboard, self.btn_pasien, self.btn_session, self.btn_report, self.btn_help]
+        buttons = [self.btn_dashboard, self.btn_pasien, self.btn_session, self.btn_report, self.btn_help, self.btn_settings]
         for btn in buttons:
             btn.setObjectName("MenuButton")
             btn.style().unpolish(btn)
