@@ -19,6 +19,12 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
     app = QApplication(sys.argv)
+    
+    from PySide6.QtGui import QIcon
+    icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "images", "Logo.jpeg")
+    if os.path.exists(icon_path):
+        app.setWindowIcon(QIcon(icon_path))
+        
     load_stylesheet(app)
 
     init_db()

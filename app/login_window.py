@@ -69,51 +69,31 @@ class LoginWindow(QWidget):
         left_layout.setSpacing(0)
         left_layout.setAlignment(Qt.AlignCenter)
 
-        lbl_logo_icon = QLabel()
-        lbl_logo_icon.setPixmap(qta.icon('fa5s.heartbeat', color='#FFFFFF').pixmap(64, 64))
-        lbl_logo_icon.setAlignment(Qt.AlignCenter)
-        lbl_logo_icon.setStyleSheet("background: transparent; border: none;")
-
-        lbl_app_name = QLabel("PhysioAnx")
-        lbl_app_name.setAlignment(Qt.AlignCenter)
-        lbl_app_name.setStyleSheet("""
-            color: #FFFFFF;
-            font-size: 36px;
-            font-weight: 900;
-            background: transparent;
-            letter-spacing: 2px;
-        """)
-
-        lbl_tagline = QLabel("Sistem Pemantauan Tingkat Kecemasan")
-        lbl_tagline.setAlignment(Qt.AlignCenter)
-        lbl_tagline.setWordWrap(True)
-        lbl_tagline.setStyleSheet("""
-            color: #E0F2F1;
-            font-size: 15px;
-            font-weight: 500;
-            background: transparent;
-            line-height: 1.6;
-        """)
-
-        divider = QFrame()
-        divider.setFixedSize(60, 3)
-        divider.setStyleSheet("background-color: #FFFFFF; border-radius: 2px; opacity: 0.5;")
-        divider_row = QHBoxLayout()
-        divider_row.setAlignment(Qt.AlignCenter)
-        divider_row.addWidget(divider)
+        import os
+        logo_container = QFrame()
+        logo_container.setFixedSize(300, 140)
+        logo_container.setStyleSheet("background-color: #FFFFFF; border-radius: 16px;")
+        # Beri bayangan agar menonjol dari latar biru
+        logo_container.setGraphicsEffect(create_shadow(blur=20, opacity=40, offset_y=4))
+        
+        logo_layout = QVBoxLayout(logo_container)
+        logo_layout.setContentsMargins(10, 10, 10, 10)
+        
+        lbl_logo = QLabel()
+        logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "images", "Logo_Text.jpeg")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path).scaled(280, 120, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            lbl_logo.setPixmap(pixmap)
+        lbl_logo.setAlignment(Qt.AlignCenter)
+        lbl_logo.setStyleSheet("background: transparent; border: none;")
+        logo_layout.addWidget(lbl_logo)
 
         lbl_version = QLabel("v1.0.0")
         lbl_version.setAlignment(Qt.AlignCenter)
         lbl_version.setStyleSheet("color: #B2EBF2; font-size: 11px; background: transparent;")
 
         left_layout.addStretch()
-        left_layout.addWidget(lbl_logo_icon)
-        left_layout.addSpacing(16)
-        left_layout.addWidget(lbl_app_name)
-        left_layout.addSpacing(12)
-        left_layout.addLayout(divider_row)
-        left_layout.addSpacing(16)
-        left_layout.addWidget(lbl_tagline)
+        left_layout.addWidget(logo_container, alignment=Qt.AlignCenter)
         left_layout.addStretch()
         left_layout.addWidget(lbl_version)
 
@@ -139,6 +119,8 @@ class LoginWindow(QWidget):
         card_layout = QVBoxLayout(card)
         card_layout.setContentsMargins(36, 36, 36, 36)
         card_layout.setSpacing(20)
+
+
 
         lbl_welcome = QLabel("Welcome")
         lbl_welcome.setStyleSheet("""

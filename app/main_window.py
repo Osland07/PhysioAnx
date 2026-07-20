@@ -2,7 +2,8 @@ import sys
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
                                QLabel, QPushButton, QFrame, QGraphicsDropShadowEffect, QStackedWidget, QLineEdit, QComboBox, QTableWidget, QTableWidgetItem)
 from PySide6.QtCore import Qt, QTimer, QTime, QSize
-from PySide6.QtGui import QColor, QIcon
+from PySide6.QtGui import QColor, QIcon, QPixmap
+import os
 import pyqtgraph as pg
 import qtawesome as qta
 from models.database import init_db, SessionLocal
@@ -41,8 +42,16 @@ class MainWindow(QMainWindow):
         sidebar_layout.setContentsMargins(0, 40, 0, 30) 
         sidebar_layout.setSpacing(5)
         
-        title = QLabel("PHYSIOANX")
-        title.setObjectName("AppTitle")
+        title = QLabel()
+        logo_path = os.path.join(os.path.dirname(__file__), "assets", "images", "Logo_Text.jpeg")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            # Skala gambar dengan filter halus (SmoothTransformation) agar tidak buram
+            pixmap = pixmap.scaled(220, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            title.setPixmap(pixmap)
+        else:
+            title.setText("PHYSIOANX")
+            title.setObjectName("AppTitle")
         title.setAlignment(Qt.AlignCenter)
         
         self.btn_dashboard = QPushButton(" Dashboard")
@@ -725,16 +734,31 @@ class MainWindow(QMainWindow):
         # Device Connection Card
         dev_panel = QFrame()
         dev_panel.setFixedHeight(85)
-        dev_panel.setGraphicsEffect(create_shadow())
-        dev_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
+        dev_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 6px; border: 1px solid #E2E8F0;")
         dev_layout = QHBoxLayout(dev_panel)
-        dev_layout.setContentsMargins(20, 10, 20, 10)
+        dev_layout.setContentsMargins(20, 15, 20, 15)
+        dev_layout.setSpacing(15)
         
-        self.lbl_bluetooth = QLabel("Belum Terhubung")
-        self.lbl_bluetooth.setStyleSheet("color: #A0AEC0; font-weight: bold; font-size: 14px; border: none; background: transparent;")
+        icon_wrap = QFrame()
+        icon_wrap.setFixedSize(46, 46)
+        icon_wrap.setStyleSheet("background-color: #EDF2F7; border-radius: 23px; border: none;")
+        ic_l = QHBoxLayout(icon_wrap)
+        ic_l.setContentsMargins(0, 0, 0, 0)
         self.icon_bluetooth = QLabel()
-        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#A0AEC0').pixmap(24, 24))
-        self.icon_bluetooth.setStyleSheet("border: none; background: transparent;")
+        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#718096').pixmap(24, 24))
+        self.icon_bluetooth.setAlignment(Qt.AlignCenter)
+        self.icon_bluetooth.setStyleSheet("background: transparent; border: none;")
+        ic_l.addWidget(self.icon_bluetooth)
+        
+        text_col = QVBoxLayout()
+        text_col.setSpacing(2)
+        text_col.setAlignment(Qt.AlignVCenter)
+        title_bt = QLabel("Status Perangkat")
+        title_bt.setStyleSheet("color: #718096; font-size: 11px; font-weight: bold; background: transparent; border: none;")
+        self.lbl_bluetooth = QLabel("Belum Terhubung")
+        self.lbl_bluetooth.setStyleSheet("color: #4A5568; font-size: 14px; font-weight: bold; background: transparent; border: none;")
+        text_col.addWidget(title_bt)
+        text_col.addWidget(self.lbl_bluetooth)
         
         self.btn_connect = QPushButton(" Hubungkan")
         self.btn_connect.setIcon(qta.icon('fa5s.link', color='#FFFFFF'))
@@ -742,7 +766,7 @@ class MainWindow(QMainWindow):
             QPushButton {
                 background-color: #3182CE; 
                 color: #FFFFFF; 
-                border-radius: 6px; 
+                border-radius: 4px; 
                 padding: 8px 16px; 
                 font-weight: bold;
                 font-size: 13px;
@@ -752,8 +776,8 @@ class MainWindow(QMainWindow):
         """)
         self.btn_connect.setCursor(Qt.PointingHandCursor)
         
-        dev_layout.addWidget(self.icon_bluetooth)
-        dev_layout.addWidget(self.lbl_bluetooth)
+        dev_layout.addWidget(icon_wrap)
+        dev_layout.addLayout(text_col)
         dev_layout.addStretch()
         dev_layout.addWidget(self.btn_connect)
         

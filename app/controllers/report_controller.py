@@ -12,9 +12,9 @@ class ReportController:
 
     def load_dummy_data(self):
         dummy_sesi = [
-            ("19 Juli 2026, 09:15", "ID-2406-001", "Bpk. Budi", "Severe", "45 Tahun", "Laki-laki", "170 cm", "75 kg", "Jl. Merdeka No. 1, Jakarta"),
-            ("18 Juli 2026, 14:30", "ID-2406-002", "Ibu Siti", "Moderate", "38 Tahun", "Perempuan", "160 cm", "60 kg", "Jl. Sudirman No. 12, Bandung"),
-            ("17 Juli 2026, 10:00", "ID-2406-003", "Sdr. Andi", "Mild", "25 Tahun", "Laki-laki", "175 cm", "68 kg", "Jl. Diponegoro No. 8, Surabaya")
+            ("July 19, 2026, 09:15", "ID-2406-001", "Mr. Budi", "Severe", "45 Years", "Male", "170 cm", "75 kg", "1 Merdeka St., Jakarta"),
+            ("July 18, 2026, 14:30", "ID-2406-002", "Mrs. Siti", "Moderate", "38 Years", "Female", "160 cm", "60 kg", "12 Sudirman St., Bandung"),
+            ("July 17, 2026, 10:00", "ID-2406-003", "Mr. Andi", "Mild", "25 Years", "Male", "175 cm", "68 kg", "8 Diponegoro St., Surabaya")
         ]
         
         self.view.table_sesi.setRowCount(len(dummy_sesi))
@@ -78,7 +78,7 @@ class ReportController:
             
             self.view.table_sesi.setCellWidget(row, 4, action_widget)
             
-        self.view.lbl_info.setText(f"Menampilkan 1 hingga {len(dummy_sesi)} dari {len(dummy_sesi)} riwayat sesi")
+        self.view.lbl_info.setText(f"Showing 1 to {len(dummy_sesi)} of {len(dummy_sesi)} session history records")
 
     def export_excel(self, data):
         from PySide6.QtWidgets import QFileDialog, QMessageBox
@@ -86,15 +86,15 @@ class ReportController:
         
         # Bersihkan nama pasien untuk nama file
         safe_name = data[2].replace('.', '').replace(' ', '_')
-        filepath, _ = QFileDialog.getSaveFileName(self.view, "Simpan Excel", f"Laporan_{safe_name}.xlsx", "Excel Files (*.xlsx)")
+        filepath, _ = QFileDialog.getSaveFileName(self.view, "Save Excel", f"Report_{safe_name}.xlsx", "Excel Files (*.xlsx)")
         if filepath:
             try:
                 wb = openpyxl.Workbook()
                 ws = wb.active
-                ws.title = "Laporan Sesi"
+                ws.title = "Session Report"
                 
                 # Header
-                ws.append(["Tanggal Sesi", "ID Pasien", "Nama Pasien", "Indikasi Kecemasan"])
+                ws.append(["Session Date", "Patient ID", "Patient Name", "Anxiety Indication"])
                 # Data
                 ws.append([data[0], data[1], data[2], data[3]])
                 
@@ -104,9 +104,9 @@ class ReportController:
                     cell.font = Font(bold=True)
                     
                 wb.save(filepath)
-                QMessageBox.information(self.view, "Sukses", f"Data Excel berhasil diekspor ke:\n{filepath}")
+                QMessageBox.information(self.view, "Success", f"Excel data successfully exported to:\n{filepath}")
             except Exception as e:
-                QMessageBox.critical(self.view, "Error", f"Gagal menyimpan file:\n{str(e)}")
+                QMessageBox.critical(self.view, "Error", f"Failed to save file:\n{str(e)}")
 
     def export_pdf(self, data):
         from PySide6.QtWidgets import QFileDialog, QMessageBox
@@ -138,8 +138,8 @@ class ReportController:
             sev_fg, sev_bg = sev_colors.get(sev, ("#4A5568", "#EDF2F7"))
             
             now = datetime.now()
-            months_id = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
-            tanggal_ttd = f"{now.day} {months_id[now.month]} {now.year}"
+            months_en = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            tanggal_ttd = f"{months_en[now.month]} {now.day}, {now.year}"
             printed_at = datetime.now().strftime("%d %B %Y, %H:%M")
 
             html = f"""
@@ -244,86 +244,86 @@ class ReportController:
 
 <!-- KOP SURAT -->
 <div class="kop-surat">
-  <h1>KLINIK FISIOTERAPI PHYSIOANX</h1>
-  <h2>Pusat Pemantauan Fisiologis & Kecemasan</h2>
-  <p>Jl. Kesehatan No. 123, Jakarta, Indonesia | Telp: (021) 555-1234</p>
+  <h1>PHYSIOANX PHYSIOTHERAPY CLINIC</h1>
+  <h2>Physiological & Anxiety Monitoring Center</h2>
+  <p>123 Kesehatan St., Jakarta, Indonesia | Phone: (021) 555-1234</p>
 </div>
 <div class="kop-garis-bawah"></div>
 
 <!-- JUDUL SURAT -->
-<div class="judul-surat">SURAT HASIL PEMERIKSAAN FISIOLOGIS</div>
+<div class="judul-surat">PHYSIOLOGICAL EXAMINATION REPORT</div>
 
 <!-- ISI SURAT -->
 <div class="content">
-  <p>Yang bertanda tangan di bawah ini, menerangkan bahwa pasien berikut:</p>
+  <p>The undersigned certifies that the following patient:</p>
   
   <table class="table-identitas">
     <tr>
-      <td width="20%">Nama</td>
+      <td width="20%">Name</td>
       <td width="2%">:</td>
       <td width="78%"><b>{data[2]}</b></td>
     </tr>
     <tr>
-        <td><b>ID Pasien</b></td>
+        <td><b>Patient ID</b></td>
         <td>:</td>
       <td>{data[1]}</td>
     </tr>
     <tr>
-      <td>Usia</td>
+      <td>Age</td>
       <td>:</td>
       <td>{data[4]}</td>
     </tr>
     <tr>
-      <td>Jenis Kelamin</td>
+      <td>Gender</td>
       <td>:</td>
       <td>{data[5]}</td>
     </tr>
     <tr>
-      <td>Tinggi / Berat</td>
+      <td>Height / Weight</td>
       <td>:</td>
       <td>{data[6]} / {data[7]}</td>
     </tr>
   </table>
 
-  <p>Telah menjalani pemeriksaan pemantauan respons fisiologis pada tanggal <b>{data[0]}</b>. Berdasarkan hasil perekaman sensor biometrik selama sesi, didapatkan ringkasan parameter sebagai berikut:</p>
+  <p>Has undergone physiological response monitoring examination on <b>{data[0]}</b>. Based on biometric sensor recording during the session, the following parameter summary was obtained:</p>
 
   <table class="table-hasil">
     <tr>
       <th width="30%">Parameter</th>
-      <th width="20%">Rata-rata</th>
-      <th width="20%">Puncak</th>
-      <th width="30%">Keterangan</th>
+      <th width="20%">Average</th>
+      <th width="20%">Peak</th>
+      <th width="30%">Remarks</th>
     </tr>
     <tr>
       <td>Heart Rate (BPM)</td>
       <td>84.2 bpm</td>
       <td>112.5 bpm</td>
-      <td>Reaktivitas kardiovaskular tinggi</td>
+      <td>High cardiovascular reactivity</td>
     </tr>
     <tr>
       <td>Skin Conductance (&mu;S)</td>
       <td>5.8 &mu;S</td>
       <td>9.1 &mu;S</td>
-      <td>Aktivitas kelenjar keringat aktif</td>
+      <td>Active sweat gland activity</td>
     </tr>
     <tr>
       <td>Skin Temperature (&deg;C)</td>
       <td>31.5 &deg;C</td>
       <td>33.2 &deg;C</td>
-      <td>Vasokonstriksi (menurun)</td>
+      <td>Vasoconstriction (decreased)</td>
     </tr>
   </table>
 
-  <p>Berdasarkan analisis data fluktuasi <i>Heart Rate</i> dan lonjakan <i>Galvanic Skin Response</i> (GSR) di atas, pasien terindikasi mengalami tingkat kecemasan <b>{sev.upper()}</b>. Hasil ini menunjukkan adanya hiperaktivitas pada saraf simpatis selama sesi perekaman.</p>
+  <p>Based on the analysis of <i>Heart Rate</i> fluctuation data and <i>Galvanic Skin Response</i> (GSR) spikes above, the patient is indicated to have an anxiety level of <b>{sev.upper()}</b>. These results show hyperactivity in the sympathetic nervous system during the recording session.</p>
 
-  <p>Demikian surat hasil pemeriksaan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
+  <p>This examination report is issued to be used accordingly.</p>
 </div>
 
 <!-- TANDA TANGAN -->
 <div class="tanda-tangan">
   <p>Jakarta, {tanggal_ttd}</p>
-  <p>Dokter / Fisioterapis Pemeriksa,</p>
-  <p class="nama-terang">dr. Pemeriksa PhysioAnx, Sp.Kj</p>
+  <p>Examining Doctor / Physiotherapist,</p>
+  <p class="nama-terang">Dr. PhysioAnx Examiner, Psychiatrist</p>
   <p>NIP. 19801231 200501 1 001</p>
 </div>
 

@@ -17,7 +17,7 @@ class ReportView(QWidget):
         
         # --- 1. HEADER PANEL ---
         header_layout = QHBoxLayout()
-        title = QLabel("Riwayat Sesi Pemeriksaan")
+        title = QLabel("Session History")
         title.setObjectName("HeaderTitle")
         
         header_layout.addWidget(title)
@@ -33,11 +33,11 @@ class ReportView(QWidget):
         
         self.search_input = QLineEdit()
         self.search_input.setObjectName("SearchBar")
-        self.search_input.setPlaceholderText("Cari ID atau Nama Pasien...")
+        self.search_input.setPlaceholderText("Search Patient ID or Name...")
         self.search_input.setMinimumWidth(300)
         
         self.cmb_anxiety = QComboBox()
-        self.cmb_anxiety.addItems(["Semua Kategori", "Minimal", "Mild", "Moderate", "Severe"])
+        self.cmb_anxiety.addItems(["All Categories", "Minimal", "Mild", "Moderate", "Severe"])
         self.cmb_anxiety.setFixedSize(220, 40)
         
         self.btn_filter = QPushButton(" Filter")
@@ -61,7 +61,7 @@ class ReportView(QWidget):
         
         self.table_sesi = QTableWidget(0, 5)
         self.table_sesi.setHorizontalHeaderLabels([
-            "Tanggal Sesi", "ID Pasien", "Nama Pasien", "Indikasi", "Aksi"
+            "Session Date", "Patient ID", "Patient Name", "Indication", "Action"
         ])
         
         header = self.table_sesi.horizontalHeader()
@@ -85,7 +85,7 @@ class ReportView(QWidget):
         
         # --- 4. PAGINATION PANEL ---
         pagination_layout = QHBoxLayout()
-        self.lbl_info = QLabel("Menampilkan data riwayat sesi")
+        self.lbl_info = QLabel("Showing session history data")
         self.lbl_info.setStyleSheet("color: #8C9EBA; font-size: 13px;")
         
         self.btn_prev = QPushButton(" Prev")
