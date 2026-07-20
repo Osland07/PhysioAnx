@@ -12,10 +12,10 @@ class PatientDialog(QDialog):
         self.setStyleSheet("""
             QDialog {
                 background-color: #FFFFFF;
-                color: #2D3748;
+                color: #002C6F;
             }
             QLabel {
-                color: #4A5568;
+                color: #1E3F76;
                 font-weight: bold;
                 font-size: 13px;
             }
@@ -24,14 +24,14 @@ class PatientDialog(QDialog):
                 border: 2px solid #E2E8F0;
                 border-radius: 6px;
                 padding: 8px;
-                color: #2D3748;
+                color: #002C6F;
                 font-size: 14px;
             }
             QSpinBox, QDoubleSpinBox {
                 padding-right: 25px;
             }
             QLineEdit:focus, QComboBox:focus, QDateEdit:focus, QTextEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
-                border: 2px solid #00B4DB;
+                border: 2px solid #5C9EDA;
                 background-color: #FFFFFF;
             }
             QComboBox::drop-down {
@@ -40,7 +40,7 @@ class PatientDialog(QDialog):
             }
             QComboBox QAbstractItemView {
                 background-color: #FFFFFF;
-                color: #2D3748;
+                color: #002C6F;
                 selection-background-color: #EBF8FA;
                 border: 1px solid #E2E8F0;
             }
@@ -51,7 +51,7 @@ class PatientDialog(QDialog):
         layout.setSpacing(15)
 
         lbl_title = QLabel("Formulir Data Pasien" if not patient_data else "Edit Profil Pasien")
-        lbl_title.setStyleSheet("color: #2D3748; font-size: 20px; font-weight: 900; margin-bottom: 10px;")
+        lbl_title.setStyleSheet("color: #002C6F; font-size: 20px; font-weight: 900; margin-bottom: 10px;")
         lbl_title.setAlignment(Qt.AlignCenter)
         layout.addWidget(lbl_title)
 
@@ -168,9 +168,9 @@ class PatientDialog(QDialog):
         self.btn_save.setIcon(qta.icon('fa5s.save', color='white'))
         self.btn_save.setStyleSheet("""
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0083B0, stop:1 #00B4DB); color: white; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: none;
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4F97D1, stop:1 #5C9EDA); color: white; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 6px; border: none;
             }
-            QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00B4DB, stop:1 #00D2FF); }
+            QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #5C9EDA, stop:1 #75B0E1); }
         """)
         self.btn_save.setCursor(Qt.PointingHandCursor)
         self.btn_save.clicked.connect(self.accept)

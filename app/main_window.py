@@ -42,36 +42,41 @@ class MainWindow(QMainWindow):
         sidebar_layout.setContentsMargins(0, 40, 0, 30) 
         sidebar_layout.setSpacing(5)
         
+        logo_container = QFrame()
+        logo_container.setFixedHeight(80)
+        logo_container.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; margin-left: 20px; margin-right: 20px;")
+        logo_layout = QVBoxLayout(logo_container)
+        logo_layout.setContentsMargins(5, 2, 5, 2)
+
         title = QLabel()
         logo_path = os.path.join(os.path.dirname(__file__), "assets", "images", "Logo_Text.jpeg")
         if os.path.exists(logo_path):
             pixmap = QPixmap(logo_path)
-            # Skala gambar dengan filter halus (SmoothTransformation) agar tidak buram
-            pixmap = pixmap.scaled(220, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            # Skala gambar dengan tinggi maksimal lebih kecil (65) agar tidak ada ruang kosong berlebih di atas/bawah
+            pixmap = pixmap.scaled(200, 65, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             title.setPixmap(pixmap)
-        else:
-            title.setText("PHYSIOANX")
-            title.setObjectName("AppTitle")
         title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("background: transparent; border: none; margin: 0px;")
+        logo_layout.addWidget(title)
         
         self.btn_dashboard = QPushButton(" Dashboard")
-        self.btn_dashboard.setIcon(qta.icon('fa5s.chart-pie', color='#8C9EBA'))
+        self.btn_dashboard.setIcon(qta.icon('fa5s.chart-pie', color='#FFFFFF'))
         self.btn_dashboard.setIconSize(QSize(20, 20))
         
         self.btn_pasien = QPushButton(" Patients")
-        self.btn_pasien.setIcon(qta.icon('fa5s.users', color='#8C9EBA'))
+        self.btn_pasien.setIcon(qta.icon('fa5s.users', color='#FFFFFF'))
         self.btn_pasien.setIconSize(QSize(20, 20))
         
-        self.btn_session = QPushButton(" Sesi Pemeriksaan")
-        self.btn_session.setIcon(qta.icon('fa5s.heartbeat', color='#8C9EBA'))
+        self.btn_session = QPushButton(" New Session")
+        self.btn_session.setIcon(qta.icon('fa5s.heartbeat', color='#FFFFFF'))
         self.btn_session.setIconSize(QSize(20, 20))
         
-        self.btn_report = QPushButton(" Riwayat Sesi")
-        self.btn_report.setIcon(qta.icon('fa5s.file-medical-alt', color='#8C9EBA'))
+        self.btn_report = QPushButton(" History")
+        self.btn_report.setIcon(qta.icon('fa5s.file-medical-alt', color='#FFFFFF'))
         self.btn_report.setIconSize(QSize(20, 20))
 
         self.btn_help = QPushButton(" Help")
-        self.btn_help.setIcon(qta.icon('fa5s.question-circle', color='#8C9EBA'))
+        self.btn_help.setIcon(qta.icon('fa5s.question-circle', color='#FFFFFF'))
         self.btn_help.setIconSize(QSize(20, 20))
         
         self.btn_dashboard.clicked.connect(lambda: self.switch_page(0))
@@ -80,7 +85,7 @@ class MainWindow(QMainWindow):
         self.btn_report.clicked.connect(lambda: self.switch_page(3))
         self.btn_help.clicked.connect(lambda: self.switch_page(4))
         
-        sidebar_layout.addWidget(title)
+        sidebar_layout.addWidget(logo_container)
         sidebar_layout.addSpacing(30)
         sidebar_layout.addWidget(self.btn_dashboard)
         sidebar_layout.addWidget(self.btn_pasien)
@@ -90,27 +95,24 @@ class MainWindow(QMainWindow):
         sidebar_layout.addStretch()
 
         # Tombol Logout
-        btn_logout = QPushButton(" Keluar")
+        btn_logout = QPushButton(" Logout")
         btn_logout.setIcon(qta.icon('fa5s.sign-out-alt', color='white'))
         btn_logout.setIconSize(QSize(16, 16))
         btn_logout.setCursor(Qt.PointingHandCursor)
         btn_logout.setStyleSheet("""
             QPushButton {
-                background-color: #FF0000;
+                background-color: rgba(255, 255, 255, 0.15);
                 color: white;
                 font-weight: bold;
                 font-size: 13px;
-                border: none;
+                border: 1px solid rgba(255, 255, 255, 0.3);
                 border-radius: 6px;
                 padding: 10px 16px;
                 margin: 0 16px;
                 text-align: center;
             }
             QPushButton:hover {
-                background-color: #D50000;
-            }
-            QPushButton:pressed {
-                background-color: #AA0000;
+                background-color: rgba(255, 255, 255, 0.25);
             }
         """)
         btn_logout.clicked.connect(self._do_logout)
@@ -273,9 +275,10 @@ class MainWindow(QMainWindow):
         is_valid = " - " in text and len(text) > 5
 
         if is_valid:
+            self.btn_enter_session.setIcon(qta.icon('fa5s.play', color='#FFFFFF'))
             self.btn_enter_session.setStyleSheet("""
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0083B0, stop:1 #00B4DB);
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4F97D1, stop:1 #5C9EDA);
                     color: white;
                     font-weight: bold;
                     font-size: 14px;
@@ -284,11 +287,12 @@ class MainWindow(QMainWindow):
                     padding: 0 20px;
                     letter-spacing: 0.5px;
                 }
-                QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00B4DB, stop:1 #00D2FF); }
+                QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #5C9EDA, stop:1 #75B0E1); }
             """)
             # Update preview kartu pasien
             self._refresh_patient_preview(text)
         else:
+            self.btn_enter_session.setIcon(qta.icon('fa5s.play', color='#A0AEC0'))
             self.btn_enter_session.setStyleSheet("""
                 QPushButton {
                     background-color: #EDF2F7;
@@ -454,7 +458,7 @@ class MainWindow(QMainWindow):
         # --- SECTION TITLE ---
         sec_title = QLabel("Persiapan Sesi Pemeriksaan")
         sec_title.setStyleSheet("""
-            color: #2D3748;
+            color: #002C6F;
             font-size: 24px;
             font-weight: 800;
             background: transparent;
@@ -489,14 +493,14 @@ class MainWindow(QMainWindow):
         self.cmb_pasien_session.setStyleSheet("""
             QComboBox {
                 background-color: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 12px;
-                color: #2D3748; font-size: 15px; padding-left: 16px;
+                color: #002C6F; font-size: 15px; padding-left: 16px;
             }
-            QComboBox:focus { border: 2px solid #00B4DB; background-color: #FFFFFF; }
+            QComboBox:focus { border: 2px solid #5C9EDA; background-color: #FFFFFF; }
             QComboBox::drop-down { width: 40px; border: none; }
             QComboBox::down-arrow { image: none; width: 0; }
             QComboBox QAbstractItemView {
-                background-color: #FFFFFF; color: #2D3748; border: 1px solid #E2E8F0; border-radius: 8px;
-                selection-background-color: #EBF8FA; selection-color: #00B4DB; font-size: 14px; padding: 6px; outline: none;
+                background-color: #FFFFFF; color: #002C6F; border: 1px solid #E2E8F0; border-radius: 8px;
+                selection-background-color: #EBF8FA; selection-color: #5C9EDA; font-size: 14px; padding: 6px; outline: none;
             }
         """)
         
@@ -514,11 +518,11 @@ class MainWindow(QMainWindow):
         
         # Tombol Pasien Baru (di bawah pencarian)
         btn_tambah_ps = QPushButton("  Daftarkan Pasien Baru")
-        btn_tambah_ps.setIcon(qta.icon('fa5s.plus', color='#00B4DB'))
+        btn_tambah_ps.setIcon(qta.icon('fa5s.plus', color='#5C9EDA'))
         btn_tambah_ps.setFixedHeight(46)
         btn_tambah_ps.setStyleSheet("""
             QPushButton {
-                background-color: #F7FAFC; color: #2D3748; font-weight: 700; font-size: 14px;
+                background-color: #F7FAFC; color: #002C6F; font-weight: 700; font-size: 14px;
                 border-radius: 8px; border: 1px solid #E2E8F0;
             }
             QPushButton:hover { background-color: #EDF2F7; }
@@ -564,7 +568,7 @@ class MainWindow(QMainWindow):
         name_col = QVBoxLayout()
         name_col.setSpacing(4)
         self.prev_nama = QLabel("Belum Dipilih")
-        self.prev_nama.setStyleSheet("color: #2D3748; font-size: 20px; font-weight: bold; background: transparent; border: none;")
+        self.prev_nama.setStyleSheet("color: #002C6F; font-size: 20px; font-weight: bold; background: transparent; border: none;")
         self.prev_rm = QLabel("ID: -")
         self.prev_rm.setStyleSheet("color: #718096; font-size: 14px; background: transparent; border: none;")
         
@@ -596,7 +600,7 @@ class MainWindow(QMainWindow):
             lbl_title = QLabel(label)
             lbl_title.setStyleSheet("color: #718096; font-size: 12px; font-weight: bold; background: transparent; border: none;")
             val = QLabel("-")
-            val.setStyleSheet("color: #2D3748; font-size: 15px; font-weight: normal; background: transparent; border: none;")
+            val.setStyleSheet("color: #002C6F; font-size: 15px; font-weight: normal; background: transparent; border: none;")
             setattr(self, value_attr, val)
             
             l.addWidget(lbl_title)
@@ -664,7 +668,7 @@ class MainWindow(QMainWindow):
                 padding: 6px 12px;
                 font-size: 12px;
             }
-            QPushButton:hover { background-color: #F7FAFC; color: #2D3748; }
+            QPushButton:hover { background-color: #F7FAFC; color: #002C6F; }
         """)
         btn_back.setCursor(Qt.PointingHandCursor)
         btn_back.clicked.connect(self.exit_active_session)
@@ -711,7 +715,7 @@ class MainWindow(QMainWindow):
         patient_details.setSpacing(2)
         
         self.lbl_info_nama = QLabel("Belum ada pasien dipilih")
-        self.lbl_info_nama.setStyleSheet("color: #2D3748; font-size: 18px; font-weight: 800; border: none; background: transparent;")
+        self.lbl_info_nama.setStyleSheet("color: #002C6F; font-size: 18px; font-weight: 800; border: none; background: transparent;")
         
         info_sub = QHBoxLayout()
         self.lbl_info_rm = QLabel("ID: -")
@@ -734,33 +738,16 @@ class MainWindow(QMainWindow):
         # Device Connection Card
         dev_panel = QFrame()
         dev_panel.setFixedHeight(85)
-        dev_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 6px; border: 1px solid #E2E8F0;")
+        dev_panel.setGraphicsEffect(create_shadow())
+        dev_panel.setStyleSheet("background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0;")
         dev_layout = QHBoxLayout(dev_panel)
         dev_layout.setContentsMargins(20, 15, 20, 15)
         dev_layout.setSpacing(15)
         
-        icon_wrap = QFrame()
-        icon_wrap.setFixedSize(46, 46)
-        icon_wrap.setStyleSheet("background-color: #EDF2F7; border-radius: 23px; border: none;")
-        ic_l = QHBoxLayout(icon_wrap)
-        ic_l.setContentsMargins(0, 0, 0, 0)
-        self.icon_bluetooth = QLabel()
-        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#718096').pixmap(24, 24))
-        self.icon_bluetooth.setAlignment(Qt.AlignCenter)
-        self.icon_bluetooth.setStyleSheet("background: transparent; border: none;")
-        ic_l.addWidget(self.icon_bluetooth)
+        self.lbl_bluetooth = QLabel("Not Connected")
+        self.lbl_bluetooth.setStyleSheet("color: #1E3F76; font-size: 16px; font-weight: bold; background: transparent; border: none;")
         
-        text_col = QVBoxLayout()
-        text_col.setSpacing(2)
-        text_col.setAlignment(Qt.AlignVCenter)
-        title_bt = QLabel("Status Perangkat")
-        title_bt.setStyleSheet("color: #718096; font-size: 11px; font-weight: bold; background: transparent; border: none;")
-        self.lbl_bluetooth = QLabel("Belum Terhubung")
-        self.lbl_bluetooth.setStyleSheet("color: #4A5568; font-size: 14px; font-weight: bold; background: transparent; border: none;")
-        text_col.addWidget(title_bt)
-        text_col.addWidget(self.lbl_bluetooth)
-        
-        self.btn_connect = QPushButton(" Hubungkan")
+        self.btn_connect = QPushButton(" Connect")
         self.btn_connect.setIcon(qta.icon('fa5s.link', color='#FFFFFF'))
         self.btn_connect.setStyleSheet("""
             QPushButton {
@@ -776,8 +763,7 @@ class MainWindow(QMainWindow):
         """)
         self.btn_connect.setCursor(Qt.PointingHandCursor)
         
-        dev_layout.addWidget(icon_wrap)
-        dev_layout.addLayout(text_col)
+        dev_layout.addWidget(self.lbl_bluetooth)
         dev_layout.addStretch()
         dev_layout.addWidget(self.btn_connect)
         
@@ -883,24 +869,24 @@ class MainWindow(QMainWindow):
             self.is_dot_visible = True
             self.lbl_record_dot.setStyleSheet("background-color: #FF0000; border-radius: 5px; border: none;")
             self.blink_counter = 0
-            self.lbl_bluetooth.setText("Alat Terhubung")
-            self.lbl_bluetooth.setStyleSheet("color: #00E676; font-weight: bold; font-size: 15px; border: none; background: transparent;")
-            self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#00E676').pixmap(24, 24))
-            
-            self.btn_connect.setText(" Putuskan")
-            self.btn_connect.setIcon(qta.icon('fa5s.unlink', color='#4A5568'))
-            self.btn_connect.setStyleSheet("""
-                QPushButton {
-                    background-color: #E2E8F0; 
-                    color: #4A5568; 
-                    border-radius: 6px; 
-                    padding: 8px 16px; 
-                    font-weight: bold;
-                    font-size: 13px;
-                    border: none;
-                }
-                QPushButton:hover { background-color: #CBD5E0; }
-            """)
+            if not self.is_connected:
+                self.is_connected = True
+                self.lbl_bluetooth.setText("Connected")
+                self.lbl_bluetooth.setStyleSheet("color: #00E676; font-size: 16px; font-weight: bold; background: transparent; border: none;")
+                self.btn_connect.setText(" Disconnect")
+                self.btn_connect.setIcon(qta.icon('fa5s.unlink', color='#1E3F76'))
+                self.btn_connect.setStyleSheet("""
+                    QPushButton {
+                        background-color: #EDF2F7; 
+                        color: #1E3F76; 
+                        border-radius: 4px; 
+                        padding: 8px 16px; 
+                        font-weight: bold;
+                        font-size: 13px;
+                        border: none;
+                    }
+                    QPushButton:hover { background-color: #E2E8F0; }
+                """)
 
     def stop_session_recording(self):
         self.is_recording = False
@@ -921,17 +907,16 @@ class MainWindow(QMainWindow):
         self.lbl_val_hr.setText("--")
         self.lbl_val_gsr.setText("--")
         self.lbl_val_temp.setText("--")
-        self.lbl_bluetooth.setText("Belum Terhubung")
-        self.lbl_bluetooth.setStyleSheet("color: #A0AEC0; font-weight: bold; font-size: 14px; border: none; background: transparent;")
-        self.icon_bluetooth.setPixmap(qta.icon('fa5b.bluetooth', color='#A0AEC0').pixmap(24, 24))
+        self.lbl_bluetooth.setText("Not Connected")
+        self.lbl_bluetooth.setStyleSheet("color: #1E3F76; font-size: 16px; font-weight: bold; background: transparent; border: none;")
         
-        self.btn_connect.setText(" Hubungkan")
+        self.btn_connect.setText(" Connect")
         self.btn_connect.setIcon(qta.icon('fa5s.link', color='#FFFFFF'))
         self.btn_connect.setStyleSheet("""
             QPushButton {
                 background-color: #3182CE; 
                 color: #FFFFFF; 
-                border-radius: 6px; 
+                border-radius: 4px; 
                 padding: 8px 16px; 
                 font-weight: bold;
                 font-size: 13px;

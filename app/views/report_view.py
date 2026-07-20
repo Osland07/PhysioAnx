@@ -89,12 +89,12 @@ class ReportView(QWidget):
         self.lbl_info.setStyleSheet("color: #8C9EBA; font-size: 13px;")
         
         self.btn_prev = QPushButton(" Prev")
-        self.btn_prev.setIcon(qta.icon('fa5s.chevron-left', color='#2D3748'))
+        self.btn_prev.setIcon(qta.icon('fa5s.chevron-left', color='#002C6F'))
         self.btn_prev.setObjectName("SecondaryButton")
         self.btn_prev.setFixedSize(80, 30)
         
         self.btn_next = QPushButton(" Next")
-        self.btn_next.setIcon(qta.icon('fa5s.chevron-right', color='#2D3748'))
+        self.btn_next.setIcon(qta.icon('fa5s.chevron-right', color='#002C6F'))
         self.btn_next.setLayoutDirection(Qt.RightToLeft)
         self.btn_next.setObjectName("SecondaryButton")
         self.btn_next.setFixedSize(80, 30)

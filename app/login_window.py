@@ -58,8 +58,8 @@ class LoginWindow(QWidget):
             QFrame {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #00B4DB,
-                    stop:1 #0083B0
+                    stop:0 #5C9EDA,
+                    stop:1 #4F97D1
                 );
             }
         """)
@@ -124,7 +124,7 @@ class LoginWindow(QWidget):
 
         lbl_welcome = QLabel("Welcome")
         lbl_welcome.setStyleSheet("""
-            color: #2D3748;
+            color: #002C6F;
             font-size: 24px;
             font-weight: 800;
             background: transparent;
@@ -137,7 +137,7 @@ class LoginWindow(QWidget):
 
         # === USERNAME ===
         lbl_user = QLabel("Username")
-        lbl_user.setStyleSheet("color: #4A5568; font-size: 12px; font-weight: 700; background: transparent; border: none;")
+        lbl_user.setStyleSheet("color: #1E3F76; font-size: 12px; font-weight: 700; background: transparent; border: none;")
 
         user_frame = QFrame()
         user_frame.setFixedHeight(44)
@@ -162,7 +162,7 @@ class LoginWindow(QWidget):
             QLineEdit {
                 background: transparent;
                 border: none;
-                color: #2D3748;
+                color: #002C6F;
                 font-size: 14px;
             }
         """)
@@ -171,7 +171,7 @@ class LoginWindow(QWidget):
 
         # === PASSWORD ===
         lbl_pass = QLabel("Password")
-        lbl_pass.setStyleSheet("color: #4A5568; font-size: 12px; font-weight: 700; background: transparent; border: none;")
+        lbl_pass.setStyleSheet("color: #1E3F76; font-size: 12px; font-weight: 700; background: transparent; border: none;")
 
         pass_frame = QFrame()
         pass_frame.setFixedHeight(44)
@@ -197,7 +197,7 @@ class LoginWindow(QWidget):
             QLineEdit {
                 background: transparent;
                 border: none;
-                color: #2D3748;
+                color: #002C6F;
                 font-size: 14px;
             }
         """)
@@ -248,8 +248,8 @@ class LoginWindow(QWidget):
             QPushButton {
                 background: qlineargradient(
                     x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #0083B0,
-                    stop:1 #00B4DB
+                    stop:0 #4F97D1,
+                    stop:1 #5C9EDA
                 );
                 color: #FFFFFF;
                 font-weight: bold;
@@ -261,8 +261,8 @@ class LoginWindow(QWidget):
             QPushButton:hover {
                 background: qlineargradient(
                     x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #00B4DB,
-                    stop:1 #00D2FF
+                    stop:0 #5C9EDA,
+                    stop:1 #75B0E1
                 );
             }
             QPushButton:pressed { background-color: #007299; }

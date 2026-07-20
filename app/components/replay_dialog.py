@@ -61,7 +61,7 @@ class ReplayDialog(QDialog):
         self.btn_close.setStyleSheet("""
             QPushButton {
                 background-color: #FFFFFF;
-                color: #2D3748;
+                color: #002C6F;
                 padding: 0 20px;
                 font-weight: bold;
                 border-radius: 8px;

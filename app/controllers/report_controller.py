@@ -12,9 +12,9 @@ class ReportController:
 
     def load_dummy_data(self):
         dummy_sesi = [
-            ("July 19, 2026, 09:15", "ID-2406-001", "Mr. Budi", "Severe", "45 Years", "Male", "170 cm", "75 kg", "1 Merdeka St., Jakarta"),
-            ("July 18, 2026, 14:30", "ID-2406-002", "Mrs. Siti", "Moderate", "38 Years", "Female", "160 cm", "60 kg", "12 Sudirman St., Bandung"),
-            ("July 17, 2026, 10:00", "ID-2406-003", "Mr. Andi", "Mild", "25 Years", "Male", "175 cm", "68 kg", "8 Diponegoro St., Surabaya")
+            ("19/07/2026 09:15", "ID-2406-001", "Mr. Budi", "Severe", "45 Years", "Male", "170 cm", "75 kg", "1 Merdeka St., Jakarta"),
+            ("18/07/2026 14:30", "ID-2406-002", "Mrs. Siti", "Moderate", "38 Years", "Female", "160 cm", "60 kg", "12 Sudirman St., Bandung"),
+            ("17/07/2026 10:00", "ID-2406-003", "Mr. Andi", "Mild", "25 Years", "Male", "175 cm", "68 kg", "8 Diponegoro St., Surabaya")
         ]
         
         self.view.table_sesi.setRowCount(len(dummy_sesi))
@@ -135,12 +135,11 @@ class ReportController:
                 "Mild":     ("#975A16", "#FFFFF0"),
                 "Minimal":  ("#276749", "#F0FFF4"),
             }
-            sev_fg, sev_bg = sev_colors.get(sev, ("#4A5568", "#EDF2F7"))
+            sev_fg, sev_bg = sev_colors.get(sev, ("#1E3F76", "#EDF2F7"))
             
             now = datetime.now()
-            months_en = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-            tanggal_ttd = f"{months_en[now.month]} {now.day}, {now.year}"
-            printed_at = datetime.now().strftime("%d %B %Y, %H:%M")
+            tanggal_ttd = now.strftime("%d/%m/%Y")
+            printed_at = now.strftime("%d/%m/%Y, %H:%M")
 
             html = f"""
 <!DOCTYPE html>

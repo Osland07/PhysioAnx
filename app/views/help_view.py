@@ -209,7 +209,7 @@ class HelpView(QWidget):
 
         lbl_desc = QLabel(desc)
         lbl_desc.setStyleSheet(
-            "color: #4A5568; font-size: 12px; "
+            "color: #1E3F76; font-size: 12px; "
             "background: transparent; border: none;"
         )
 
@@ -256,7 +256,7 @@ class HelpView(QWidget):
             lbl_a = QLabel(item_body)
             lbl_a.setWordWrap(True)
             lbl_a.setStyleSheet(
-                "color: #4A5568; font-size: 12px; "
+                "color: #1E3F76; font-size: 12px; "
                 "background: transparent; border: none;"
             )
 

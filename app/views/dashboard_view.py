@@ -78,7 +78,7 @@ class DashboardView(QWidget):
         chart_layout.addWidget(chart_title)
 
         pg.setConfigOption('background', 'transparent')
-        pg.setConfigOption('foreground', '#4A5568')
+        pg.setConfigOption('foreground', '#1E3F76')
         
         self.plot_widget = pg.PlotWidget()
         self.plot_widget.setMenuEnabled(False)
@@ -126,7 +126,7 @@ class DashboardView(QWidget):
         
         top_layout = QHBoxLayout()
         lbl = QLabel(label_text)
-        lbl.setStyleSheet("font-size: 14px; font-weight: bold; color: #4A5568;")
+        lbl.setStyleSheet("font-size: 14px; font-weight: bold; color: #1E3F76;")
         
         pct = int((count / total) * 100)
         val = QLabel(f"{count} ({pct}%)")
