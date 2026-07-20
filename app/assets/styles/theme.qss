@@ -8,8 +8,8 @@ QMainWindow, QWidget#ContentArea {
 }
 
 QFrame#Sidebar {
-    background-color: #071733; 
-    border-right: 1px solid #0F254A; 
+    background-color: #FFFFFF; 
+    border-right: 1px solid #E2E8F0; 
 }
 
 /* --- TOP BAR --- */
@@ -34,7 +34,7 @@ QLabel#TopBarClock {
 QLabel#AppTitle {
     font-size: 24px;
     font-weight: 900;
-    color: #FFD54F; 
+    color: #1A202C; 
     letter-spacing: 3px;
 }
 
@@ -70,10 +70,10 @@ QLabel#CardUnit {
     margin-bottom: 6px;
 }
 
-/* --- SIDEBAR BUTTONS (Keep Dark) --- */
+/* --- SIDEBAR BUTTONS (Light Mode) --- */
 QPushButton#MenuButton {
     background-color: transparent;
-    color: #64748B;
+    color: #4A5568;
     text-align: left;
     padding: 16px 30px;
     font-size: 15px;
@@ -83,20 +83,20 @@ QPushButton#MenuButton {
 }
 
 QPushButton#MenuButton:hover {
-    background-color: #0A1F45;
-    color: #E2E8F0;
-    border-left: 4px solid #64748B;
+    background-color: #F7FAFC;
+    color: #2D3748;
+    border-left: 4px solid #CBD5E0;
 }
 
 QPushButton#MenuButtonActive {
-    background-color: #0F254A;
-    color: #FFD54F; 
+    background-color: #EBF8FA;
+    color: #0083B0; 
     text-align: left;
     padding: 16px 30px;
     font-size: 15px;
     font-weight: bold;
     border: none;
-    border-left: 4px solid #FFD54F; 
+    border-left: 4px solid #0083B0; 
 }
 
 /* --- BUTTONS & INPUTS --- */
