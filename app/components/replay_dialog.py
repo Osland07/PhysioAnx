@@ -128,7 +128,7 @@ class ReplayDialog(QDialog):
 
         fields = [
             ("Name",    data[2]),
-            ("No. RM",  data[1]),
+            ("ID Pasien",  data[1]),
             ("Date",    data[0]),
             ("Age",     data[4]),
             ("Gender",  data[5]),

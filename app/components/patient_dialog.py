@@ -64,7 +64,7 @@ class PatientDialog(QDialog):
         
         self.inp_rm.setText(new_rm if not patient_data else patient_data.no_rm)
         self.inp_rm.setStyleSheet("background-color: #EDF2F7; color: #A0AEC0; border-color: #E2E8F0;")
-        form_layout.addRow("No. Rekam Medis", self.inp_rm)
+        form_layout.addRow("ID Pasien", self.inp_rm)
 
         self.inp_nama = QLineEdit()
         self.inp_nama.setPlaceholderText("Masukkan nama lengkap pasien")
@@ -157,7 +157,7 @@ class PatientDialog(QDialog):
         
         current_yymm = datetime.now().strftime("%y%m")
         
-        if latest_patient and latest_patient.no_rm.startswith(f"RM-{current_yymm}-"):
+        if latest_patient and latest_patient.no_rm.startswith(f"ID-{current_yymm}-"):
             try:
                 last_num = int(latest_patient.no_rm.split("-")[-1])
                 new_num = last_num + 1
@@ -166,4 +166,4 @@ class PatientDialog(QDialog):
         else:
             new_num = 1
             
-        return f"RM-{current_yymm}-{new_num:03d}"
+        return f"ID-{current_yymm}-{new_num:03d}"

@@ -41,7 +41,7 @@ class PatientView(QWidget):
         
         self.search_input_pasien = QLineEdit()
         self.search_input_pasien.setObjectName("SearchBar")
-        self.search_input_pasien.setPlaceholderText("Cari No. RM atau Nama Pasien...")
+        self.search_input_pasien.setPlaceholderText("Cari ID atau Nama Pasien...")
         self.search_input_pasien.setMinimumWidth(300)
         
         self.cmb_gender_pasien = QComboBox()
@@ -69,7 +69,7 @@ class PatientView(QWidget):
         
         self.table_pasien = QTableWidget(0, 5)
         self.table_pasien.setHorizontalHeaderLabels([
-            "No. RM", "Nama Pasien", "Umur", "Gender", "Aksi"
+            "ID Pasien", "Nama Pasien", "Umur", "Gender", "Aksi"
         ])
         
         header = self.table_pasien.horizontalHeader()

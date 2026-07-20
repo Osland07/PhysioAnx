@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
             buttons[index].style().polish(buttons[index])
 
     def start_examination(self, patient, umur):
-        self.lbl_info_rm.setText(f"RM: {patient.no_rm}")
+        self.lbl_info_rm.setText(f"ID: {patient.no_rm}")
         self.lbl_info_nama.setText(patient.full_name)
         self.lbl_info_usia.setText(f"Usia: {umur}")
         self.lbl_info_gender.setText(f"Gender: {patient.gender}")
@@ -317,7 +317,7 @@ class MainWindow(QMainWindow):
                 usia_str = f"{age} Tahun"
 
             self.prev_nama.setText(p.full_name)
-            self.prev_rm.setText(f"No. RM: {p.no_rm}")
+            self.prev_rm.setText(f"ID: {p.no_rm}")
             self.prev_jk.setText(gender_full)
             self.prev_usia.setText(usia_str)
             bb_str = f"{p.weight} kg" if p.weight else "-"
@@ -329,7 +329,7 @@ class MainWindow(QMainWindow):
         if not hasattr(self, 'prev_nama'):
             return
         self.prev_nama.setText("Belum Dipilih")
-        self.prev_rm.setText("No. RM: -")
+        self.prev_rm.setText("ID: -")
         for attr in ['prev_jk', 'prev_usia', 'prev_bb', 'prev_tb']:
             if hasattr(self, attr):
                 getattr(self, attr).setText("-")
@@ -356,7 +356,7 @@ class MainWindow(QMainWindow):
                     usia_pasien = f"{age} Tahun"
             session.close()
 
-        self.lbl_info_rm.setText(f"RM: {rm_pasien}")
+        self.lbl_info_rm.setText(f"ID: {rm_pasien}")
         self.lbl_info_nama.setText(nama_pasien)
         self.lbl_info_usia.setText(f"Usia: {usia_pasien}")
         self.lbl_info_gender.setText(f"Jenis Kelamin: {gender_pasien}")
@@ -459,7 +459,7 @@ class MainWindow(QMainWindow):
         self.cmb_pasien_session = QComboBox()
         self.cmb_pasien_session.setEditable(True)
         self.cmb_pasien_session.setInsertPolicy(QComboBox.NoInsert)
-        self.cmb_pasien_session.lineEdit().setPlaceholderText("Ketik nama pasien atau No. RM di sini...")
+        self.cmb_pasien_session.lineEdit().setPlaceholderText("Ketik nama pasien atau ID di sini...")
         self.cmb_pasien_session.setFixedHeight(54)
         self.cmb_pasien_session.setStyleSheet("""
             QComboBox {
@@ -698,7 +698,7 @@ class MainWindow(QMainWindow):
         self.lbl_info_nama.setStyleSheet("color: #2D3748; font-size: 18px; font-weight: 800; border: none; background: transparent;")
         
         info_sub = QHBoxLayout()
-        self.lbl_info_rm = QLabel("RM: -")
+        self.lbl_info_rm = QLabel("ID: -")
         self.lbl_info_usia = QLabel("Usia: -")
         self.lbl_info_gender = QLabel("Gender: -")
         

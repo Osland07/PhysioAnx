@@ -12,9 +12,9 @@ class ReportController:
 
     def load_dummy_data(self):
         dummy_sesi = [
-            ("19 Juli 2026, 09:15", "2406-001", "Bpk. Budi", "Severe", "45 Tahun", "Laki-laki", "170 cm", "75 kg", "Jl. Merdeka No. 1, Jakarta"),
-            ("18 Juli 2026, 14:30", "2406-002", "Ibu Siti", "Moderate", "38 Tahun", "Perempuan", "160 cm", "60 kg", "Jl. Sudirman No. 12, Bandung"),
-            ("17 Juli 2026, 10:00", "2406-003", "Sdr. Andi", "Mild", "25 Tahun", "Laki-laki", "175 cm", "68 kg", "Jl. Diponegoro No. 8, Surabaya")
+            ("19 Juli 2026, 09:15", "ID-2406-001", "Bpk. Budi", "Severe", "45 Tahun", "Laki-laki", "170 cm", "75 kg", "Jl. Merdeka No. 1, Jakarta"),
+            ("18 Juli 2026, 14:30", "ID-2406-002", "Ibu Siti", "Moderate", "38 Tahun", "Perempuan", "160 cm", "60 kg", "Jl. Sudirman No. 12, Bandung"),
+            ("17 Juli 2026, 10:00", "ID-2406-003", "Sdr. Andi", "Mild", "25 Tahun", "Laki-laki", "175 cm", "68 kg", "Jl. Diponegoro No. 8, Surabaya")
         ]
         
         self.view.table_sesi.setRowCount(len(dummy_sesi))
@@ -264,8 +264,8 @@ class ReportController:
       <td width="78%"><b>{data[2]}</b></td>
     </tr>
     <tr>
-      <td>No. Rekam Medis</td>
-      <td>:</td>
+        <td><b>ID Pasien</b></td>
+        <td>:</td>
       <td>{data[1]}</td>
     </tr>
     <tr>
