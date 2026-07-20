@@ -392,8 +392,8 @@ class MainWindow(QMainWindow):
 
         self.lbl_info_rm.setText(f"ID: {rm_pasien}")
         self.lbl_info_nama.setText(nama_pasien)
-        self.lbl_info_usia.setText(f"Usia: {usia_pasien}")
-        self.lbl_info_gender.setText(f"Jenis Kelamin: {gender_pasien}")
+        self.lbl_info_usia.setText(f"Age: {usia_pasien}")
+        self.lbl_info_gender.setText(f"Gender: {gender_pasien}")
 
         if hasattr(self, 'session_stacked'):
             self.session_stacked.setCurrentIndex(1)
@@ -666,7 +666,7 @@ class MainWindow(QMainWindow):
         # --- 1. KONTROL ATAS (KEMBALI & STATUS) ---
         kontrol_row = QHBoxLayout()
         
-        btn_back = QPushButton(" Kembali")
+        btn_back = QPushButton(" Back")
         btn_back.setIcon(qta.icon('fa5s.arrow-left', color='#718096'))
         btn_back.setStyleSheet("""
             QPushButton { 
@@ -694,7 +694,7 @@ class MainWindow(QMainWindow):
         self.lbl_record_dot.setFixedSize(10, 10)
         self.lbl_record_dot.setStyleSheet("background-color: transparent; border-radius: 5px; border: none;")
         
-        self.lbl_status_sesi = QLabel("Sesi Belum Dimulai")
+        self.lbl_status_sesi = QLabel("Session Not Started")
         self.lbl_status_sesi.setStyleSheet("color: #718096; font-weight: bold; font-size: 12px; border: none; background: transparent;")
         
         status_layout.addWidget(self.lbl_record_dot)

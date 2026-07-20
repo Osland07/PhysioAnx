@@ -47,7 +47,7 @@ class PatientController:
             if p.date_of_birth:
                 today = date.today()
                 age = today.year - p.date_of_birth.year - ((today.month, today.day) < (p.date_of_birth.month, p.date_of_birth.day))
-                umur = f"{age} Thn"
+                umur = f"{age} Tahun"
             
             item_umur = QTableWidgetItem(umur)
             item_umur.setTextAlignment(Qt.AlignCenter)

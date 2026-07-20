@@ -67,7 +67,7 @@ class PatientDialog(QDialog):
         form_layout.addRow("Patient ID", self.inp_rm)
 
         self.inp_nama = QLineEdit()
-        self.inp_nama.setPlaceholderText("Enter patient's full name")
+        self.inp_nama.setPlaceholderText("Enter full name")
         if patient_data: self.inp_nama.setText(patient_data.full_name)
         form_layout.addRow("Full Name", self.inp_nama)
 
