@@ -329,7 +329,7 @@ class MainWindow(QMainWindow):
         session.close()
 
         if p:
-            gender_full = "Laki-laki" if p.gender == "L" else "Perempuan"
+            gender_full = "Male" if p.gender in ["L", "M"] else "Female"
             usia_str = "-"
             if p.date_of_birth:
                 today = date.today()
@@ -350,7 +350,7 @@ class MainWindow(QMainWindow):
     def _clear_patient_preview(self):
         if not hasattr(self, 'prev_nama'):
             return
-        self.prev_nama.setText("Belum Dipilih")
+        self.prev_nama.setText("Not Selected")
         self.prev_rm.setText("ID: -")
         for attr in ['prev_jk', 'prev_usia', 'prev_bb', 'prev_tb']:
             if hasattr(self, attr):
@@ -365,8 +365,8 @@ class MainWindow(QMainWindow):
             from PySide6.QtWidgets import QMessageBox
             QMessageBox.warning(
                 self, 
-                "Perhatian",
-                "Silakan isi atau pilih pasien terlebih dahulu dari daftar sebelum memulai sesi.\n\nJika pasien belum terdaftar, klik tombol 'Daftarkan Pasien Baru'.",
+                "Attention",
+                "Please select a patient from the list before starting the session.\n\nIf the patient is not registered yet, click the 'Register Patient' button.",
                 QMessageBox.Ok
             )
             return
@@ -381,7 +381,7 @@ class MainWindow(QMainWindow):
             p = session.query(Patient).filter(Patient.no_rm == rm_pasien).first()
             if p:
                 nama_pasien = p.full_name
-                gender_pasien = "Laki-laki" if p.gender == "L" else "Perempuan"
+                gender_pasien = "Male" if p.gender in ["L", "M"] else "Female"
                 if p.date_of_birth:
                     today = date.today()
                     age = today.year - p.date_of_birth.year - (
@@ -466,14 +466,14 @@ class MainWindow(QMainWindow):
         pre_root.setSpacing(20)
 
         # --- SECTION TITLE ---
-        sec_title = QLabel("Persiapan Sesi Pemeriksaan")
+        sec_title = QLabel("Session Preparation")
         sec_title.setStyleSheet("""
             color: #002C6F;
             font-size: 24px;
             font-weight: 800;
             background: transparent;
         """)
-        sec_sub = QLabel("Pilih pasien yang akan diperiksa, periksa data identitas, lalu mulai sesi.")
+        sec_sub = QLabel("Select a patient, verify identity data, then start the session.")
         sec_sub.setStyleSheet("color: #718096; font-size: 14px; background: transparent;")
         pre_root.addWidget(sec_title)
         pre_root.addWidget(sec_sub)
@@ -498,7 +498,7 @@ class MainWindow(QMainWindow):
         self.cmb_pasien_session = QComboBox()
         self.cmb_pasien_session.setEditable(True)
         self.cmb_pasien_session.setInsertPolicy(QComboBox.NoInsert)
-        self.cmb_pasien_session.lineEdit().setPlaceholderText("Ketik nama pasien atau ID di sini...")
+        self.cmb_pasien_session.lineEdit().setPlaceholderText("Type patient name or ID here...")
         self.cmb_pasien_session.setFixedHeight(54)
         self.cmb_pasien_session.setStyleSheet("""
             QComboBox {
@@ -527,7 +527,7 @@ class MainWindow(QMainWindow):
         self.cmb_pasien_session.lineEdit().mousePressEvent = _show_popup
         
         # Tombol Pasien Baru (di bawah pencarian)
-        btn_tambah_ps = QPushButton("  Daftarkan Pasien Baru")
+        btn_tambah_ps = QPushButton("  Register Patient")
         btn_tambah_ps.setIcon(qta.icon('fa5s.plus', color='#5C9EDA'))
         btn_tambah_ps.setFixedHeight(46)
         btn_tambah_ps.setStyleSheet("""
@@ -577,7 +577,7 @@ class MainWindow(QMainWindow):
         
         name_col = QVBoxLayout()
         name_col.setSpacing(4)
-        self.prev_nama = QLabel("Belum Dipilih")
+        self.prev_nama = QLabel("Not Selected")
         self.prev_nama.setStyleSheet("color: #002C6F; font-size: 20px; font-weight: bold; background: transparent; border: none;")
         self.prev_rm = QLabel("ID: -")
         self.prev_rm.setStyleSheet("color: #718096; font-size: 14px; background: transparent; border: none;")
@@ -618,10 +618,10 @@ class MainWindow(QMainWindow):
             
             grid_layout.addWidget(wrap, row, col)
 
-        _make_grid_item('Jenis Kelamin', 'prev_jk', 0, 0)
-        _make_grid_item('Usia', 'prev_usia', 0, 1)
-        _make_grid_item('Berat Badan (kg)', 'prev_bb', 1, 0)
-        _make_grid_item('Tinggi Badan (cm)', 'prev_tb', 1, 1)
+        _make_grid_item('Gender', 'prev_jk', 0, 0)
+        _make_grid_item('Age', 'prev_usia', 0, 1)
+        _make_grid_item('Weight (kg)', 'prev_bb', 1, 0)
+        _make_grid_item('Height (cm)', 'prev_tb', 1, 1)
         
         identity_layout.addLayout(grid_layout)
         identity_layout.addSpacing(10)

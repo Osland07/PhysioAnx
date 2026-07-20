@@ -51,10 +51,10 @@ class PatientController:
             self.view.table_pasien.setItem(row, 2, item_umur)
             
             # Format Gender
-            if p.gender in ["L", "Laki-laki"]:
-                gender_display = "Laki-laki"
-            elif p.gender in ["P", "Perempuan"]:
-                gender_display = "Perempuan"
+            if p.gender in ["L", "M", "Laki-laki", "Male"]:
+                gender_display = "Male"
+            elif p.gender in ["P", "F", "Perempuan", "Female"]:
+                gender_display = "Female"
             else:
                 gender_display = p.gender
                 
@@ -68,7 +68,7 @@ class PatientController:
             action_layout.setContentsMargins(5, 2, 5, 2)
             action_layout.setSpacing(8)
             
-            btn_periksa = QPushButton(" Periksa")
+            btn_periksa = QPushButton(" Start")
             btn_periksa.setIcon(qta.icon('fa5s.stethoscope', color='white'))
             btn_periksa.setStyleSheet("background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-weight: bold;")
             btn_periksa.setCursor(Qt.PointingHandCursor)
@@ -80,7 +80,7 @@ class PatientController:
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda checked, pat=p: self.show_edit_patient_dialog(pat))
             
-            btn_delete = QPushButton(" Hapus")
+            btn_delete = QPushButton(" Delete")
             btn_delete.setIcon(qta.icon('fa5s.trash-alt', color='white'))
             btn_delete.setStyleSheet("background-color: #D32F2F; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-weight: bold;")
             btn_delete.setCursor(Qt.PointingHandCursor)
@@ -92,7 +92,7 @@ class PatientController:
             action_layout.addStretch()
             self.view.table_pasien.setCellWidget(row, 4, action_widget)
             
-        self.view.lbl_info.setText(f"Menampilkan 1 hingga {len(patients)} dari {len(patients)} entri")
+        self.view.lbl_info.setText(f"Showing 1 to {len(patients)} of {len(patients)} entries")
         session.close()
 
     def show_add_patient_dialog(self):

@@ -20,7 +20,7 @@ class PatientView(QWidget):
         title = QLabel("Patients")
         title.setObjectName("HeaderTitle")
         
-        self.btn_add = QPushButton(" Register New Patient")
+        self.btn_add = QPushButton(" Register Patient")
         self.btn_add.setIcon(qta.icon('fa5s.user-plus', color='white'))
         self.btn_add.setIconSize(QSize(18, 18))
         self.btn_add.setObjectName("PrimaryButton")
@@ -41,11 +41,11 @@ class PatientView(QWidget):
         
         self.search_input_pasien = QLineEdit()
         self.search_input_pasien.setObjectName("SearchBar")
-        self.search_input_pasien.setPlaceholderText("Cari ID atau Nama Pasien...")
+        self.search_input_pasien.setPlaceholderText("Search Patient ID or Name...")
         self.search_input_pasien.setMinimumWidth(300)
         
         self.cmb_gender_pasien = QComboBox()
-        self.cmb_gender_pasien.addItems(["Semua Jenis Kelamin", "Laki-laki", "Perempuan"])
+        self.cmb_gender_pasien.addItems(["All Genders", "Male", "Female"])
         self.cmb_gender_pasien.setFixedSize(210, 40)
         
         self.btn_filter = QPushButton(" Filter")
@@ -69,7 +69,7 @@ class PatientView(QWidget):
         
         self.table_pasien = QTableWidget(0, 5)
         self.table_pasien.setHorizontalHeaderLabels([
-            "ID Pasien", "Nama Pasien", "Umur", "Gender", "Aksi"
+            "Patient ID", "Patient Name", "Age", "Gender", "Action"
         ])
         
         header = self.table_pasien.horizontalHeader()

@@ -6,7 +6,7 @@ import qtawesome as qta
 class PatientDialog(QDialog):
     def __init__(self, parent=None, patient_data=None):
         super().__init__(parent)
-        self.setWindowTitle("Registrasi Pasien Baru" if not patient_data else "Edit Data Pasien")
+        self.setWindowTitle("Register Patient" if not patient_data else "Edit Patient Data")
         self.setFixedSize(450, 500)
         
         self.setStyleSheet("""
@@ -50,7 +50,7 @@ class PatientDialog(QDialog):
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
-        lbl_title = QLabel("Formulir Data Pasien" if not patient_data else "Edit Profil Pasien")
+        lbl_title = QLabel("Patient Data Form" if not patient_data else "Edit Patient Profile")
         lbl_title.setStyleSheet("color: #002C6F; font-size: 20px; font-weight: 900; margin-bottom: 10px;")
         lbl_title.setAlignment(Qt.AlignCenter)
         layout.addWidget(lbl_title)
@@ -64,12 +64,12 @@ class PatientDialog(QDialog):
         
         self.inp_rm.setText(new_rm if not patient_data else patient_data.no_rm)
         self.inp_rm.setStyleSheet("background-color: #EDF2F7; color: #A0AEC0; border-color: #E2E8F0;")
-        form_layout.addRow("ID Pasien", self.inp_rm)
+        form_layout.addRow("Patient ID", self.inp_rm)
 
         self.inp_nama = QLineEdit()
-        self.inp_nama.setPlaceholderText("Masukkan nama lengkap pasien")
+        self.inp_nama.setPlaceholderText("Enter patient's full name")
         if patient_data: self.inp_nama.setText(patient_data.full_name)
-        form_layout.addRow("Nama Lengkap", self.inp_nama)
+        form_layout.addRow("Full Name", self.inp_nama)
 
         self.layout_tgl = QHBoxLayout()
         self.layout_tgl.setSpacing(5)
@@ -79,8 +79,8 @@ class PatientDialog(QDialog):
         
         self.inp_tgl_bulan = QComboBox()
         self.inp_tgl_bulan.addItems([
-            "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
-            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            "January", "February", "March", "April", "May", "June", 
+            "July", "August", "September", "October", "November", "December"
         ])
         
         self.inp_tgl_tahun = QComboBox()
@@ -121,13 +121,13 @@ class PatientDialog(QDialog):
         self.inp_tgl_bulan.currentIndexChanged.connect(update_days)
         self.inp_tgl_tahun.currentTextChanged.connect(update_days)
         
-        form_layout.addRow("Tanggal Lahir", self.layout_tgl)
+        form_layout.addRow("Date of Birth", self.layout_tgl)
 
         self.inp_jk = QComboBox()
-        self.inp_jk.addItems(["Laki-laki", "Perempuan"])
-        if patient_data and patient_data.gender == "P":
-            self.inp_jk.setCurrentText("Perempuan")
-        form_layout.addRow("Jenis Kelamin", self.inp_jk)
+        self.inp_jk.addItems(["Male", "Female"])
+        if patient_data and patient_data.gender:
+            self.inp_jk.setCurrentText("Male" if patient_data.gender in ["L", "M"] else "Female")
+        form_layout.addRow("Gender", self.inp_jk)
 
         self.inp_bb = QDoubleSpinBox()
         self.inp_bb.setRange(10.0, 300.0)
@@ -136,7 +136,7 @@ class PatientDialog(QDialog):
             self.inp_bb.setValue(patient_data.weight)
         else:
             self.inp_bb.setValue(60.0)
-        form_layout.addRow("Berat Badan", self.inp_bb)
+        form_layout.addRow("Weight", self.inp_bb)
             
         self.inp_tb = QSpinBox()
         self.inp_tb.setRange(50, 250)
@@ -145,7 +145,7 @@ class PatientDialog(QDialog):
             self.inp_tb.setValue(patient_data.height)
         else:
             self.inp_tb.setValue(165)
-        form_layout.addRow("Tinggi Badan", self.inp_tb)
+        form_layout.addRow("Height", self.inp_tb)
 
         layout.addLayout(form_layout)
         layout.addStretch()
@@ -153,7 +153,7 @@ class PatientDialog(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(10)
 
-        self.btn_cancel = QPushButton(" Batal")
+        self.btn_cancel = QPushButton(" Cancel")
         self.btn_cancel.setIcon(qta.icon('fa5s.times', color='#E53E3E'))
         self.btn_cancel.setStyleSheet("""
             QPushButton {
@@ -164,7 +164,7 @@ class PatientDialog(QDialog):
         self.btn_cancel.setCursor(Qt.PointingHandCursor)
         self.btn_cancel.clicked.connect(self.reject)
 
-        self.btn_save = QPushButton(" Simpan Data")
+        self.btn_save = QPushButton(" Save Data")
         self.btn_save.setIcon(qta.icon('fa5s.save', color='white'))
         self.btn_save.setStyleSheet("""
             QPushButton {
@@ -190,7 +190,7 @@ class PatientDialog(QDialog):
             "no_rm": self.inp_rm.text().strip(),
             "full_name": self.inp_nama.text().strip(),
             "date_of_birth": date(year, month, day),
-            "gender": "L" if self.inp_jk.currentText() == "Laki-laki" else "P",
+            "gender": "M" if self.inp_jk.currentText() == "Male" else "F",
             "weight": self.inp_bb.value(),
             "height": self.inp_tb.value()
         }

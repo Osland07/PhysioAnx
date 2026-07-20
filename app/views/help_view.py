@@ -70,8 +70,8 @@ class HelpView(QWidget):
                 "title": "Patients",
                 "desc":  "Patient data management page.",
                 "items": [
-                    ("Register New Patient",
-                     "Click the 'Register New Patient' button in the top right corner. "
+                    ("Register Patient",
+                     "Click the 'Register Patient' button in the top right corner. "
                      "Fill out the patient identity form (Name, Medical Record No., Date of Birth, "
                      "Gender, Weight, Height), then click Save."),
                     ("Search Patients",
