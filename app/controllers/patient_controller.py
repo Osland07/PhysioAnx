@@ -29,8 +29,11 @@ class PatientController:
             query = query.filter((Patient.full_name.ilike(f"%{search_text}%")) | (Patient.no_rm.ilike(f"%{search_text}%")))
             
         gender_text = self.view.cmb_gender_pasien.currentText()
-        if gender_text != "Semua Jenis Kelamin":
-            query = query.filter(Patient.gender == gender_text)
+        if gender_text != "All Genders":
+            if gender_text == "Male":
+                query = query.filter(Patient.gender.in_(["L", "M"]))
+            elif gender_text == "Female":
+                query = query.filter(Patient.gender.in_(["P", "F"]))
             
         patients = query.all()
         
