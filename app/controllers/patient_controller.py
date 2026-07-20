@@ -117,6 +117,7 @@ class PatientController:
             self.load_patients()
             if hasattr(self.main_window, 'load_patients_to_combobox'):
                 self.main_window.load_patients_to_combobox()
+            QMessageBox.information(self.view, "Sukses", "Data pasien berhasil ditambahkan.")
 
     def show_edit_patient_dialog(self, patient_obj):
         dialog = PatientDialog(self.view, patient_data=patient_obj)
@@ -135,6 +136,7 @@ class PatientController:
             self.load_patients()
             if hasattr(self.main_window, 'load_patients_to_combobox'):
                 self.main_window.load_patients_to_combobox()
+            QMessageBox.information(self.view, "Sukses", "Data pasien berhasil diperbarui.")
 
     def delete_patient_action(self, rm_id, patient_name):
         msg_box = QMessageBox(self.view)
@@ -158,3 +160,4 @@ class PatientController:
             self.load_patients()
             if hasattr(self.main_window, 'load_patients_to_combobox'):
                 self.main_window.load_patients_to_combobox()
+            QMessageBox.information(self.view, "Sukses", "Data pasien berhasil dihapus.")

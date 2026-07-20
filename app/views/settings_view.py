@@ -64,27 +64,11 @@ class SettingsView(QWidget):
         self.inp_doctor.setMinimumHeight(40)
         self.inp_doctor.setStyleSheet("padding: 5px 15px; border: 1px solid #CBD5E0; border-radius: 6px; color: #002C6F; background: white;")
         
-        self.cmb_language = QComboBox()
-        self.cmb_language.addItems(["English", "Bahasa Indonesia"])
-        self.cmb_language.setMinimumHeight(40)
-        self.cmb_language.setStyleSheet("padding: 5px 15px; border: 1px solid #CBD5E0; border-radius: 6px; color: #002C6F; background: white;")
-        
-        self.cmb_theme = QComboBox()
-        self.cmb_theme.addItems(["Light Mode", "Dark Mode"])
-        self.cmb_theme.setMinimumHeight(40)
-        self.cmb_theme.setStyleSheet("padding: 5px 15px; border: 1px solid #CBD5E0; border-radius: 6px; color: #002C6F; background: white;")
-        
         lbl_style = "color: #1E3F76; font-weight: bold; font-size: 14px; padding-right: 20px;"
         lbl_doc = QLabel("Physician Name:")
         lbl_doc.setStyleSheet(lbl_style)
-        lbl_lang = QLabel("Language:")
-        lbl_lang.setStyleSheet(lbl_style)
-        lbl_theme = QLabel("Appearance:")
-        lbl_theme.setStyleSheet(lbl_style)
         
         gen_form.addRow(lbl_doc, self.inp_doctor)
-        gen_form.addRow(lbl_lang, self.cmb_language)
-        gen_form.addRow(lbl_theme, self.cmb_theme)
         
         gen_group.layout().addLayout(gen_form)
         scroll_layout.addWidget(gen_group)
