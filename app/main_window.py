@@ -56,16 +56,22 @@ class MainWindow(QMainWindow):
         self.btn_report = QPushButton(" Riwayat Sesi")
         self.btn_report.setIcon(qta.icon('fa5s.file-medical-alt', color='#8C9EBA'))
         self.btn_report.setIconSize(QSize(20, 20))
+
+        self.btn_help = QPushButton(" Help")
+        self.btn_help.setIcon(qta.icon('fa5s.question-circle', color='#8C9EBA'))
+        self.btn_help.setIconSize(QSize(20, 20))
         
         self.btn_pasien.clicked.connect(lambda: self.switch_page(0))
         self.btn_session.clicked.connect(lambda: self.switch_page(1))
         self.btn_report.clicked.connect(lambda: self.switch_page(2))
+        self.btn_help.clicked.connect(lambda: self.switch_page(3))
         
         sidebar_layout.addWidget(title)
         sidebar_layout.addSpacing(30)
         sidebar_layout.addWidget(self.btn_pasien)
         sidebar_layout.addWidget(self.btn_session)
         sidebar_layout.addWidget(self.btn_report)
+        sidebar_layout.addWidget(self.btn_help)
         sidebar_layout.addStretch()
 
         # Tombol Logout
@@ -140,13 +146,17 @@ class MainWindow(QMainWindow):
         
         from views.report_view import ReportView
         from controllers.report_controller import ReportController
+        from views.help_view import HelpView
         
         self.page_report = ReportView()
         self.report_ctrl = ReportController(self.page_report, self)
+
+        self.page_help = HelpView()
         
         self.stacked_widget.addWidget(self.page_pasien)       # 0
         self.stacked_widget.addWidget(self.page_live_session) # 1
         self.stacked_widget.addWidget(self.page_report)       # 2
+        self.stacked_widget.addWidget(self.page_help)         # 3
         
         self.content_layout.addWidget(self.top_bar)
         self.content_layout.addWidget(self.stacked_widget)
@@ -211,13 +221,13 @@ class MainWindow(QMainWindow):
         self.sidebar.show()
         self.top_bar.show()
         
-        buttons = [self.btn_pasien, self.btn_session, self.btn_report]
+        buttons = [self.btn_pasien, self.btn_session, self.btn_report, self.btn_help]
         for btn in buttons:
             btn.setObjectName("MenuButton")
             btn.style().unpolish(btn)
             btn.style().polish(btn)
             
-        if 0 <= index < 4:
+        if 0 <= index < len(buttons):
             buttons[index].setObjectName("MenuButtonActive")
             buttons[index].style().unpolish(buttons[index])
             buttons[index].style().polish(buttons[index])

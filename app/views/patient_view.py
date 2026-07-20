@@ -20,7 +20,7 @@ class PatientView(QWidget):
         title = QLabel("Patients")
         title.setObjectName("HeaderTitle")
         
-        self.btn_add = QPushButton(" Registrasi Pasien Baru")
+        self.btn_add = QPushButton(" Register New Patient")
         self.btn_add.setIcon(qta.icon('fa5s.user-plus', color='white'))
         self.btn_add.setIconSize(QSize(18, 18))
         self.btn_add.setObjectName("PrimaryButton")

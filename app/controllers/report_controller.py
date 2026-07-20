@@ -12,9 +12,9 @@ class ReportController:
 
     def load_dummy_data(self):
         dummy_sesi = [
-            ("19 Jul 2026, 09:15", "2406-001", "Bpk. Budi", "Severe", "45 Tahun", "Laki-laki", "170 cm", "75 kg", "Jl. Merdeka No. 1, Jakarta"),
-            ("18 Jul 2026, 14:30", "2406-002", "Ibu Siti", "Moderate", "38 Tahun", "Perempuan", "160 cm", "60 kg", "Jl. Sudirman No. 12, Bandung"),
-            ("17 Jul 2026, 10:00", "2406-003", "Sdr. Andi", "Mild", "25 Tahun", "Laki-laki", "175 cm", "68 kg", "Jl. Diponegoro No. 8, Surabaya")
+            ("19 Juli 2026, 09:15", "2406-001", "Bpk. Budi", "Severe", "45 Tahun", "Laki-laki", "170 cm", "75 kg", "Jl. Merdeka No. 1, Jakarta"),
+            ("18 Juli 2026, 14:30", "2406-002", "Ibu Siti", "Moderate", "38 Tahun", "Perempuan", "160 cm", "60 kg", "Jl. Sudirman No. 12, Bandung"),
+            ("17 Juli 2026, 10:00", "2406-003", "Sdr. Andi", "Mild", "25 Tahun", "Laki-laki", "175 cm", "68 kg", "Jl. Diponegoro No. 8, Surabaya")
         ]
         
         self.view.table_sesi.setRowCount(len(dummy_sesi))
@@ -110,95 +110,237 @@ class ReportController:
 
     def export_pdf(self, data):
         from PySide6.QtWidgets import QFileDialog, QMessageBox
-        from PySide6.QtGui import QTextDocument
+        from PySide6.QtGui import QTextDocument, QPageSize
         from PySide6.QtPrintSupport import QPrinter
-        
-        safe_name = data[2].replace('.', '').replace(' ', '_')
-        filepath, _ = QFileDialog.getSaveFileName(self.view, "Simpan PDF", f"Laporan_{safe_name}.pdf", "PDF Files (*.pdf)")
-        if filepath:
-            try:
-                printer = QPrinter(QPrinter.HighResolution)
-                printer.setOutputFormat(QPrinter.PdfFormat)
-                printer.setOutputFileName(filepath)
-                
-                doc = QTextDocument()
-                html = f"""
-                <div style="font-family: Arial, sans-serif; color: #2D3748;">
-                    <h1 style='color: #2B6CB0; text-align: center;'>Laporan Analisis Fisiologis & Kecemasan</h1>
-                    <hr style="border: 1px solid #E2E8F0;">
-                    
-                    <h2 style='color: #2D3748;'>1. Informasi Pasien & Sesi</h2>
-                    <table width="100%" cellpadding="8" style="border-collapse: collapse; margin-bottom: 20px;">
-                        <tr style="background-color: #F7FAFC;">
-                            <td width="30%"><b>ID Pasien</b></td>
-                            <td width="70%">{data[1]}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Nama Pasien</b></td>
-                            <td>{data[2]}</td>
-                        </tr>
-                        <tr style="background-color: #F7FAFC;">
-                            <td><b>Waktu Perekaman</b></td>
-                            <td>{data[0]} (Durasi: 15 Menit 45 Detik)</td>
-                        </tr>
-                        <tr>
-                            <td><b>Tingkat Kecemasan</b></td>
-                            <td><b>{data[3]}</b></td>
-                        </tr>
-                    </table>
-                    
-                    <h2 style='color: #2D3748;'>2. Ringkasan Sinyal Fisiologis</h2>
-                    <table border="1" width="100%" cellpadding="10" style="border-collapse: collapse; border-color: #CBD5E0; margin-bottom: 20px;">
-                        <tr style="background-color: #EDF2F7; text-align: left;">
-                            <th>Parameter Sensor</th>
-                            <th>Rata-rata (Avg)</th>
-                            <th>Puncak (Peak)</th>
-                            <th>Interpretasi Baseline</th>
-                        </tr>
-                        <tr>
-                            <td><b>Heart Rate (BPM)</b></td>
-                            <td>84.2 bpm</td>
-                            <td>112.5 bpm</td>
-                            <td>Reaktivitas kardiovaskular tinggi</td>
-                        </tr>
-                        <tr>
-                            <td><b>Skin Conductance (μS)</b></td>
-                            <td>5.8 μS</td>
-                            <td>9.1 μS</td>
-                            <td>Aktivitas kelenjar keringat aktif</td>
-                        </tr>
-                        <tr>
-                            <td><b>Skin Temperature (°C)</b></td>
-                            <td>31.5 °C</td>
-                            <td>33.2 °C</td>
-                            <td>Sedikit menurun (Vasokonstriksi)</td>
-                        </tr>
-                    </table>
+        from datetime import datetime
 
-                    <h2 style='color: #2D3748;'>3. Kesimpulan & Observasi Medis</h2>
-                    <p style="line-height: 1.6;">
-                        Berdasarkan hasil pembacaan sensor biometrik di atas, terdapat pola fluktuasi yang kuat pada <i>Heart Rate</i> dan lonjakan signifikan pada <i>Galvanic Skin Response</i> (GSR) yang berkorelasi lurus dengan indikasi tingkat kecemasan <b>{data[3]}</b>. Pasien menunjukkan hiperaktivitas pada saraf simpatis selama sesi perekaman berlangsung.
-                    </p>
-                    
-                    <br><br><br>
-                    <table width="100%">
-                        <tr>
-                            <td width="60%"></td>
-                            <td width="40%" style="text-align: center;">
-                                <p>Mengetahui,</p>
-                                <br><br><br>
-                                <p><b>( Dokter / Terapis )</b></p>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                """
-                doc.setHtml(html)
-                doc.print_(printer)
-                
-                QMessageBox.information(self.view, "Sukses", f"Laporan PDF berhasil diekspor ke:\n{filepath}")
-            except Exception as e:
-                QMessageBox.critical(self.view, "Error", f"Gagal menyimpan PDF:\n{str(e)}")
+        safe_name = data[2].replace('.', '').replace(' ', '_')
+        filepath, _ = QFileDialog.getSaveFileName(
+            self.view, "Save PDF Report",
+            f"PhysioReport_{safe_name}.pdf", "PDF Files (*.pdf)"
+        )
+        if not filepath:
+            return
+
+        try:
+            printer = QPrinter(QPrinter.HighResolution)
+            printer.setOutputFormat(QPrinter.PdfFormat)
+            printer.setOutputFileName(filepath)
+            printer.setPageSize(QPageSize(QPageSize.A4))
+
+            sev = data[3]
+            sev_colors = {
+                "Severe":   ("#C53030", "#FFF5F5"),
+                "Moderate": ("#C05621", "#FFFAF0"),
+                "Mild":     ("#975A16", "#FFFFF0"),
+                "Minimal":  ("#276749", "#F0FFF4"),
+            }
+            sev_fg, sev_bg = sev_colors.get(sev, ("#4A5568", "#EDF2F7"))
+            
+            now = datetime.now()
+            months_id = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+            tanggal_ttd = f"{now.day} {months_id[now.month]} {now.year}"
+            printed_at = datetime.now().strftime("%d %B %Y, %H:%M")
+
+            html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * {{ box-sizing: border-box; }}
+  body {{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11pt;
+    color: #000;
+    line-height: 1.3;
+    background: #fff;
+    padding: 10px 20px;
+  }}
+
+  /* ── KOP SURAT ── */
+  .kop-surat {{
+    text-align: center;
+    border-bottom: 3px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 2px;
+    line-height: 1.1;
+  }}
+  .kop-surat h1 {{
+    font-size: 14pt;
+    margin: 0;
+    text-transform: uppercase;
+  }}
+  .kop-surat h2 {{
+    font-size: 12pt;
+    margin: 0;
+  }}
+  .kop-surat p {{
+    font-size: 10pt;
+    margin: 0;
+  }}
+  .kop-garis-bawah {{
+    border-bottom: 1px solid #000;
+    margin-bottom: 15px;
+  }}
+
+  /* ── JUDUL SURAT ── */
+  .judul-surat {{
+    text-align: center;
+    font-weight: bold;
+    font-size: 12pt;
+    text-decoration: underline;
+    margin-bottom: 15px;
+  }}
+
+  /* ── ISI SURAT ── */
+  .content {{
+    text-align: justify;
+  }}
+  .table-identitas {{
+    width: 100%;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    border-collapse: collapse;
+  }}
+  .table-identitas td {{
+    vertical-align: top;
+    padding: 1px 3px;
+  }}
+
+  /* ── TABEL HASIL ── */
+  .table-hasil {{
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+  }}
+  .table-hasil th, .table-hasil td {{
+    border: 1px solid #000;
+    padding: 5px;
+    text-align: left;
+  }}
+  .table-hasil th {{
+    text-align: center;
+  }}
+
+  /* ── TANDA TANGAN ── */
+  .tanda-tangan {{
+    width: 250px;
+    float: right;
+    text-align: center;
+    margin-top: 20px;
+  }}
+  .tanda-tangan p {{
+    margin: 0;
+  }}
+  .nama-terang {{
+    font-weight: bold;
+    text-decoration: underline;
+    margin-top: 50px !important;
+  }}
+</style>
+</head>
+<body>
+
+<!-- KOP SURAT -->
+<div class="kop-surat">
+  <h1>KLINIK FISIOTERAPI PHYSIOANX</h1>
+  <h2>Pusat Pemantauan Fisiologis & Kecemasan</h2>
+  <p>Jl. Kesehatan No. 123, Jakarta, Indonesia | Telp: (021) 555-1234</p>
+</div>
+<div class="kop-garis-bawah"></div>
+
+<!-- JUDUL SURAT -->
+<div class="judul-surat">SURAT HASIL PEMERIKSAAN FISIOLOGIS</div>
+
+<!-- ISI SURAT -->
+<div class="content">
+  <p>Yang bertanda tangan di bawah ini, menerangkan bahwa pasien berikut:</p>
+  
+  <table class="table-identitas">
+    <tr>
+      <td width="20%">Nama</td>
+      <td width="2%">:</td>
+      <td width="78%"><b>{data[2]}</b></td>
+    </tr>
+    <tr>
+      <td>No. Rekam Medis</td>
+      <td>:</td>
+      <td>{data[1]}</td>
+    </tr>
+    <tr>
+      <td>Usia</td>
+      <td>:</td>
+      <td>{data[4]}</td>
+    </tr>
+    <tr>
+      <td>Jenis Kelamin</td>
+      <td>:</td>
+      <td>{data[5]}</td>
+    </tr>
+    <tr>
+      <td>Tinggi / Berat</td>
+      <td>:</td>
+      <td>{data[6]} / {data[7]}</td>
+    </tr>
+  </table>
+
+  <p>Telah menjalani pemeriksaan pemantauan respons fisiologis pada tanggal <b>{data[0]}</b>. Berdasarkan hasil perekaman sensor biometrik selama sesi, didapatkan ringkasan parameter sebagai berikut:</p>
+
+  <table class="table-hasil">
+    <tr>
+      <th width="30%">Parameter</th>
+      <th width="20%">Rata-rata</th>
+      <th width="20%">Puncak</th>
+      <th width="30%">Keterangan</th>
+    </tr>
+    <tr>
+      <td>Heart Rate (BPM)</td>
+      <td>84.2 bpm</td>
+      <td>112.5 bpm</td>
+      <td>Reaktivitas kardiovaskular tinggi</td>
+    </tr>
+    <tr>
+      <td>Skin Conductance (&mu;S)</td>
+      <td>5.8 &mu;S</td>
+      <td>9.1 &mu;S</td>
+      <td>Aktivitas kelenjar keringat aktif</td>
+    </tr>
+    <tr>
+      <td>Skin Temperature (&deg;C)</td>
+      <td>31.5 &deg;C</td>
+      <td>33.2 &deg;C</td>
+      <td>Vasokonstriksi (menurun)</td>
+    </tr>
+  </table>
+
+  <p><b>Kesimpulan Pemeriksaan:</b></p>
+  <p>Berdasarkan analisis data fluktuasi <i>Heart Rate</i> dan lonjakan <i>Galvanic Skin Response</i> (GSR) di atas, pasien terindikasi mengalami tingkat kecemasan <b>{sev.upper()}</b>. Hasil ini menunjukkan adanya hiperaktivitas pada saraf simpatis selama sesi perekaman.</p>
+
+  <p>Demikian surat hasil pemeriksaan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
+</div>
+
+<!-- TANDA TANGAN -->
+<div class="tanda-tangan">
+  <p>Jakarta, {tanggal_ttd}</p>
+  <p>Dokter / Fisioterapis Pemeriksa,</p>
+  <p class="nama-terang">dr. Pemeriksa PhysioAnx, Sp.Kj</p>
+  <p>NIP. 19801231 200501 1 001</p>
+</div>
+
+</body>
+</html>
+"""
+            doc = QTextDocument()
+            doc.setHtml(html)
+            doc.print_(printer)
+
+            QMessageBox.information(
+                self.view, "Success",
+                f"PDF report successfully exported to:\n{filepath}"
+            )
+        except Exception as e:
+            QMessageBox.critical(self.view, "Error", f"Failed to save PDF:\n{str(e)}")
 
     def open_detail_replay(self, data):
         from components.replay_dialog import ReplayDialog
