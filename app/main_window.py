@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.current_user = current_user
         self.setWindowTitle("PhysioAnx")
-        self.setMinimumSize(1200, 750)
+        self.setMinimumSize(950, 600)
         
         main_widget = QWidget()
         self.setCentralWidget(main_widget)

@@ -73,13 +73,13 @@ class PatientView(QWidget):
         ])
         
         header = self.table_pasien.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Interactive)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
         
-        self.table_pasien.setColumnWidth(0, 130)
-        self.table_pasien.setColumnWidth(2, 100) # Increased from 80 to 100 for 'xx Years'
-        self.table_pasien.setColumnWidth(3, 120)
-        self.table_pasien.setColumnWidth(4, 260)
+        self.table_pasien.setHorizontalScrollMode(QTableWidget.ScrollPerPixel)
         
         self.table_pasien.verticalHeader().setVisible(False)
         self.table_pasien.verticalHeader().setDefaultSectionSize(55)
