@@ -32,9 +32,11 @@ class DashboardView(QWidget):
             db.close()
 
     def setup_ui(self):
-        root = QVBoxLayout(self)
-        root.setContentsMargins(0, 0, 0, 0)
-        root.setSpacing(24)
+        root = self.layout()
+        if not root:
+            root = QVBoxLayout(self)
+            root.setContentsMargins(0, 0, 0, 0)
+            root.setSpacing(24)
 
         # ── Header ───────────────────────────────────────────────────────────────
         header = QHBoxLayout()
