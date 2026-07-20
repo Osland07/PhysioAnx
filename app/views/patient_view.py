@@ -77,7 +77,7 @@ class PatientView(QWidget):
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         
         self.table_pasien.setColumnWidth(0, 130)
-        self.table_pasien.setColumnWidth(2, 80)
+        self.table_pasien.setColumnWidth(2, 100) # Increased from 80 to 100 for 'xx Years'
         self.table_pasien.setColumnWidth(3, 120)
         self.table_pasien.setColumnWidth(4, 260)
         
