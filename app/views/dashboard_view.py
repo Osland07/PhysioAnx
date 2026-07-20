@@ -104,7 +104,7 @@ class DashboardView(QWidget):
         prog_frame.setStyleSheet("QFrame { background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0; }")
         prog_layout = QVBoxLayout(prog_frame)
         prog_layout.setContentsMargins(24, 24, 24, 24)
-        prog_layout.setSpacing(16)
+        prog_layout.setSpacing(32)
         
         prog_title = QLabel("Anxiety Level Distribution")
         prog_title.setStyleSheet("font-size: 15px; font-weight: 800; color: #1A202C; border: none;")
@@ -126,33 +126,33 @@ class DashboardView(QWidget):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(4)
+        layout.setSpacing(8)
         
         top_layout = QHBoxLayout()
         lbl = QLabel(label_text)
-        lbl.setStyleSheet("font-size: 13px; font-weight: bold; color: #4A5568;")
+        lbl.setStyleSheet("font-size: 14px; font-weight: bold; color: #4A5568;")
         
         pct = int((count / total) * 100)
         val = QLabel(f"{count} ({pct}%)")
-        val.setStyleSheet("font-size: 13px; font-weight: bold; color: #1A202C;")
+        val.setStyleSheet("font-size: 14px; font-weight: bold; color: #1A202C;")
         
         top_layout.addWidget(lbl)
         top_layout.addStretch()
         top_layout.addWidget(val)
         
         bar = QProgressBar()
-        bar.setFixedHeight(8)
+        bar.setFixedHeight(12)
         bar.setTextVisible(False)
         bar.setValue(pct)
         bar.setStyleSheet(f"""
             QProgressBar {{
                 background-color: #EDF2F7;
-                border-radius: 4px;
+                border-radius: 6px;
                 border: none;
             }}
             QProgressBar::chunk {{
                 background-color: {color};
-                border-radius: 4px;
+                border-radius: 6px;
             }}
         """)
         
